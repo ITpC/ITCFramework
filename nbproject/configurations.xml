@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="80">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <logicalFolder name="HeaderFiles"
+                   displayName="Header Files"
+                   projectFiles="true">
+      <logicalFolder name="include" displayName="include" projectFiles="true">
+        <logicalFolder name="abstract" displayName="abstract" projectFiles="true">
+          <itemPath>include/abstract/IController.h</itemPath>
+          <itemPath>include/abstract/IMessageListener.h</itemPath>
+          <itemPath>include/abstract/IThreadPool.h</itemPath>
+          <itemPath>include/abstract/IView.h</itemPath>
+          <itemPath>include/abstract/IWorkflowState.h</itemPath>
+          <itemPath>include/abstract/Observable.h</itemPath>
+          <itemPath>include/abstract/Observer.h</itemPath>
+          <itemPath>include/abstract/QueueInterface.h</itemPath>
+          <itemPath>include/WorkerThread.h</itemPath>
+        </logicalFolder>
+        <itemPath>include/ClientSocketsFactory.h</itemPath>
+        <itemPath>include/CompCommon.h</itemPath>
+        <itemPath>include/CompressBuffer.h</itemPath>
+        <itemPath>include/Exceptions.h</itemPath>
+        <itemPath>include/LazyThread.h</itemPath>
+        <itemPath>include/PoolThread.h</itemPath>
+        <itemPath>include/Sequence.h</itemPath>
+        <itemPath>include/Singleton.h</itemPath>
+        <itemPath>include/ThreadPool.h</itemPath>
+        <itemPath>include/ThreadSafeLocalQueue.h</itemPath>
+        <itemPath>include/WorkflowControl.h</itemPath>
+        <itemPath>include/WorkflowEntity.h</itemPath>
+        <itemPath>include/WorkflowStorableState.h</itemPath>
+        <itemPath>include/bz2Compressor.h</itemPath>
+        <itemPath>include/bz2Decompressor.h</itemPath>
+      </logicalFolder>
+    </logicalFolder>
+    <logicalFolder name="ResourceFiles"
+                   displayName="Resource Files"
+                   projectFiles="true">
+    </logicalFolder>
+    <logicalFolder name="SourceFiles"
+                   displayName="Source Files"
+                   projectFiles="true">
+    </logicalFolder>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false">
+      <itemPath>Makefile</itemPath>
+    </logicalFolder>
+  </logicalFolder>
+  <sourceRootList>
+    <Elem>../utils/include</Elem>
+  </sourceRootList>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Debug" type="3">
+      <toolsSet>
+        <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
+        <compilerSet>GNU|GNU</compilerSet>
+      </toolsSet>
+      <compileType>
+        <ccTool>
+          <incDir>
+            <pElem>include</pElem>
+            <pElem>../ITCLib/include</pElem>
+            <pElem>../utils/include</pElem>
+          </incDir>
+          <commandLine>-pipe -pthread -D_REENTRANT -D_THREAD_SAFE -O2 -march=native -mtune=native -fomit-frame-pointer -mfpmath=sse -ftree-vectorize -funroll-loops -mno-tls-direct-seg-refs -DBZ_NO_STDIO -DLOG_DEBUG -DMAX_BUFF_SIZE=256 -DTSAFE_LOG=1 -std=c++0x</commandLine>
+          <warningLevel>2</warningLevel>
+        </ccTool>
+        <archiverTool>
+        </archiverTool>
+      </compileType>
+    </conf>
+    <conf name="Release" type="3">
+      <toolsSet>
+        <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
+        <compilerSet>GNU|GNU</compilerSet>
+      </toolsSet>
+      <compileType>
+        <cTool>
+          <developmentMode>5</developmentMode>
+        </cTool>
+        <ccTool>
+          <developmentMode>5</developmentMode>
+          <stripSymbols>true</stripSymbols>
+          <incDir>
+            <pElem>include</pElem>
+            <pElem>../ITCLib/include</pElem>
+            <pElem>../utils/include</pElem>
+          </incDir>
+          <commandLine>-pipe -pthread -D_REENTRANT -D_THREAD_SAFE -O2 -march=native -mtune=native -fomit-frame-pointer -mfpmath=sse -ftree-vectorize -funroll-loops -mno-tls-direct-seg-refs -DBZ_NO_STDIO -DLOG_ERROR -DMAX_BUFF_SIZE=256 -DTSAFE_LOG=1 -std=c++0x -DNDEBUG=1</commandLine>
+          <warningLevel>2</warningLevel>
+        </ccTool>
+        <fortranCompilerTool>
+          <developmentMode>5</developmentMode>
+        </fortranCompilerTool>
+        <archiverTool>
+        </archiverTool>
+      </compileType>
+    </conf>
+  </confs>
+</configurationDescriptor>

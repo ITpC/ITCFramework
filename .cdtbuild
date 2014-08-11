@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?fileVersion 3.1.0?>
+
+<ManagedProjectBuildInfo>
+<project id="ITCFramework.cdt.managedbuild.target.gnu.exe.581606258" name="Executable (Gnu)" projectType="cdt.managedbuild.target.gnu.exe">
+<configuration artifactName="ITCFramework" cleanCommand="rm -rf" description="" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.config.gnu.exe.debug.1133799887" name="Debug" parent="cdt.managedbuild.config.gnu.exe.debug">
+<toolChain id="cdt.managedbuild.toolchain.gnu.exe.debug.882507933" name="GCC Tool Chain" superClass="cdt.managedbuild.toolchain.gnu.exe.debug">
+<tool command="gcc -march=k8 -mtune=athlon64" id="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.348600855" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.debug"/>
+<tool command="g++ -g -pthread -march=k8 -D_REENTRANT -D_THREAD_SAFE -DLOG_DEBUG" id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.1468275043" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug">
+<option id="gnu.cpp.compiler.option.include.paths.605132969" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
+<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ITCFramework/include}&quot;"/>
+<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ITCLib/include}&quot;"/>
+<listOptionValue builtIn="false" value="&quot;${workspace_loc:/utils/include}&quot;"/>
+</option>
+<option id="gnu.cpp.compiler.exe.debug.option.optimization.level.1882150084" superClass="gnu.cpp.compiler.exe.debug.option.optimization.level" value="gnu.cpp.compiler.optimization.level.most" valueType="enumerated"/>
+</tool>
+<tool command="gcc" id="cdt.managedbuild.tool.gnu.c.linker.exe.debug.288695132" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.exe.debug"/>
+<tool command="g++ -pthread -march=k8" id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.976808551" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug">
+<option id="gnu.cpp.link.option.libs.1021917398" superClass="gnu.cpp.link.option.libs" valueType="libs">
+<listOptionValue builtIn="false" value="ITCLib"/>
+<listOptionValue builtIn="false" value="pthread"/>
+</option>
+<option id="gnu.cpp.link.option.paths.1434389694" superClass="gnu.cpp.link.option.paths" valueType="stringList">
+<listOptionValue builtIn="false" value="${ProjDirPath}/../ITCLib/Debug/"/>
+</option>
+</tool>
+<tool command="as" id="cdt.managedbuild.tool.gnu.assembler.exe.debug.1032498139" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug"/>
+<macros/>
+</toolChain>
+</configuration>
+<configuration artifactName="ITCFramework" cleanCommand="rm -rf" description="" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.config.gnu.exe.release.1770957369" name="Release" parent="cdt.managedbuild.config.gnu.exe.release">
+<toolChain id="cdt.managedbuild.toolchain.gnu.exe.release.2014235452" name="GCC Tool Chain" superClass="cdt.managedbuild.toolchain.gnu.exe.release">
+<tool id="cdt.managedbuild.tool.gnu.c.compiler.exe.release.505067386" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.release"/>
+<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.release.469618104" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.release"/>
+<tool id="cdt.managedbuild.tool.gnu.c.linker.exe.release.1704486461" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.exe.release"/>
+<tool id="cdt.managedbuild.tool.gnu.cpp.linker.exe.release.644089869" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.release"/>
+<tool id="cdt.managedbuild.tool.gnu.assembler.exe.release.1655262439" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.release"/>
+</toolChain>
+</configuration>
+<configuration artifactName="ITCFramework" cleanCommand="rm -rf" description="Microsoft C++ Debug Configuration" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser;org.eclipse.cdt.core.VCErrorParser" id="cdt.managedbuild.config.gnu.exe.debug.782153560" name="MSVC_DEBUG" parent="cdt.managedbuild.config.gnu.exe.debug">
+<toolChain id="cdt.managedbuild.toolchain.gnu.exe.debug.981520404" name="GCC Tool Chain" superClass="cdt.managedbuild.toolchain.gnu.exe.debug">
+<tool command="gcc" id="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.225257007" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.debug"/>
+<tool command="g++ -pthread -march=k8 -D_REENTRANT -D_THREAD_SAFE" id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.526853478" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug">
+<option id="gnu.cpp.compiler.option.include.paths.1301658532" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
+<listOptionValue builtIn="false" value="${ProjDirPath}/include"/>
+<listOptionValue builtIn="false" value="${ProjDirPath}/appinclude"/>
+<listOptionValue builtIn="false" value="${ProjDirPath}/../ITCLib/include"/>
+<listOptionValue builtIn="false" value="${ProjDirPath}/../utils/include"/>
+</option>
+</tool>
+<tool command="gcc" id="cdt.managedbuild.tool.gnu.c.linker.exe.debug.1230964185" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.exe.debug"/>
+<tool command="g++ -pthread -march=k8" id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.637921222" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug">
+<option id="gnu.cpp.link.option.libs.805727453" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
+<listOptionValue builtIn="false" value="ITCLib"/>
+<listOptionValue builtIn="false" value="pthread"/>
+</option>
+<option id="gnu.cpp.link.option.paths.742856292" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="stringList">
+<listOptionValue builtIn="false" value="${ProjDirPath}/../ITCLib/Debug/"/>
+</option>
+</tool>
+<tool command="as" id="cdt.managedbuild.tool.gnu.assembler.exe.debug.2065329884" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug"/>
+<macros/>
+</toolChain>
+</configuration>
+<macros/>
+</project>
+</ManagedProjectBuildInfo>
