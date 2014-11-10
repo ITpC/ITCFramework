@@ -63,6 +63,11 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libitcframework.a: ${OBJECTFILES}
 	${AR} -rv ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libitcframework.a ${OBJECTFILES} 
 	$(RANLIB) ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libitcframework.a
 
+${OBJECTDIR}/include/ThreadPool.h.gch: include/ThreadPool.h 
+	${MKDIR} -p ${OBJECTDIR}/include
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -Wall -Iinclude -I../ITCLib/include -I../utils/include -MMD -MP -MF "$@.d" -o "$@" include/ThreadPool.h
+
 # Subprojects
 .build-subprojects:
 
