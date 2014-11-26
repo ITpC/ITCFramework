@@ -12,6 +12,7 @@
             <make-dep-projects/>
             <sourceRootList>
                 <sourceRootElem>../utils/include</sourceRootElem>
+                <sourceRootElem>../utils/include</sourceRootElem>
             </sourceRootList>
             <confList>
                 <confElem>
