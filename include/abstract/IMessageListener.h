@@ -48,8 +48,8 @@ namespace itc
 {
 
 template <
-typename DataType,
-template <class> class QueueImpl
+    typename DataType,
+    template <class> class QueueImpl
 > class IMessageListener : public itc::abstract::IRunnable
 {
 public:
