@@ -32,8 +32,7 @@
 #ifndef __CLIENT_SOCKETS_FACTORY_H__
 #define __CLIENT_SOCKETS_FACTORY_H__
 
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <memory>
 
 #include <InterfaceCheck.h>
 #include <net/NSocket.h>
@@ -51,7 +50,7 @@ public:
     : mMaxQueueLength(maxPrebuild), mMinQueueLength(minQL)
     {
         static_assert(SOpts < SERVER_SOCKET,"Must be a client socket type");
-        static_assert(SOpts > CLSocketMinDefinition,"Is not a client socket type");
+        static_assert(SOpts > CLN_TCP_KA_TND,"Is not a client socket type");
 
         for (
             size_t i = 0; i < mMaxQueueLength;

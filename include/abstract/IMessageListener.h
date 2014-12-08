@@ -32,8 +32,7 @@
 #ifndef __IMESSAGELISTENER_H__
 #    define __IMESSAGELISTENER_H__
 
-#    include <boost/shared_ptr.hpp>
-#    include <boost/weak_ptr.hpp>
+#    include <memory>
 
 #    include <sys/Thread.h>
 #    include <sys/AtomicBool.h>

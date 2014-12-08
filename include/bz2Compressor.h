@@ -39,7 +39,7 @@
 #    include <InterfaceCheck.h>
 #    include <errno.h>
 #    include <bzlib.h>
-#    include <boost/shared_ptr.hpp>
+#    include <memory>
 #    include <sys/SyncLock.h>
 #    include <sys/types.h>
 #    include <CompCommon.h>

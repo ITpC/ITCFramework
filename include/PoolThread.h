@@ -31,7 +31,7 @@
 #ifndef CLEANABLETHREAD_H_
 #    define CLEANABLETHREAD_H_
 
-#    include <boost/shared_ptr.hpp>
+#    include <moemory>
 
 #    include <InterfaceCheck.h>
 #    include <abstract/Runnable.h>

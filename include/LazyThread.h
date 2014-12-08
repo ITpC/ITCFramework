@@ -38,7 +38,7 @@
 
 #include <errno.h>
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 #include <InterfaceCheck.h>
 #include <abstract/Runnable.h>

@@ -32,8 +32,7 @@
 #ifndef WORKFLOWSTORABLESTATE_H_
 #define WORKFLOWSTORABLESTATE_H_
 
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <memory>
 
 #include <abstract/IWorkflowState.h>
 

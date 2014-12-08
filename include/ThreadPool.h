@@ -10,7 +10,7 @@
 #include <queue>
 
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 #include <Val2Type.h>
 

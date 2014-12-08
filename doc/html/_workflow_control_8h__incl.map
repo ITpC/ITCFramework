@@ -1,0 +1,9 @@
+<map id="include/WorkflowControl.h" name="include/WorkflowControl.h">
+<area shape="rect" id="node5" href="$_i_message_listener_8h.html" title="abstract/IMessageListener.h" alt="" coords="840,83,1027,112"/>
+<area shape="rect" id="node31" href="$_i_workflow_state_8h.html" title="abstract/IWorkflowState.h" alt="" coords="125,160,299,189"/>
+<area shape="rect" id="node33" href="$_workflow_entity_8h.html" title="WorkflowEntity.h" alt="" coords="89,237,212,267"/>
+<area shape="rect" id="node38" href="$_workflow_storable_state_8h.html" title="WorkflowStorableState.h" alt="" coords="275,83,440,112"/>
+<area shape="rect" id="node46" href="$_thread_safe_local_queue_8h.html" title="ThreadSafeLocalQueue.h" alt="" coords="1816,83,1984,112"/>
+<area shape="rect" id="node19" href="$_exceptions_8h.html" title="Exceptions.h" alt="" coords="851,160,949,189"/>
+<area shape="rect" id="node29" href="$_queue_interface_8h.html" title="abstract/QueueInterface.h" alt="" coords="973,160,1147,189"/>
+</map>

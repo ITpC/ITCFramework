@@ -37,7 +37,7 @@
 #include <sys/Mutex.h>
 #include <sys/SyncLock.h>
 #include <sys/Nanosleep.h>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 namespace itc {
 

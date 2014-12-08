@@ -1,0 +1,4 @@
+<map id="itc::IMessageListener&lt; DataType, QueueImpl &gt;" name="itc::IMessageListener&lt; DataType, QueueImpl &gt;">
+<area shape="rect" id="node5" href="$classitc_1_1bz2_compressor.html" title="itc::bz2Compressor\l\&lt; CompressBuffer\&lt; char\l \&gt;, ThreadSafeLocalQueue \&gt;" alt="" coords="361,5,551,69"/>
+<area shape="rect" id="node7" href="$classitc_1_1bz2_decompressor.html" title="itc::bz2Decompressor\l\&lt; CompressBuffer\&lt; char\l \&gt;, ThreadSafeLocalQueue \&gt;" alt="" coords="361,93,551,157"/>
+</map>
