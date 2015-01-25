@@ -33,15 +33,14 @@
 #define __CLIENT_SOCKETS_FACTORY_H__
 
 #include <memory>
-
+#include <stdint.h>
 #include <InterfaceCheck.h>
 #include <net/NSocket.h>
 
 #include <queue>
 
-#define CLSocketMinDefinition (size_t)(CLIENT_SOCKET)
 
-template <size_t SOpts> class ClientSocketsFactory {
+template <uint64_t SOpts=CLIENT_SOCKET> class ClientSocketsFactory {
 public:
     typedef ::itc::net::Socket<SOpts> ClientSocketType;
     typedef ::std::shared_ptr<ClientSocketType> SharedClientSocketPtrType;
@@ -49,8 +48,9 @@ public:
     explicit ClientSocketsFactory(size_t maxPrebuild, size_t minQL)
     : mMaxQueueLength(maxPrebuild), mMinQueueLength(minQL)
     {
-        static_assert(SOpts < SERVER_SOCKET,"Must be a client socket type");
-        static_assert(SOpts > CLN_TCP_KA_TND,"Is not a client socket type");
+        static_assert(SOpts < SERVER_SOCKET,"Must be a tcp client socket type");
+        static_assert(SOpts >= CLIENT_SOCKET,"Must be a tcp client socket type");
+        static_assert(CLN_TCP_KA_TND >= SERVER_SOCKET,"WTF ? can't you count ?!");
 
         for (
             size_t i = 0; i < mMaxQueueLength;
