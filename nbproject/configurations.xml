@@ -15,13 +15,16 @@
           <itemPath>include/abstract/Observer.h</itemPath>
           <itemPath>include/abstract/QueueInterface.h</itemPath>
           <itemPath>include/WorkerThread.h</itemPath>
+          <itemPath>include/abstract/gcClient.h</itemPath>
         </logicalFolder>
         <itemPath>include/ClientSocketsFactory.h</itemPath>
+        <itemPath>include/CollectibleThread.h</itemPath>
         <itemPath>include/CompCommon.h</itemPath>
         <itemPath>include/CompressBuffer.h</itemPath>
         <itemPath>include/Exceptions.h</itemPath>
         <itemPath>include/LazyThread.h</itemPath>
         <itemPath>include/PoolThread.h</itemPath>
+        <itemPath>include/RScheduler.h</itemPath>
         <itemPath>include/Sequence.h</itemPath>
         <itemPath>include/Singleton.h</itemPath>
         <itemPath>include/ThreadPool.h</itemPath>
@@ -79,6 +82,8 @@
       </compileType>
       <item path="include/ClientSocketsFactory.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/CollectibleThread.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/CompCommon.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/CompressBuffer.h" ex="false" tool="3" flavor2="0">
@@ -88,6 +93,8 @@
       <item path="include/LazyThread.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/PoolThread.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/RScheduler.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Sequence.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -124,6 +131,8 @@
       </item>
       <item path="include/abstract/QueueInterface.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/abstract/gcClient.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/bz2Compressor.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/bz2Decompressor.h" ex="false" tool="3" flavor2="0">
@@ -158,6 +167,8 @@
       </compileType>
       <item path="include/ClientSocketsFactory.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/CollectibleThread.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/CompCommon.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/CompressBuffer.h" ex="false" tool="3" flavor2="0">
@@ -167,6 +178,8 @@
       <item path="include/LazyThread.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/PoolThread.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/RScheduler.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Sequence.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -202,6 +215,8 @@
       <item path="include/abstract/Observer.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/abstract/QueueInterface.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/abstract/gcClient.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/bz2Compressor.h" ex="false" tool="3" flavor2="0">
       </item>
