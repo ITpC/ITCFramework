@@ -32,49 +32,31 @@
 #ifndef __ITHREADPOOL_H__
 #    define __ITHREADPOOL_H__
 
-#    include <Val2Type.h>
-#    include <PoolThread.h>
-#    include <abstract/IView.h>
-#    include <abstract/Runnable.h>
-
+#include <memory>
 namespace itc
 {
-
-enum EnqueueBlockPolicy
-{
-    ASYNC, SYNC, DISCARD
-};
-
-enum EnqueueDiscardPolicy
-{
-    ERROR, EXCEPTION
-};
-
-namespace abstract
-{
-
-class IThreadPool
-{
-public:
-
-    IThreadPool()
+    namespace abstract
     {
+        /**
+         * @brief it is a simple interface of the thread pool.
+         */
+        class IThreadPool
+        {
+        public:
+            typedef std::shared_ptr<abstract::IRunnable> value_type;
+
+            virtual const bool getAutotune() = 0;
+            virtual const size_t getThreadsCount() = 0;
+            virtual const size_t getMaxThreads() = 0;
+            
+            virtual void setAutotune(const bool&) = 0;
+            virtual void expand(const size_t&) = 0;
+            virtual void reduce(const size_t&) = 0;
+            virtual void enqueue(value_type&) = 0;
+            
+        protected:
+            virtual ~IThreadPool()=default;
+        };
     }
-
-    virtual const size_t getMinThreads() = 0 const;
-    virtual const size_t getMaxThreads() = 0 const;
-
-
-    virtual void extend(const size_t&) = 0;
-    virtual void reduce(const size_t&) = 0;
-    virtual bool enqueue(abstract::IRunnable*) = 0;
-
-protected:
-
-    virtual ~IThreadPool()
-    {
-    }
-};
-}
 }
 #endif /*ITHREADPOOL_H_*/

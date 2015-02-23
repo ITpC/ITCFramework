@@ -49,8 +49,7 @@ namespace itc {
 
         protected:
 
-            virtual ~Observer() {
-            };
+            virtual ~Observer()=default;
         };
     }
 }

@@ -54,9 +54,7 @@ public:
 protected:
     virtual void notify()=0;
     
-    virtual ~IController()
-    {
-    }
+    virtual ~IController()=default;
 };
 
 }

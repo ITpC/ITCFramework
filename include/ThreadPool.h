@@ -1,31 +1,47 @@
-/*
- * File:   ThreadPool.h
- * Author: pk
+/**
+ * Copyright (c) 2007, Pavel Kraynyukhov.
+ *  
+ * Permission to use, copy, modify, and distribute this software and its
+ * documentation for any purpose, without fee, and without a written agreement
+ * is hereby granted under the terms of the General Public License version 2
+ * (GPLv2), provided that the above copyright notice and this paragraph and the
+ * following two paragraphs and the "LICENSE" file appear in all modified or
+ * unmodified copies of the software "AS IS" and without any changes.
  *
- * $Id: ThreadPool.h 22 2010-11-23 12:53:33Z pk $
- */
-
-#include <map>
-#include <vector>
-#include <queue>
-
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE TO ANY PARTY FOR
+ * DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING
+ * LOST PROFITS, ARISING OUT OF THE USE OF THIS SOFTWARE AND ITS
+ * DOCUMENTATION, EVEN IF THE COPYRIGHT HOLDER HAS BEEN ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
+ * THE COPYRIGHT HOLDER SPECIFICALLY DISCLAIMS ANY WARRANTIES,
+ * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
+ * AND FITNESS FOR A PARTICULAR PURPOSE.  THE SOFTWARE PROVIDED HEREUNDER IS
+ * ON AN "AS IS" BASIS, AND THE COPYRIGHT HOLDER HAS NO OBLIGATIONS TO
+ * PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+ * 
+ * 
+  * $Id: ThreadPool.h 22 2010-11-23 12:53:33Z pk $
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ *  
+ **/
 
 #include <memory>
-
 #include <Val2Type.h>
+#include <bdmap.h>
+#include <list>
 
 #include <sys/Mutex.h>
 #include <sys/SyncLock.h>
-
-#include <abstract/Runnable.h>
 #include <abstract/IThreadPool.h>
-#include <abstract/IMessageListener.h>
+#include <sys/PThread.h>
+#include <TSLog.h>
+#include <queue>
+#include <Date.h>
 
-#include <PoolThread.h>
-
-#include <ThreadSafeLocalQueue.h>
-
-#include <bdmap.h>
 
 
 
@@ -35,521 +51,205 @@
 
 namespace itc
 {
-typedef std::shared_ptr<PoolThread> PoolThreadSPtr;
-typedef std::shared_ptr<IRunnable> IRunnableSPtr;
-
-template <
-EnqueueBlockPolicy TBlockPolicy = ASYNC,
-EnqueueDiscardPolicy TDiscardPolicy = ERROR
-> class ThreadPool : public abstract::IThreadPool, IView<::itc::ModelType>
-{
-private:
-    typedef bdmap<pthread_t, std::vector::size_type>::type Intersection;
-
-    sys::Mutex mMutex;
-    sys::Semaphore mHavePassiveThreads;
-
-    std::vector<PoolThreadSPtr> mActiveThreads;
-    std::queue<PoolThreadSPtr> mPassiveThreads;
-
-    std::queue<IRunnableSPtr> mTaskQueue;
-
-    Intersection mThread2PoolIdx;
-
-    size_t mThreadsStarted;
-    size_t mMinThreads;
-    size_t mMaxThreads;
-
-
-public:
-
-    ThreadPool(const size_t pMinThreads = 0, const size_t pMaxThreads = 10)
+    class ThreadPool : public abstract::IThreadPool
     {
-        sys::SyncLock sync(mMutex);
-
-        mMinThreads = pMinThreads;
-        mMaxThreads = pMaxThreads;
-
-        for (mThreadsStarted = 0; mThreadsStarted < mMinThreads; mThreadsStarted++)
+    public:
+        typedef ::itc::sys::PThread::TaskType        TaskType;
+        typedef std::shared_ptr<sys::PThread>        ThreadPTR;
+        typedef std::list<ThreadPTR>::iterator       ThreadListIterator;
+        
+        explicit ThreadPool(
+            const size_t maxthreads=10, bool autotune=true,float overcommit=1.2
+        ):mMutex(),mMaxThreads(maxthreads),mAutotune(autotune),
+            mOvercommitRatio(overcommit),mMayRun(true)
         {
-            PoolThreadSPtr tmp(new PoolThread(this));
-            mPassiveThreads.push(tmp);
-            mHavePassiveThreads.post();
-            mThreadsStarted++;
+            sys::SyncLock   synchronize(mMutex);
+            ::itc::getLog()->debug(
+                __FILE__,__LINE__,
+                "created ThreadPool::ThreadPool(%ju,%u,%f)",
+                 mMaxThreads,mAutotune,mOvercommitRatio
+            );
+            spawnThreads(mMaxThreads);
         }
-    }
-
-    template<typename TRunnable> const bool enqueue(TRunnable* ptr)
-    {
-        return enqueue<TRunnable > (
-                                    ptr,
-                                    utils::Int2Type<TBlockPolicy>,
-                                    utils::Int2Type<TDiscardPolicy>
-                                    );
-    }
-
-protected:
-
-    /**
-     * @brief asynchronously assign a runnable to the PoolThread or queue the requests
-     *        if there no free threads in pool and number of threads reached the mMaxThreads.
-     *        It may happen that on exception created PoolThread or moved from passive pool
-     *        would be wiped out of control, so mThreadsStarted will be decreased.
-     *        Uncontrolled threads are canceled automatically after the the stack pops.
-     *
-     * @return false on exception, true on success.
-     **/
-    template <typename TRunnable> const bool enqueue(
-                                                     TRunnable* ptr,
-                                                     const utils::Int2Type<ASYNC>& fictive,
-                                                     const utils::Int2Type<ERROR>& fictive1
-                                                     )
-    {
-        try
+        
+        inline const bool getAutotune()
         {
-            sys::SyncLock sync(mEnqueueMutex);
-            if (!mPassiveThreads.empty())
-            {
-                PoolThreadSPtr tmp(mPassiveThreads.front());
-                mPassiveThreads.pop();
-                try
-                {
-                    size_t idx = mActiveThreads.size();
-                    pthread_t TID = tmp.get()->getThreadId();
-                    mActiveThreads.push_back(tmp);
-                    mThread2PoolIdx.insert(TID, idx);
-                }
-                catch (std::exception& e)
-                {
-                    mThreadsStarted--;
-                    itc::getLog()->error(__FILE__, __LINE__, "Exception %s in ThreadPool::enqueue() at address %x", e.what(), this);
-                    return false;
-                }
-                tmp.get()->setNextRunnable<TRunnable > (ptr);
-                return true;
-            }
-            else if (mThreadsStarted < mMaxThreads)
-            {
-                PoolThreadSPtr tmp(new PoolThread(this));
-                try
-                {
-                    size_t idx = mActiveThreads.size();
-                    pthread_t TID = tmp.get()->getThreadId();
-                    mActiveThreads.push_back(tmp);
-                    mThread2PoolIdx.insert(TID, idx);
-                    mThreadsStarted++;
-                }
-                catch (std::exception& e)
-                {
-                    itc::getLog()->error(__FILE__, __LINE__, "Exception %s in ThreadPool::enqueue() at address %x", e.what(), this);
-                    return false;
-                }
-                tmp.get()->setNextRunnable<TRunnable > (ptr);
-                return true;
-            }
-            mTaskQueue.push(ptr);
+            return mAutotune;
         }
-        catch (std::exception& e)
+        
+        inline void setAutotune(const bool& autotune)
         {
-            itc::getLog()->error(__FILE__, __LINE__, "Exception %s in ThreadPool::enqueue() at address %x", e.what(), this);
-            return false;
+            sys::SyncLock   synchronize(mMutex);
+            mAutotune=autotune;
         }
-        return true;
-    }
-
-    /**
-     * @brief asynchronously assign a runnable to the PoolThread or queue the requests
-     *        if there no free threads in pool and number of threads reached the mMaxThreads.
-     *        It may happen that on exception created PoolThread or moved from passive pool one,
-     *        would be wiped out of control, so mThreadsStarted will be decreased.
-     *        Uncontrolled threads are canceled automatically after the stack pops.
-     *
-     * @return always true.
-     *
-     * @exception propagates any exception further
-     **/
-    template <typename TRunnable> const bool enqueue(
-                                                     TRunnable* ptr,
-                                                     const utils::Int2Type<ASYNC>& fictive,
-                                                     const utils::Int2Type<EXCEPTION>& fictive1
-                                                     )
-    {
-        try
+        
+        inline const size_t getMaxThreads()
         {
-            sys::SyncLock sync(mEnqueueMutex);
-            if (!mPassiveThreads.empty())
-            {
-                PoolThreadSPtr tmp(mPassiveThreads.front());
-                mPassiveThreads.pop();
-                try
-                {
-                    size_t idx = mActiveThreads.size();
-                    pthread_t TID = tmp.get()->getThreadId();
-                    mActiveThreads.push_back(tmp);
-                    mThread2PoolIdx.insert(TID, idx);
-                }
-                catch (std::exception& e)
-                {
-                    mThreadsStarted--;
-                    itc::getLog()->error(__FILE__, __LINE__, "Exception %s in ThreadPool::enqueue() at address %x", e.what(), this);
-                    throw ITCException(ENOMEM, exceptions::Can_not_assign_runnable);
-                }
-                tmp.get()->setNextRunnable<TRunnable > (ptr);
-                return true;
-            }
-            else if (mThreadsStarted < mMaxThreads)
-            {
-                PoolThreadSPtr tmp(new PoolThread(this));
-                try
-                {
-                    size_t idx = mActiveThreads.size();
-                    pthread_t TID = tmp.get()->getThreadId();
-                    mActiveThreads.push_back(tmp);
-                    mThread2PoolIdx.insert(TID, idx);
-                    mThreadsStarted++;
-                }
-                catch (std::exception& e)
-                {
-                    mThreadsStarted--;
-                    itc::getLog()->error(__FILE__, __LINE__, "Exception %s in ThreadPool::enqueue() at address %x", e.what(), this);
-                    throw ITCException(ENOMEM, exceptions::Can_not_assign_runnable);
-                }
-                tmp.get()->setNextRunnable<TRunnable > (ptr);
-                return true;
-            }
-            mTaskQueue.push(ptr);
+            return mMaxThreads;
         }
-        catch (std::exception& e)
+        
+        inline const size_t getThreadsCount()
         {
-            itc::getLog()->error(__FILE__, __LINE__, "Exception %s in ThreadPool::enqueue() at address %x", e.what(), this);
-            throw ITCException(EINVAL, exceptions::Can_not_assign_runnable);
+            return mActiveThreads.size()+mPassiveThreads.size();
         }
-        return true;
-    }
-
-    /**
-     * @brief Synchronously assign a Runnable to a PoolThread and  wait for free threads if there
-     * is no one free and mThreadsStarted reached mMaxThreads.
-     *
-     * @exception itc::exceptions::Can_not_assign_runnable
-     *
-     * @return always true
-     **/
-    template <typename TRunnable> const bool enqueue(
-                                                     TRunnable* ptr,
-                                                     const utils::Int2Type<SYNC>& fictive,
-                                                     const utils::Int2Type<EXCEPTION>& fictive1
-                                                     )
-    {
-        try
+        
+        inline const size_t getActiveThreadsCount()
         {
-            sys::SyncLock sync(mEnqueueMutex);
-            if (!mPassiveThreads.empty())
+            return mActiveThreads.size();
+        }
+        
+        inline const size_t getPassiveThreadsCount()
+        {
+            return mPassiveThreads.size();
+        }
+        
+        inline bool mayRun() const
+        {
+            return mMayRun;
+        }
+        
+        inline void expand(const size_t& inc)
+        {
+            sys::SyncLock   synchronize(mMutex);
+            if(mayRun())
             {
-                PoolThreadSPtr tmp(mPassiveThreads.front());
-                mPassiveThreads.pop();
-                try
-                {
-                    size_t idx = mActiveThreads.size();
-                    pthread_t TID = tmp.get()->getThreadId();
-                    mActiveThreads.push_back(tmp);
-                    mThread2PoolIdx.insert(TID, idx);
-                }
-                catch (std::exception& e)
-                {
-                    mThreadsStarted--;
-                    itc::getLog()->error(__FILE__, __LINE__, "Exception %s in ThreadPool::enqueue() at address %x", e.what(), this);
-                    throw ITCException(ENOMEM, exceptions::Can_not_assign_runnable);
-                }
-                tmp.get()->setNextRunnable<TRunnable > (ptr);
-                return true;
-            }
-            else if (mThreadsStarted < mMaxThreads)
-            {
-                PoolThreadSPtr tmp(new PoolThread(this));
-                try
-                {
-                    size_t idx = mActiveThreads.size();
-                    pthread_t TID = tmp.get()->getThreadId();
-                    mActiveThreads.push_back(tmp);
-                    mThread2PoolIdx.insert(TID, idx);
-                    mThreadsStarted++;
-                }
-                catch (std::exception& e)
-                {
-                    mThreadsStarted--;
-                    itc::getLog()->error(__FILE__, __LINE__, "Exception %s in ThreadPool::enqueue() at address %x", e.what(), this);
-                    throw ITCException(ENOMEM, exceptions::Can_not_assign_runnable);
-                }
-                tmp.get()->setNextRunnable<TRunnable > (ptr);
-                return true;
+                mMaxThreads+=inc;
+                for(size_t i=0;i<inc;i++)
+                    mPassiveThreads.push(std::make_shared<sys::PThread>());
             }
         }
-        catch (std::exception& e)
+        
+        inline void reduce(const size_t& dec)
         {
-            itc::getLog()->error(__FILE__, __LINE__, "Exception %s in ThreadPool::enqueue() at address %x", e.what(), this);
-            throw ITCException(EINVAL, exceptions::Can_not_assign_runnable);
+            sys::SyncLock   synchronize(mMutex);
+            if(mMaxThreads>dec)
+                mMaxThreads-=dec;
+        }
+        
+        inline const size_t getFreeThreadsCount()
+        {
+            sys::SyncLock   synchronize(mMutex);
+            ThreadListIterator it=mActiveThreads.begin();
+            size_t ftc=0;
+            
+            while(it!=mActiveThreads.end())
+            {
+                if(it->get()->getState() == DONE)
+                {
+                    ftc++;
+                }
+                it++;
+            }
+            return mPassiveThreads.size()+ftc;
+        }
+        
+        inline void shakePools()
+        {
+            sys::SyncLock   synchronize(mMutex);
+
+            if(mayRun())
+            {
+                shakePoolsPrivate();
+
+                if(mPassiveThreads.empty()&&(mTaskQueue.size()>0))
+                {
+                    size_t absMax =(size_t)(mMaxThreads * mOvercommitRatio);
+
+                    size_t max_start = absMax - getThreadsCount();
+
+                    spawnThreads(max_start);
+
+                    while((!mPassiveThreads.empty())&&(!mTaskQueue.empty()))
+                    {
+                        enqueuePrivate();
+                    }
+                }
+            }
         }
 
-        mHavePassiveThreads.wait();
-        return enqueue(fictive, fictive1);
-    }
-
-    /**
-     * @brief Synchronously assign a Runnable to a PoolThread or wait for free thread if there is no one free
-     *        and mThreadsStarted reached mMaxThreads.
-     *
-     * @return true on success or false on exception
-     **/
-    template <typename TRunnable> const bool enqueue(
-                                                     TRunnable* ptr,
-                                                     const utils::Int2Type<SYNC>& fictive,
-                                                     const utils::Int2Type<ERROR>& fictive1
-                                                     )
-    {
-        try
+        void enqueue(value_type& ref)
         {
-            sys::SyncLock sync(mEnqueueMutex);
-            if (!mPassiveThreads.empty())
+            sys::SyncLock   synchronize(mMutex);
+
+            if(mayRun())
             {
-                PoolThreadSPtr tmp(mPassiveThreads.front());
-                mPassiveThreads.pop();
-                try
+                mTaskQueue.push(ref);
+                itc::getLog()->trace(__FILE__,__LINE__,"Thread [%jx] ThreadPool::enqueue() the Runnable is enqueued",pthread_self());
+                if(!mPassiveThreads.empty())
                 {
-                    size_t idx = mActiveThreads.size();
-                    pthread_t TID = tmp.get()->getThreadId();
-                    mActiveThreads.push_back(tmp);
-                    mThread2PoolIdx.insert(TID, idx);
+                    itc::getLog()->trace(__FILE__,__LINE__,"Thread [%jx] ThreadPool::enqueue() the Runnable will be assigned to the thread now",pthread_self());
+                    enqueuePrivate();
+                    itc::getLog()->trace(__FILE__,__LINE__,"Thread [%jx] ThreadPool::enqueue() the Runnable has been assigned to the thread",pthread_self());
                 }
-                catch (std::exception& e)
-                {
-                    mThreadsStarted--;
-                    itc::getLog()->error(
-                                         __FILE__, __LINE__,
-                                         "Exception %s in ThreadPool::enqueue() at address %x",
-                                         e.what(), this
-                                         );
-                    return false;
-                }
-                tmp.get()->setNextRunnable<TRunnable > (ptr);
-                return true;
-            }
-            else if (mThreadsStarted < mMaxThreads)
-            {
-                PoolThreadSPtr tmp(new PoolThread(this));
-                try
-                {
-                    size_t idx = mActiveThreads.size();
-                    pthread_t TID = tmp.get()->getThreadId();
-                    mActiveThreads.push_back(tmp);
-                    mThread2PoolIdx.insert(TID, idx);
-                    mThreadsStarted++;
-                }
-                catch (std::exception& e)
-                {
-                    mThreadsStarted--;
-                    itc::getLog()->error(
-                                         __FILE__, __LINE__,
-                                         "Exception %s in ThreadPool::enqueue() at address %x",
-                                         e.what(), this
-                                         );
-                    return false;
-                }
-                tmp.get()->setNextRunnable<TRunnable > (ptr);
-                return true;
             }
         }
-        catch (std::exception& e)
+        
+        ~ThreadPool()
         {
-            itc::getLog()->error(
-                                 __FILE__, __LINE__,
-                                 "Exception %s in ThreadPool::enqueue() at address %x",
-                                 e.what(), this
-                                 );
-            return false;
+            stopRunning();
         }
-
-        mHavePassiveThreads.wait();
-        return enqueue(fictive, fictive1);
-    }
-
-    /**
-     * @brief assign Runnable to the PollThread or discard a request
-     *        when no free threads are available and number
-     *        of threads in pool has reached mMaxThreads;
-     *
-     * @return true on success or false on error.
-     **/
-    template <typename TRunnable> const bool enqueue(
-                                                     TRunnable* ptr,
-                                                     const utils::Int2Type<DISCARD>& fictive,
-                                                     const utils::Int2Type<ERROR>& fictive1
-                                                     )
-    {
-        try
+        
+    private:
+        ::itc::sys::Mutex        mMutex;
+        size_t                   mMaxThreads;
+        bool                     mAutotune;
+        float                    mOvercommitRatio;
+        std::queue<TaskType>     mTaskQueue;
+        std::list<ThreadPTR>     mActiveThreads;
+        std::queue<ThreadPTR>    mPassiveThreads;
+        bool                     mMayRun;
+        
+        inline void spawnThreads(size_t n)
         {
-            sys::SyncLock sync(mEnqueueMutex);
-            if (!mPassiveThreads.empty())
+            for(size_t i=0;i<n;i++)
             {
-                PoolThreadSPtr tmp(mPassiveThreads.front());
-                mPassiveThreads.pop();
-                try
-                {
-                    size_t idx = mActiveThreads.size();
-                    pthread_t TID = tmp.get()->getThreadId();
-                    mActiveThreads.push_back(tmp);
-                    mThread2PoolIdx.insert(TID, idx);
-                }
-                catch (std::exception& e)
-                {
-                    mThreadsStarted--;
-                    itc::getLog()->error(
-                                         __FILE__, __LINE__,
-                                         "Exception %s in ThreadPool::enqueue() at address %x",
-                                         e.what(), this
-                                         );
-                    return false;
-                }
-                tmp.get()->setNextRunnable<TRunnable > (ptr);
-                return true;
-            }
-            else if (mThreadsStarted < mMaxThreads)
+                mPassiveThreads.push(std::make_shared<sys::PThread>());
+            }            
+        }
+        
+        inline void shakePoolsPrivate()
+        {
+            ThreadListIterator it=mActiveThreads.begin();
+
+            while(it!=mActiveThreads.end())
             {
-                PoolThreadSPtr tmp(new PoolThread(this));
-                try
+                if(it->get()->getState() == DONE)
                 {
-                    size_t idx = mActiveThreads.size();
-                    pthread_t TID = tmp.get()->getThreadId();
-                    mActiveThreads.push_back(tmp);
-                    mThread2PoolIdx.insert(TID, idx);
-                    mThreadsStarted++;
+                    if((getThreadsCount()>mMaxThreads)&&(mTaskQueue.empty()))
+                    {
+                        mActiveThreads.erase(it);
+                    }
+                    else
+                    {
+                        mPassiveThreads.push(*it);
+                        mActiveThreads.erase(it);
+                    }                    
+                    it=mActiveThreads.begin();
                 }
-                catch (std::exception& e)
+                else if(it->get()->getState() == CANCEL)
                 {
-                    mThreadsStarted--;
-                    itc::getLog()->error(
-                                         __FILE__, __LINE__,
-                                         "Exception %s in ThreadPool::enqueue() at address %x",
-                                         e.what(), this
-                                         );
-                    return false;
+                    mActiveThreads.erase(it);
+                    it=mActiveThreads.begin();
                 }
-                tmp.get()->setNextRunnable<TRunnable > (ptr);
-                return true;
+                else it++;
             }
         }
-        catch (std::exception& e)
+        
+        inline void enqueuePrivate()
         {
-            itc::getLog()->error(
-                                 __FILE__, __LINE__,
-                                 "Exception %s in ThreadPool::enqueue() at address %x",
-                                 e.what(), this
-                                 );
-            return false;
+            ThreadPTR aThread=mPassiveThreads.front();
+            aThread->setRunnable(mTaskQueue.front());
+            mTaskQueue.pop();
+            mActiveThreads.push_back(aThread);
+            mPassiveThreads.pop();                    
         }
-        return false;
-    }
-
-    /**
-     * @brief assign Runnable to the PollThread or discard a request when no free threads
-     *           available and number of threads in pool has reached mMaxThreads;
-     *
-     * @exception ITCException(EBUSY,exceptions::Can_not_assign_runnable)
-     *               on discard condition and propagates all exceptions.
-     *
-     * @return true on success or throws an exception otherways.
-     **/
-    template <typename TRunnable> const bool enqueue(
-                                                     TRunnable* ptr,
-                                                     const utils::Int2Type<DISCARD>& fictive,
-                                                     const utils::Int2Type<EXCEPTION>& fictive1
-                                                     )
-    {
-        try
+        
+        inline void stopRunning()
         {
-            sys::SyncLock sync(mEnqueueMutex);
-            if (!mPassiveThreads.empty())
-            {
-                PoolThreadSPtr tmp(mPassiveThreads.front());
-                mPassiveThreads.pop();
-                try
-                {
-                    size_t idx = mActiveThreads.size();
-                    pthread_t TID = tmp.get()->getThreadId();
-                    mActiveThreads.push_back(tmp);
-                    mThread2PoolIdx.insert(TID, idx);
-                }
-                catch (std::exception& e)
-                {
-                    mThreadsStarted--;
-                    itc::getLog()->error(__FILE__, __LINE__, "Exception %s in ThreadPool::enqueue() at address %x", e.what(), this);
-                    throw ITCException(ENOMEM, exceptions::Can_not_assign_runnable);
-                }
-                tmp.get()->setNextRunnable<TRunnable > (ptr);
-                return true;
-            }
-            else if (mThreadsStarted < mMaxThreads)
-            {
-                PoolThreadSPtr tmp(new PoolThread(this));
-                try
-                {
-                    size_t idx = mActiveThreads.size();
-                    pthread_t TID = tmp.get()->getThreadId();
-                    mActiveThreads.push_back(tmp);
-                    mThread2PoolIdx.insert(TID, idx);
-                    mThreadsStarted++;
-                }
-                catch (std::exception& e)
-                {
-                    mThreadsStarted--;
-                    itc::getLog()->error(__FILE__, __LINE__, "Exception %s in ThreadPool::enqueue() at address %x", e.what(), this);
-                    throw ITCException(ENOMEM, exceptions::Can_not_assign_runnable);
-                }
-                tmp.get()->setNextRunnable<TRunnable > (ptr);
-                return true;
-            }
+            sys::SyncLock   synchronize(mMutex);
+            mMayRun=false;
         }
-        catch (std::exception& e)
-        {
-            itc::getLog()->error(__FILE__, __LINE__, "Exception %s in ThreadPool::enqueue() at address %x", e.what(), this);
-            throw ITCException(EINVAL, exceptions::Can_not_assign_runnable);
-        }
-        throw ITCException(EBUSY, exceptions::Can_not_assign_runnable);
-    }
-
-    void update(const ModelType& ref)
-    {
-        sys::SyncLock sync(mMutex);
-
-        switch (ref.second)
-        {
-            case WAIT:
-            {
-                Intersection::iterator it = mThread2PoolIdx.find<first > (ref.first);
-                if (it != mThread2PoolIdx.end())
-                {
-                    size_t idx = it->second;
-
-                }
-                else
-                {
-                    // WTF ????? it must not come to this section. TODO: make here very rude stop!
-                }
-            }
-                break;
-            case CANCELLED:
-            {
-
-            }
-                break;
-            default:
-            {
-
-            }
-                break;
-        }
-    }
-};
+    };
 }
 
 #endif    /* _THREADPOOL_H */

@@ -41,8 +41,7 @@ namespace itc {
             virtual void update(const TModel&) = 0;
         protected:
 
-            virtual ~IView() {
-            }
+            virtual ~IView()=default;
         };
     }
 }
