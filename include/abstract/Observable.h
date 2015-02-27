@@ -35,6 +35,7 @@
 #define _OBSERVABLE_H_
 
 #include <Val2Type.h>
+#include <memory>
 
 namespace itc {
     namespace abstract {
@@ -48,7 +49,8 @@ namespace itc {
         private:
         protected:
             typedef TObserver<EventType> TPObserver;
-            typedef TContainer<TPObserver*> TPOContainer;
+            typedef std::shared_ptr<TObserver> TObserverSPtr;
+            typedef TContainer<TObserverSPtr> TPOContainer;
             typedef typename TPOContainer::iterator TPOCIterator;
 
             TPOContainer Observers;
@@ -58,19 +60,19 @@ namespace itc {
             Observable() {
             }
 
-            inline void attach(TPObserver* anObserver, Bool2Type < true > fictive) {
+            inline void attach(const TObserverSPtr& anObserver, Bool2Type < true > fictive) {
                 Observers.push_back(anObserver);
             }
 
-            inline void attach(TPObserver* anObserver, Bool2Type < false > fictive) {
+            inline void attach(const TObserverSPtr& anObserver, Bool2Type < false > fictive) {
                 Observers.insert(anObserver);
             }
 
-            inline void attach(TPObserver* anObserver) {
+            inline void attach(const TObserverSPtr& anObserver) {
                 this->attach(anObserver, mUseInsert);
             }
 
-            inline void detach(TPObserver* anObserver) {
+            inline void detach(const TObserverSPtr& anObserver) {
                 TPOCIterator i = std::find(Observers.begin(), Observers.end(), anObserver);
 
                 if (i != Observers.end())
@@ -87,7 +89,7 @@ namespace itc {
                 for (; ib != ie; i++) notify(*i, anObject);
             }
 
-            virtual void notify(TPObserver* o, const EventType& anObject) = 0;
+            virtual void notify(const TObserverSPtr&, const EventType&) = 0;
 
         protected:
 

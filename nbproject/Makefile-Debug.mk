@@ -66,7 +66,7 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libitcframework.a: ${OBJECTFILES}
 ${OBJECTDIR}/include/ThreadPool.h.gch: include/ThreadPool.h 
 	${MKDIR} -p ${OBJECTDIR}/include
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -Wall -Iinclude -I../ITCLib/include -I../utils/include -MMD -MP -MF "$@.d" -o "$@" include/ThreadPool.h
+	$(COMPILE.cc) -g -Wall -Iinclude -I../ITCLib/include -I../utils/include -std=c++11 -MMD -MP -MF "$@.d" -o "$@" include/ThreadPool.h
 
 # Subprojects
 .build-subprojects:

@@ -112,8 +112,8 @@ namespace itc
                 itc::getLog()->debug(__FILE__,__LINE__,"in -> RScheduler::add()");
                 Date aDate;
                 
-                DateFormatter now(aDate,"%d-%m-%Y %H:%M:%S");
-                itc::getLog()->debug(__FILE__,__LINE__,"RScheduler::add() time now: %s",now.toString().c_str());
+                //DateFormatter now(aDate,"%d-%m-%Y %H:%M:%S");
+                //itc::getLog()->trace(__FILE__,__LINE__,"RScheduler::add() time now: %s",now.toString().c_str());
                 
                 Time aTime(aDate.getTime());
 
@@ -141,9 +141,9 @@ namespace itc
 
                 mNextWake=mSchedule.begin()->first.getTime();
                 
-                DateFormatter nw(Date(mNextWake),"%d-%m-%Y %H:%M:%S");
+                //DateFormatter nw(Date(mNextWake),"%d-%m-%Y %H:%M:%S");
                 
-                itc::getLog()->debug(__FILE__,__LINE__,"RScheduler::add() mNextWake: %s",nw.toString().c_str());
+                //itc::getLog()->trace(__FILE__,__LINE__,"RScheduler::add() mNextWake: %s",nw.toString().c_str());
                 itc::getLog()->debug(__FILE__,__LINE__,"out <- RScheduler::add()");
             }
         }
@@ -173,13 +173,10 @@ namespace itc
                        
                         if(aDate.getTime()>=mNextWake)
                         {
-                            DateFormatter now(aDate,"%d-%m-%Y %H:%M:%S");
                         
-                            itc::getLog()->trace(__FILE__,__LINE__,"Thread [%jx] RScheduler::execute() Time now: %s",now.toString().c_str());
-                        
-                            DateFormatter b(Date(mNextWake),"%d-%m-%Y %H:%M:%S");
+                            //DateFormatter nwake(Date(mNextWake),"%d-%m-%Y %H:%M:%S");
                             
-                            itc::getLog()->trace(__FILE__,__LINE__,"Thread [%jx] RScheduler::execute() NextWake: %s",b.toString().c_str());
+                            //itc::getLog()->debug(__FILE__,__LINE__,"Thread [%jx] RScheduler::execute() NextWake: %s",pthread_self(),nwake.toString().c_str());
                                     
                             scIterator it=mSchedule.begin()->second.begin();
                             scIterator itend=mSchedule.begin()->second.end();

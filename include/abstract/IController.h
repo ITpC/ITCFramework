@@ -30,8 +30,10 @@
  **/
 
 #ifndef _ICONTROLLER_H
-#    define	_ICONTROLLER_H
-#    include <abstract/IView.h>
+# define	_ICONTROLLER_H
+#   include <abstract/IView.h>
+#   include <memory>
+#include <TSLog.h>
 
 namespace itc
 {
@@ -41,18 +43,23 @@ namespace abstract
 template <typename TModel> class IController
 {
 public:
-
-    IController()
+    typedef IView<TModel> ViewType;
+    typedef std::shared_ptr<ViewType> ViewTypeSPtr;
+    
+    void notify(const TModel& pModel, ViewTypeSPtr& pView)
     {
-    }
-
-    void notify(const TModel& pModel, IView<TModel>* pView)
-    {
-        pView->update(pModel);
+        if(ViewType* aViewPtr=pView.get())
+        {
+            aViewPtr->update(pModel);
+        }
+        else
+        {
+            itc::getLog()->debug(__FILE__,__LINE__,"itc::abstract::IController::notify() a view is NULL");
+        }
     }
 
 protected:
-    virtual void notify()=0;
+    virtual void notify_all()=0;
     
     virtual ~IController()=default;
 };

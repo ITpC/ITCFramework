@@ -36,15 +36,13 @@
 namespace itc {
     namespace abstract {
 
-        template <class EventType, template <class> class TObservable> class Observer {
+        template <typename EventType, template <class> class TObservable> class Observer {
         public:
 
             inline void update(TObservable<EventType> *pObservable, const EventType& event) {
                 onUpdate(pObservable, event);
             }
 
-            Observer() {
-            }
             virtual void onUpdate(TObservable<EventType> *pObservable, const EventType& event) = 0;
 
         protected:

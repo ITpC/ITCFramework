@@ -35,12 +35,17 @@
 
 namespace itc {
     namespace abstract {
-
-        template <typename TModel> class IView {
+        template <typename TModel> class IView
+        {
         public:
-            virtual void update(const TModel&) = 0;
+            void update(const TModel& pM)
+            {
+                onUpdate(pM);
+            }
+        
         protected:
-
+            virtual void onUpdate(const TModel&)=0;
+            
             virtual ~IView()=default;
         };
     }
