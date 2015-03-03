@@ -21,66 +21,29 @@
  * PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
  * 
  * 
- * $Id: TCPListener.h 1 2015-02-28 13:30:33Z pk $
+ * $Id: TCPSession.h 1 2015-03-04 02:09:33Z pk $
  * 
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  * 
  **/
-#ifndef __TCPLISTENER_H__
-#define	__TCPLISTENER_H__
-#include <net/NSocket.h>
-#include <sys/Mutex.h>
-#include <sys/SyncLock.h>
-#include <memory>
+#ifndef __TCPSESSION_H__
+#define	__TCPSESSION_H__
+
 #include <TCPSocketDef.h>
 
 namespace itc
 {
-
-	class TCPListener: public itc::abstract::IRunnable
-	{
-	private:
-    ServerSocket mServerSocket;
-    itc::sys::Mutex mMutex;
-
-	public:
-    explicit TCPListener(const std::string& address,const int port)
-    : mServerSocket(address,port)
-    {   
-    }
-    void execute()
-    {
-      while (1)
-      {
-        itc::sys::SyncLock sync(mMutex);
-
-        SharedCSPtr newClient(itc::Singleton<TCPSocketsFactory>::getInstance<size_t,size_t>(100,1000)->getBlindSocket());
-
-        if(int ret=mServerSocket.accept(newClient))
-        {
-          throw TITCException<exceptions::InvalidSocketException>(ret);
-        }
-        else
-        {
-          itc::Singleton<itc::SessionPool>::getInstance()->newSession(newClient);
-        }
-      }
-    }
-    void onCancel()
-    {
-      itc::sys::SyncLock sync(mMutex);
-      mServerSocket.close();
-    }
-    void shutdown()
-    {
-      itc::sys::SyncLock sync(mMutex);
-      mServerSocket.close();
-    }
-	};
+  class TCPSession
+  {
+  private:
+    SharedCSPtr mSocket;
+  public:
+  
+  };
 }
 
 
-#endif	/* __TCPLISTENER_H__ */
+#endif	/* __TCPSESSION_H__ */
 
