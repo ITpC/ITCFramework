@@ -27,8 +27,8 @@ var NAVTREE =
       [ "File List", "files.html", "files" ],
       [ "File Members", "globals.html", [
         [ "All", "globals.html", null ],
-        [ "Typedefs", "globals_type.html", null ],
-        [ "Macros", "globals_defs.html", null ]
+        [ "Functions", "globals_func.html", null ],
+        [ "Typedefs", "globals_type.html", null ]
       ] ]
     ] ]
   ] ]
@@ -37,7 +37,7 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "_8dep_8inc.html",
-"classitc_1_1workflow_1_1_workflow_control.html#aa15820f4b0524da6ea46ac35e4bd831b"
+"classitc_1_1workflow_1_1_workflow_control.html#a2d9fbafcdb2b0c0b372712c314dffcac"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

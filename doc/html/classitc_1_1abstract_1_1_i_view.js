@@ -1,5 +1,6 @@
 var classitc_1_1abstract_1_1_i_view =
 [
-    [ "~IView", "classitc_1_1abstract_1_1_i_view.html#a9131e175a5609b14c7ab47133288ddf6", null ],
-    [ "update", "classitc_1_1abstract_1_1_i_view.html#ac37c66a49115348a69ed92c645c2660e", null ]
+    [ "~IView", "classitc_1_1abstract_1_1_i_view.html#a14713d0a6ce22825df6cb086a8e0e315", null ],
+    [ "onUpdate", "classitc_1_1abstract_1_1_i_view.html#a91e8b2902d531b1d86647203b77a4185", null ],
+    [ "update", "classitc_1_1abstract_1_1_i_view.html#ae06c53a6d02c393c635d29af17b3df9a", null ]
 ];

@@ -1,6 +1,5 @@
 <map id="include/abstract/IMessageListener.h" name="include/abstract/IMessageListener.h">
-<area shape="rect" id="node3" href="$bz2_compressor_8h.html" title="include/bz2Compressor.h" alt="" coords="5,101,176,131"/>
-<area shape="rect" id="node5" href="$bz2_decompressor_8h.html" title="include/bz2Decompressor.h" alt="" coords="200,101,384,131"/>
-<area shape="rect" id="node7" href="$_thread_pool_8h.html" title="include/ThreadPool.h" alt="" coords="408,101,552,131"/>
-<area shape="rect" id="node9" href="$_workflow_control_8h.html" title="include/WorkflowControl.h" alt="" coords="576,101,749,131"/>
+<area shape="rect" id="node3" href="$bz2_compressor_8h.html" title="include/bz2Compressor.h" alt="" coords="5,101,184,131"/>
+<area shape="rect" id="node5" href="$bz2_decompressor_8h.html" title="include/bz2Decompressor.h" alt="" coords="208,101,403,131"/>
+<area shape="rect" id="node7" href="$_workflow_control_8h.html" title="include/WorkflowControl.h" alt="" coords="427,101,611,131"/>
 </map>

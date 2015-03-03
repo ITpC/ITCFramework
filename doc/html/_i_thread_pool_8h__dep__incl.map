@@ -1,3 +1,5 @@
 <map id="include/abstract/IThreadPool.h" name="include/abstract/IThreadPool.h">
-<area shape="rect" id="node3" href="$_thread_pool_8h.html" title="include/ThreadPool.h" alt="" coords="15,101,159,131"/>
+<area shape="rect" id="node3" href="$_thread_pool_8h.html" title="include/ThreadPool.h" alt="" coords="108,101,263,131"/>
+<area shape="rect" id="node5" href="$_r_scheduler_8h.html" title="include/RScheduler.h" alt="" coords="5,179,160,208"/>
+<area shape="rect" id="node7" href="$_thread_pool_manager_8h.html" title="include/ThreadPoolManager.h" alt="" coords="184,179,395,208"/>
 </map>

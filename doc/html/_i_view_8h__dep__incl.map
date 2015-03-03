@@ -1,8 +1,5 @@
 <map id="include/abstract/IView.h" name="include/abstract/IView.h">
-<area shape="rect" id="node3" href="$_i_controller_8h.html" title="include/abstract/IController.h" alt="" coords="93,83,283,112"/>
-<area shape="rect" id="node7" href="$_i_thread_pool_8h.html" title="include/abstract/IThread\lPool.h" alt="" coords="115,238,277,285"/>
-<area shape="rect" id="node12" href="$_worker_thread_8h.html" title="include/WorkerThread.h" alt="" coords="173,160,333,189"/>
-<area shape="rect" id="node15" href="$_lazy_thread_8h.html" title="include/LazyThread.h" alt="" coords="408,83,555,112"/>
-<area shape="rect" id="node5" href="$_pool_thread_8h.html" title="include/PoolThread.h" alt="" coords="5,160,149,189"/>
-<area shape="rect" id="node9" href="$_thread_pool_8h.html" title="include/ThreadPool.h" alt="" coords="64,333,208,363"/>
+<area shape="rect" id="node3" href="$_i_controller_8h.html" title="include/abstract/IController.h" alt="" coords="87,83,287,112"/>
+<area shape="rect" id="node5" href="$e_poll_8h.html" title="include/sys/ePoll.h" alt="" coords="5,160,141,189"/>
+<area shape="rect" id="node7" href="$_worker_thread_8h.html" title="include/WorkerThread.h" alt="" coords="213,160,387,189"/>
 </map>

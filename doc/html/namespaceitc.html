@@ -92,7 +92,7 @@ $(document).ready(function(){initNavTree('namespaceitc.html','');});
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Macros</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Friends</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -133,12 +133,21 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structitc_1_1_compress_buffer.html">CompressBuffer</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classitc_1_1_pool_thread.html">PoolThread</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classitc_1_1_r_scheduler.html">RScheduler</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">implements scheduling of tasks execution at specific timepoint. With this class it is possible to schedule a task to be executed within some miliseconds after call to <a class="el" href="classitc_1_1_r_scheduler.html#a1d3631187146cfc39356ad0812050d69">RScheduler::add()</a> method. The execution of a task is scheduled to happen at the specific time, however it may be delayed by 100 microseconds or a little longer. The delay over 100 microseconds depends on a granularity of a system timers.  <a href="classitc_1_1_r_scheduler.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classitc_1_1_singleton.html">Singleton</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Thread safe singleton template Define here, necessary template methods, with more then 2 arguments if required. Note that use of this class can syncronize your threads because of mutex locking.  <a href="classitc_1_1_singleton.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classitc_1_1_t_c_p_listener.html">TCPListener</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classitc_1_1_thread_pool.html">ThreadPool</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">This class is a container for taks queues and it does not manage the threads. It is capable to create and invoke threads on task enqueu, however after the task is done, the thread perists in mActiveThreads container and will not be moved to mPassiveThreads queue. You does not need this class without a <a class="el" href="classitc_1_1_thread_pool_manager.html" title="This class manages an instance of the itc::ThreadPool class. The default behavior is to expand thread...">itc::ThreadPoolManager</a>. So instantiate one, which will create an instance of <a class="el" href="classitc_1_1_thread_pool.html" title="This class is a container for taks queues and it does not manage the threads. It is capable to create...">itc::ThreadPool</a> within itself and will effectively manage the threads in a pool.  <a href="classitc_1_1_thread_pool.html#details">More...</a><br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structitc_1_1tpstats.html">tpstats</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classitc_1_1_thread_pool_manager.html">ThreadPoolManager</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">This class manages an instance of the <a class="el" href="classitc_1_1_thread_pool.html" title="This class is a container for taks queues and it does not manage the threads. It is capable to create...">itc::ThreadPool</a> class. The default behavior is to expand threads within a <a class="el" href="classitc_1_1_thread_pool.html" title="This class is a container for taks queues and it does not manage the threads. It is capable to create...">itc::ThreadPool</a> instance logarithmycally based on current value of mMaxThreads attribute of the <a class="el" href="classitc_1_1_thread_pool.html" title="This class is a container for taks queues and it does not manage the threads. It is capable to create...">itc::ThreadPool</a> if the current value of the attibute mTaskQueue of the <a class="el" href="classitc_1_1_thread_pool.html" title="This class is a container for taks queues and it does not manage the threads. It is capable to create...">itc::ThreadPool</a> is 25% longer then amount of threads in <a class="el" href="classitc_1_1_thread_pool.html" title="This class is a container for taks queues and it does not manage the threads. It is capable to create...">itc::ThreadPool</a>. The upper limit of number of threads in <a class="el" href="classitc_1_1_thread_pool.html" title="This class is a container for taks queues and it does not manage the threads. It is capable to create...">itc::ThreadPool</a> is defined by itc::ThreadPoolManager.mMaxThreads + itc::ThreadPoolManager.mOvercommitThreads. Right now this class is too simple for soft and hard upper limit, which will be changed later.  <a href="classitc_1_1_thread_pool_manager.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classitc_1_1_thread_safe_local_queue.html">ThreadSafeLocalQueue</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -171,23 +180,21 @@ Typedefs</h2></td></tr>
 <tr class="separator:af62f0b39750ecdafa93a984f2a8823c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3d990a26fbf6d40161c41d03f1901677"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classitc_1_1_i_message_listener.html#a3a66b4ccdca1605ec9f397abcaf608b2">IMLType::QueueWeakPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceitc.html#a3d990a26fbf6d40161c41d03f1901677">QueueWeakPtrType</a></td></tr>
 <tr class="separator:a3d990a26fbf6d40161c41d03f1901677"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8eeba510afab59042939038b5215f37c"><td class="memItemLeft" align="right" valign="top">typedef std::pair&lt; pthread_t, <br class="typebreak"/>
-<a class="el" href="namespaceitc.html#ae9133ddb40b580ee7153e4cb4c594a96">ThreadState</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceitc.html#a8eeba510afab59042939038b5215f37c">ModelType</a></td></tr>
-<tr class="separator:a8eeba510afab59042939038b5215f37c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab644bdd0fccb18c2202866b46528b164"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classitc_1_1abstract_1_1_i_view.html">abstract::IView</a><br class="typebreak"/>
-&lt; <a class="el" href="namespaceitc.html#a8eeba510afab59042939038b5215f37c">ModelType</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceitc.html#ab644bdd0fccb18c2202866b46528b164">TMIView</a></td></tr>
-<tr class="separator:ab644bdd0fccb18c2202866b46528b164"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa0f19ccb3d4988dfc9f8619db388ee5c"><td class="memItemLeft" align="right" valign="top">typedef std::shared_ptr&lt; <a class="el" href="namespaceitc.html#ab644bdd0fccb18c2202866b46528b164">TMIView</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceitc.html#aa0f19ccb3d4988dfc9f8619db388ee5c">IViewSPtr</a></td></tr>
-<tr class="separator:aa0f19ccb3d4988dfc9f8619db388ee5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9ff1343801285e7900798911cf7bc46c"><td class="memItemLeft" align="right" valign="top">typedef std::shared_ptr<br class="typebreak"/>
-&lt; abstract::IRunnable &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceitc.html#a9ff1343801285e7900798911cf7bc46c">RunnableSPtr</a></td></tr>
-<tr class="separator:a9ff1343801285e7900798911cf7bc46c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6d5c5675b17149db72fee32e28eb4887"><td class="memItemLeft" align="right" valign="top">typedef std::shared_ptr<br class="typebreak"/>
-&lt; <a class="el" href="classitc_1_1_pool_thread.html">PoolThread</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceitc.html#a6d5c5675b17149db72fee32e28eb4887">PoolThreadSPtr</a></td></tr>
-<tr class="separator:a6d5c5675b17149db72fee32e28eb4887"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afa54a4ba1b02802899e2a89faf21e50d"><td class="memItemLeft" align="right" valign="top">typedef std::shared_ptr<br class="typebreak"/>
-&lt; IRunnable &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceitc.html#afa54a4ba1b02802899e2a89faf21e50d">IRunnableSPtr</a></td></tr>
-<tr class="separator:afa54a4ba1b02802899e2a89faf21e50d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04bfa4a58902cf29226dc4c39fb5f6db"><td class="memItemLeft" align="right" valign="top">typedef itc::net::Socket<br class="typebreak"/>
+&lt; SRV_TCP_ANY_IF, 100 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceitc.html#a04bfa4a58902cf29226dc4c39fb5f6db">ServerSocket</a></td></tr>
+<tr class="separator:a04bfa4a58902cf29226dc4c39fb5f6db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7fc557b288c2b3da582976e03ba3de3f"><td class="memItemLeft" align="right" valign="top">typedef itc::net::Socket<br class="typebreak"/>
+&lt; CLN_TCP_KA_TND &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceitc.html#a7fc557b288c2b3da582976e03ba3de3f">ClientSocket</a></td></tr>
+<tr class="separator:a7fc557b288c2b3da582976e03ba3de3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a577eed1e07d6652f34965023c6b343"><td class="memItemLeft" align="right" valign="top">typedef std::shared_ptr<br class="typebreak"/>
+&lt; <a class="el" href="namespaceitc.html#a7fc557b288c2b3da582976e03ba3de3f">ClientSocket</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceitc.html#a7a577eed1e07d6652f34965023c6b343">ClientSocketPtr</a></td></tr>
+<tr class="separator:a7a577eed1e07d6652f34965023c6b343"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa848cda295b23db8920563e07fbbda88"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="class_client_sockets_factory.html">ClientSocketsFactory</a><br class="typebreak"/>
+&lt; CLN_TCP_KA_TND &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceitc.html#aa848cda295b23db8920563e07fbbda88">TCPSocketsFactory</a></td></tr>
+<tr class="separator:aa848cda295b23db8920563e07fbbda88"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a386dd4c07d6732fad465c35d4c828f30"><td class="memItemLeft" align="right" valign="top">typedef <br class="typebreak"/>
+<a class="el" href="class_client_sockets_factory.html#a501db2945eb0665a39118b82e9f2da86">TCPSocketsFactory::SharedClientSocketPtrType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceitc.html#a386dd4c07d6732fad465c35d4c828f30">SharedCSPtr</a></td></tr>
+<tr class="separator:a386dd4c07d6732fad465c35d4c828f30"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8b3b17f9ca058c8a438b2407506034db"><td class="memItemLeft" align="right" valign="top">typedef abstract::IRunnable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceitc.html#a8b3b17f9ca058c8a438b2407506034db">RunnableInterface</a></td></tr>
 <tr class="separator:a8b3b17f9ca058c8a438b2407506034db"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaf9a8fc77e8c1ab13593034c6933ec39"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classitc_1_1abstract_1_1_i_controller.html">abstract::IController</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceitc.html#aaf9a8fc77e8c1ab13593034c6933ec39">ControllerInterface</a></td></tr>
@@ -198,29 +205,10 @@ Typedefs</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
-<tr class="memitem:ae4a489930492a617e557f9d87f1e9eb6"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceitc.html#ae4a489930492a617e557f9d87f1e9eb6">EnqueueBlockPolicy</a> { <a class="el" href="namespaceitc.html#a46d13cbc84321094535bc7f95ae184b0a32a99827a35f0c9b28816a8ebb4ae4ae">ASYNC</a>, 
-<a class="el" href="namespaceitc.html#a46d13cbc84321094535bc7f95ae184b0a769561db5ea37d9d3c1113e3a7b71be9">SYNC</a>, 
-<a class="el" href="namespaceitc.html#ae4a489930492a617e557f9d87f1e9eb6ae500ba7c523d753c0023c87a9f9bfc2a">DISCARD</a>
- }</td></tr>
-<tr class="separator:ae4a489930492a617e557f9d87f1e9eb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae750251bcd1e002c04ce083d18bcb1a9"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceitc.html#ae750251bcd1e002c04ce083d18bcb1a9">EnqueueDiscardPolicy</a> { <a class="el" href="namespaceitc.html#ae750251bcd1e002c04ce083d18bcb1a9a9032bdeb1dcb4a2824782570a6904dc5">ERROR</a>, 
-<a class="el" href="namespaceitc.html#ae750251bcd1e002c04ce083d18bcb1a9a429ec35d58b9d4f56ab7f01637083821">EXCEPTION</a>
- }</td></tr>
-<tr class="separator:ae750251bcd1e002c04ce083d18bcb1a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a46d13cbc84321094535bc7f95ae184b0"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceitc.html#a46d13cbc84321094535bc7f95ae184b0">QueueBlockPolicy</a> { <a class="el" href="namespaceitc.html#a46d13cbc84321094535bc7f95ae184b0a32a99827a35f0c9b28816a8ebb4ae4ae">ASYNC</a>, 
-<a class="el" href="namespaceitc.html#a46d13cbc84321094535bc7f95ae184b0a769561db5ea37d9d3c1113e3a7b71be9">SYNC</a>
+<tr class="memitem:a46d13cbc84321094535bc7f95ae184b0"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceitc.html#a46d13cbc84321094535bc7f95ae184b0">QueueBlockPolicy</a> { <a class="el" href="namespaceitc.html#a46d13cbc84321094535bc7f95ae184b0a90619c68c612de346dddcd5094d1ea20">ASYNC</a>, 
+<a class="el" href="namespaceitc.html#a46d13cbc84321094535bc7f95ae184b0a79d7b6ddf12d4bb17c29300f51f8572b">SYNC</a>
  }</td></tr>
 <tr class="separator:a46d13cbc84321094535bc7f95ae184b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae9133ddb40b580ee7153e4cb4c594a96"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceitc.html#ae9133ddb40b580ee7153e4cb4c594a96">ThreadState</a> { <br/>
-&#160;&#160;<a class="el" href="namespaceitc.html#ae9133ddb40b580ee7153e4cb4c594a96a178e7c4ede1a886e695a551405c0b84d">INIT</a>, 
-<a class="el" href="namespaceitc.html#ae9133ddb40b580ee7153e4cb4c594a96a34d96eb65707b762345cde5fdf93b8f7">WAIT</a>, 
-<a class="el" href="namespaceitc.html#ae9133ddb40b580ee7153e4cb4c594a96a2fa29bd6e72d4269b8feba0a3b247075">RUN</a>, 
-<a class="el" href="namespaceitc.html#ae9133ddb40b580ee7153e4cb4c594a96a970011ccd063cd409a576ccb0e729ad3">DONE</a>, 
-<br/>
-&#160;&#160;<a class="el" href="namespaceitc.html#ae9133ddb40b580ee7153e4cb4c594a96a4db2d6432fd35af7dee78f05c613e496">CANCELED</a>
-<br/>
- }</td></tr>
-<tr class="separator:ae9133ddb40b580ee7153e4cb4c594a96"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2998ffaf7a036cd257d5cb777822c32b"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceitc.html#a2998ffaf7a036cd257d5cb777822c32b">WorkerState</a> { <br/>
 &#160;&#160;<a class="el" href="namespaceitc.html#a2998ffaf7a036cd257d5cb777822c32ba437823674c27a4b885cc6207cb5cc014">BUSY</a>, 
 <a class="el" href="namespaceitc.html#a2998ffaf7a036cd257d5cb777822c32ba442625bbf8e27b098c0b5be0a2ecb2c8">READY</a>, 
@@ -303,23 +291,29 @@ Enumerations</h2></td></tr>
 <dl class="section rcs"><dt>Id:</dt><dd><a class="el" href="_compress_buffer_8h.html">CompressBuffer.h</a> 22 2010-11-23 12:53:33Z pk </dd></dl>
 <dl class="section rcs"><dt>Author:</dt><dd>pk</dd></dl>
 <p>File: <a class="el" href="_compress_buffer_8h.html">CompressBuffer.h</a></p>
-<p>Copyright (c) 2007, Pavel Kraynyukhov.</p>
-<p>Permission to use, copy, modify, and distribute this software and its documentation for any purpose, without fee, and without a written agreement is hereby granted under the terms of the General Public License version 2 (GPLv2), provided that the above copyright notice and this paragraph and the following two paragraphs and the "LICENSE" file appear in all modified or unmodified copies of the software "AS IS" and without any changes.</p>
-<p>IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS, ARISING OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF THE COPYRIGHT HOLDER HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
-<p>THE COPYRIGHT HOLDER SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE SOFTWARE PROVIDED HEREUNDER IS ON AN "AS IS" BASIS, AND THE COPYRIGHT HOLDER HAS NO OBLIGATIONS TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.</p>
-<dl class="section rcs"><dt>Id:</dt><dd><a class="el" href="_lazy_thread_8h.html">LazyThread.h</a> 22 2010-11-23 12:53:33Z pk </dd></dl>
-<p>You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.</p>
-<p>Copyright (c) 2007, Pavel Kraynyukhov.</p>
-<p>Permission to use, copy, modify, and distribute this software and its documentation for any purpose, without fee, and without a written agreement is hereby granted under the terms of the General Public License version 2 (GPLv2), provided that the above copyright notice and this paragraph and the following two paragraphs and the "LICENSE" file appear in all modified or unmodified copies of the software "AS IS" and without any changes.</p>
-<p>IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS, ARISING OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF THE COPYRIGHT HOLDER HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
-<p>THE COPYRIGHT HOLDER SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE SOFTWARE PROVIDED HEREUNDER IS ON AN "AS IS" BASIS, AND THE COPYRIGHT HOLDER HAS NO OBLIGATIONS TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.</p>
-<dl class="section rcs"><dt>Id:</dt><dd><a class="el" href="_pool_thread_8h.html">PoolThread.h</a> 22 2010-11-23 12:53:33Z pk </dd></dl>
-<p>You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.</p>
 <p>Copyright (c) 2004-2007, Pavel Kraynyukhov.</p>
 <p>Permission to use, copy, modify, and distribute this software and its documentation for any purpose, without fee, and without a written agreement is hereby granted under the terms of the General Public License version 2 (GPLv2), provided that the above copyright notice and this paragraph and the following two paragraphs and the "LICENSE" file appear in all modified or unmodified copies of the software "AS IS" and without any changes.</p>
 <p>IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS, ARISING OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF THE COPYRIGHT HOLDER HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
 <p>THE COPYRIGHT HOLDER SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE SOFTWARE PROVIDED HEREUNDER IS ON AN "AS IS" BASIS, AND THE COPYRIGHT HOLDER HAS NO OBLIGATIONS TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.</p>
 <dl class="section rcs"><dt>Id:</dt><dd><a class="el" href="_singleton_8h.html">Singleton.h</a> 22 2010-11-23 12:53:33Z pk </dd></dl>
+<p>You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.</p>
+<p>Copyright (c) 2007-2015, Pavel Kraynyukhov.</p>
+<p>Permission to use, copy, modify, and distribute this software and its documentation for any purpose, without fee, and without a written agreement is hereby granted under the terms of the General Public License version 2 (GPLv2), provided that the above copyright notice and this paragraph and the following two paragraphs and the "LICENSE" file appear in all modified or unmodified copies of the software "AS IS" and without any changes.</p>
+<p>IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS, ARISING OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF THE COPYRIGHT HOLDER HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
+<p>THE COPYRIGHT HOLDER SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE SOFTWARE PROVIDED HEREUNDER IS ON AN "AS IS" BASIS, AND THE COPYRIGHT HOLDER HAS NO OBLIGATIONS TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.</p>
+<dl class="section rcs"><dt>Id:</dt><dd><a class="el" href="_t_c_p_listener_8h.html">TCPListener.h</a> 1 2015-02-28 13:30:33Z pk </dd></dl>
+<p>You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.</p>
+<p>Copyright (c) 2007, Pavel Kraynyukhov.</p>
+<p>Permission to use, copy, modify, and distribute this software and its documentation for any purpose, without fee, and without a written agreement is hereby granted under the terms of the General Public License version 2 (GPLv2), provided that the above copyright notice and this paragraph and the following two paragraphs and the "LICENSE" file appear in all modified or unmodified copies of the software "AS IS" and without any changes.</p>
+<p>IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS, ARISING OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF THE COPYRIGHT HOLDER HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
+<p>THE COPYRIGHT HOLDER SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE SOFTWARE PROVIDED HEREUNDER IS ON AN "AS IS" BASIS, AND THE COPYRIGHT HOLDER HAS NO OBLIGATIONS TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.</p>
+<dl class="section rcs"><dt>Id:</dt><dd><a class="el" href="_thread_pool_8h.html">ThreadPool.h</a> 22 2010-11-23 12:53:33Z pk </dd></dl>
+<p>You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.</p>
+<p>Copyright (c) 2007-2015, Pavel Kraynyukhov.</p>
+<p>Permission to use, copy, modify, and distribute this software and its documentation for any purpose, without fee, and without a written agreement is hereby granted under the terms of the General Public License version 2 (GPLv2), provided that the above copyright notice and this paragraph and the following two paragraphs and the "LICENSE" file appear in all modified or unmodified copies of the software "AS IS" and without any changes.</p>
+<p>IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS, ARISING OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF THE COPYRIGHT HOLDER HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
+<p>THE COPYRIGHT HOLDER SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE SOFTWARE PROVIDED HEREUNDER IS ON AN "AS IS" BASIS, AND THE COPYRIGHT HOLDER HAS NO OBLIGATIONS TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.</p>
+<dl class="section rcs"><dt>Id:</dt><dd><a class="el" href="_thread_pool_manager_8h.html">ThreadPoolManager.h</a> 1 2015-02-28 13:43:33Z pk </dd></dl>
 <p>You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.</p>
 <p>Copyright (c) 2007, Pavel Kraynyukhov.</p>
 <p>Permission to use, copy, modify, and distribute this software and its documentation for any purpose, without fee, and without a written agreement is hereby granted under the terms of the General Public License version 2 (GPLv2), provided that the above copyright notice and this paragraph and the following two paragraphs and the "LICENSE" file appear in all modified or unmodified copies of the software "AS IS" and without any changes.</p>
@@ -398,6 +392,34 @@ Enumerations</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a7fc557b288c2b3da582976e03ba3de3f"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef itc::net::Socket&lt;CLN_TCP_KA_TND&gt; <a class="el" href="namespaceitc.html#a7fc557b288c2b3da582976e03ba3de3f">itc::ClientSocket</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="_t_c_p_listener_8h_source.html#l00042">42</a> of file <a class="el" href="_t_c_p_listener_8h_source.html">TCPListener.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a7a577eed1e07d6652f34965023c6b343"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef std::shared_ptr&lt;<a class="el" href="namespaceitc.html#a7fc557b288c2b3da582976e03ba3de3f">ClientSocket</a>&gt; <a class="el" href="namespaceitc.html#a7a577eed1e07d6652f34965023c6b343">itc::ClientSocketPtr</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="_t_c_p_listener_8h_source.html#l00043">43</a> of file <a class="el" href="_t_c_p_listener_8h_source.html">TCPListener.h</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="aaf9a8fc77e8c1ab13593034c6933ec39"></a>
 <div class="memitem">
 <div class="memproto">
@@ -423,62 +445,6 @@ Enumerations</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Definition at line <a class="el" href="_comp_common_8h_source.html#l00048">48</a> of file <a class="el" href="_comp_common_8h_source.html">CompCommon.h</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="afa54a4ba1b02802899e2a89faf21e50d"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef std::shared_ptr&lt;IRunnable&gt; <a class="el" href="namespaceitc.html#afa54a4ba1b02802899e2a89faf21e50d">itc::IRunnableSPtr</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="_thread_pool_8h_source.html#l00039">39</a> of file <a class="el" href="_thread_pool_8h_source.html">ThreadPool.h</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="aa0f19ccb3d4988dfc9f8619db388ee5c"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef std::shared_ptr&lt;<a class="el" href="namespaceitc.html#ab644bdd0fccb18c2202866b46528b164">TMIView</a>&gt; <a class="el" href="namespaceitc.html#aa0f19ccb3d4988dfc9f8619db388ee5c">itc::IViewSPtr</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="_pool_thread_8h_source.html#l00062">62</a> of file <a class="el" href="_pool_thread_8h_source.html">PoolThread.h</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a8eeba510afab59042939038b5215f37c"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef std::pair&lt;pthread_t, <a class="el" href="namespaceitc.html#ae9133ddb40b580ee7153e4cb4c594a96">ThreadState</a>&gt; <a class="el" href="namespaceitc.html#a8eeba510afab59042939038b5215f37c">itc::ModelType</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="_pool_thread_8h_source.html#l00060">60</a> of file <a class="el" href="_pool_thread_8h_source.html">PoolThread.h</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a6d5c5675b17149db72fee32e28eb4887"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef std::shared_ptr&lt;<a class="el" href="classitc_1_1_pool_thread.html">PoolThread</a>&gt; <a class="el" href="namespaceitc.html#a6d5c5675b17149db72fee32e28eb4887">itc::PoolThreadSPtr</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="_thread_pool_8h_source.html#l00038">38</a> of file <a class="el" href="_thread_pool_8h_source.html">ThreadPool.h</a>.</p>
 
 </div>
 </div>
@@ -538,31 +504,45 @@ Enumerations</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a9ff1343801285e7900798911cf7bc46c"></a>
+<a class="anchor" id="a04bfa4a58902cf29226dc4c39fb5f6db"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef std::shared_ptr&lt;abstract::IRunnable&gt; <a class="el" href="namespaceitc.html#a9ff1343801285e7900798911cf7bc46c">itc::RunnableSPtr</a></td>
+          <td class="memname">typedef itc::net::Socket&lt;SRV_TCP_ANY_IF,100&gt; <a class="el" href="namespaceitc.html#a04bfa4a58902cf29226dc4c39fb5f6db">itc::ServerSocket</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_pool_thread_8h_source.html#l00063">63</a> of file <a class="el" href="_pool_thread_8h_source.html">PoolThread.h</a>.</p>
+<p>Definition at line <a class="el" href="_t_c_p_listener_8h_source.html#l00041">41</a> of file <a class="el" href="_t_c_p_listener_8h_source.html">TCPListener.h</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="ab644bdd0fccb18c2202866b46528b164"></a>
+<a class="anchor" id="a386dd4c07d6732fad465c35d4c828f30"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef <a class="el" href="classitc_1_1abstract_1_1_i_view.html">abstract::IView</a>&lt;<a class="el" href="namespaceitc.html#a8eeba510afab59042939038b5215f37c">ModelType</a>&gt; <a class="el" href="namespaceitc.html#ab644bdd0fccb18c2202866b46528b164">itc::TMIView</a></td>
+          <td class="memname">typedef <a class="el" href="class_client_sockets_factory.html#a501db2945eb0665a39118b82e9f2da86">TCPSocketsFactory::SharedClientSocketPtrType</a> <a class="el" href="namespaceitc.html#a386dd4c07d6732fad465c35d4c828f30">itc::SharedCSPtr</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_pool_thread_8h_source.html#l00061">61</a> of file <a class="el" href="_pool_thread_8h_source.html">PoolThread.h</a>.</p>
+<p>Definition at line <a class="el" href="_t_c_p_listener_8h_source.html#l00045">45</a> of file <a class="el" href="_t_c_p_listener_8h_source.html">TCPListener.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aa848cda295b23db8920563e07fbbda88"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef <a class="el" href="class_client_sockets_factory.html">ClientSocketsFactory</a>&lt;CLN_TCP_KA_TND&gt; <a class="el" href="namespaceitc.html#aa848cda295b23db8920563e07fbbda88">itc::TCPSocketsFactory</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="_t_c_p_listener_8h_source.html#l00044">44</a> of file <a class="el" href="_t_c_p_listener_8h_source.html">TCPListener.h</a>.</p>
 
 </div>
 </div>
@@ -581,48 +561,6 @@ Enumerations</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Enumeration Type Documentation</h2>
-<a class="anchor" id="ae4a489930492a617e557f9d87f1e9eb6"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">enum <a class="el" href="namespaceitc.html#ae4a489930492a617e557f9d87f1e9eb6">itc::EnqueueBlockPolicy</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><em><a class="anchor" id="a46d13cbc84321094535bc7f95ae184b0a32a99827a35f0c9b28816a8ebb4ae4ae"></a>ASYNC</em>&nbsp;</td><td class="fielddoc">
-</td></tr>
-<tr><td class="fieldname"><em><a class="anchor" id="a46d13cbc84321094535bc7f95ae184b0a769561db5ea37d9d3c1113e3a7b71be9"></a>SYNC</em>&nbsp;</td><td class="fielddoc">
-</td></tr>
-<tr><td class="fieldname"><em><a class="anchor" id="ae4a489930492a617e557f9d87f1e9eb6ae500ba7c523d753c0023c87a9f9bfc2a"></a>DISCARD</em>&nbsp;</td><td class="fielddoc">
-</td></tr>
-</table>
-
-<p>Definition at line <a class="el" href="_i_thread_pool_8h_source.html#l00043">43</a> of file <a class="el" href="_i_thread_pool_8h_source.html">IThreadPool.h</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="ae750251bcd1e002c04ce083d18bcb1a9"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">enum <a class="el" href="namespaceitc.html#ae750251bcd1e002c04ce083d18bcb1a9">itc::EnqueueDiscardPolicy</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><em><a class="anchor" id="ae750251bcd1e002c04ce083d18bcb1a9a9032bdeb1dcb4a2824782570a6904dc5"></a>ERROR</em>&nbsp;</td><td class="fielddoc">
-</td></tr>
-<tr><td class="fieldname"><em><a class="anchor" id="ae750251bcd1e002c04ce083d18bcb1a9a429ec35d58b9d4f56ab7f01637083821"></a>EXCEPTION</em>&nbsp;</td><td class="fielddoc">
-</td></tr>
-</table>
-
-<p>Definition at line <a class="el" href="_i_thread_pool_8h_source.html#l00048">48</a> of file <a class="el" href="_i_thread_pool_8h_source.html">IThreadPool.h</a>.</p>
-
-</div>
-</div>
 <a class="anchor" id="a46d13cbc84321094535bc7f95ae184b0"></a>
 <div class="memitem">
 <div class="memproto">
@@ -633,39 +571,13 @@ Enumerations</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><em><a class="anchor" id="a46d13cbc84321094535bc7f95ae184b0a32a99827a35f0c9b28816a8ebb4ae4ae"></a>ASYNC</em>&nbsp;</td><td class="fielddoc">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><em><a class="anchor" id="a46d13cbc84321094535bc7f95ae184b0a90619c68c612de346dddcd5094d1ea20"></a>ASYNC</em>&nbsp;</td><td class="fielddoc">
 </td></tr>
-<tr><td class="fieldname"><em><a class="anchor" id="a46d13cbc84321094535bc7f95ae184b0a769561db5ea37d9d3c1113e3a7b71be9"></a>SYNC</em>&nbsp;</td><td class="fielddoc">
+<tr><td class="fieldname"><em><a class="anchor" id="a46d13cbc84321094535bc7f95ae184b0a79d7b6ddf12d4bb17c29300f51f8572b"></a>SYNC</em>&nbsp;</td><td class="fielddoc">
 </td></tr>
 </table>
 
 <p>Definition at line <a class="el" href="_queue_interface_8h_source.html#l00038">38</a> of file <a class="el" href="_queue_interface_8h_source.html">QueueInterface.h</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="ae9133ddb40b580ee7153e4cb4c594a96"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">enum <a class="el" href="namespaceitc.html#ae9133ddb40b580ee7153e4cb4c594a96">itc::ThreadState</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><em><a class="anchor" id="ae9133ddb40b580ee7153e4cb4c594a96a178e7c4ede1a886e695a551405c0b84d"></a>INIT</em>&nbsp;</td><td class="fielddoc">
-</td></tr>
-<tr><td class="fieldname"><em><a class="anchor" id="ae9133ddb40b580ee7153e4cb4c594a96a34d96eb65707b762345cde5fdf93b8f7"></a>WAIT</em>&nbsp;</td><td class="fielddoc">
-</td></tr>
-<tr><td class="fieldname"><em><a class="anchor" id="ae9133ddb40b580ee7153e4cb4c594a96a2fa29bd6e72d4269b8feba0a3b247075"></a>RUN</em>&nbsp;</td><td class="fielddoc">
-</td></tr>
-<tr><td class="fieldname"><em><a class="anchor" id="ae9133ddb40b580ee7153e4cb4c594a96a970011ccd063cd409a576ccb0e729ad3"></a>DONE</em>&nbsp;</td><td class="fielddoc">
-</td></tr>
-<tr><td class="fieldname"><em><a class="anchor" id="ae9133ddb40b580ee7153e4cb4c594a96a4db2d6432fd35af7dee78f05c613e496"></a>CANCELED</em>&nbsp;</td><td class="fielddoc">
-</td></tr>
-</table>
-
-<p>Definition at line <a class="el" href="_pool_thread_8h_source.html#l00055">55</a> of file <a class="el" href="_pool_thread_8h_source.html">PoolThread.h</a>.</p>
 
 </div>
 </div>
@@ -701,7 +613,7 @@ Enumerations</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespaceitc.html">itc</a></li>
-    <li class="footer">Generated on Mon Dec 8 2014 15:15:40 for ITCFramework by
+    <li class="footer">Generated on Wed Mar 4 2015 01:13:37 for ITCFramework by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.3.1 </li>
   </ul>

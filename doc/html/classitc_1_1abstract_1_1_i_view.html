@@ -94,7 +94,7 @@ $(document).ready(function(){initNavTree('classitc_1_1abstract_1_1_i_view.html',
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Macros</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Friends</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -117,26 +117,28 @@ $(document).ready(function(){initNavTree('classitc_1_1abstract_1_1_i_view.html',
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ac37c66a49115348a69ed92c645c2660e"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classitc_1_1abstract_1_1_i_view.html#ac37c66a49115348a69ed92c645c2660e">update</a> (const TModel &amp;)=0</td></tr>
-<tr class="separator:ac37c66a49115348a69ed92c645c2660e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae06c53a6d02c393c635d29af17b3df9a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classitc_1_1abstract_1_1_i_view.html#ae06c53a6d02c393c635d29af17b3df9a">update</a> (const TModel &amp;pM)</td></tr>
+<tr class="separator:ae06c53a6d02c393c635d29af17b3df9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:a9131e175a5609b14c7ab47133288ddf6"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classitc_1_1abstract_1_1_i_view.html#a9131e175a5609b14c7ab47133288ddf6">~IView</a> ()</td></tr>
-<tr class="separator:a9131e175a5609b14c7ab47133288ddf6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91e8b2902d531b1d86647203b77a4185"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classitc_1_1abstract_1_1_i_view.html#a91e8b2902d531b1d86647203b77a4185">onUpdate</a> (const TModel &amp;)=0</td></tr>
+<tr class="separator:a91e8b2902d531b1d86647203b77a4185"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14713d0a6ce22825df6cb086a8e0e315"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classitc_1_1abstract_1_1_i_view.html#a14713d0a6ce22825df6cb086a8e0e315">~IView</a> ()=default</td></tr>
+<tr class="separator:a14713d0a6ce22825df6cb086a8e0e315"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><h3>template&lt;typename TModel&gt;<br/>
 class itc::abstract::IView&lt; TModel &gt;</h3>
 
 
-<p>Definition at line <a class="el" href="_i_view_8h_source.html#l00039">39</a> of file <a class="el" href="_i_view_8h_source.html">IView.h</a>.</p>
+<p>Definition at line <a class="el" href="_i_view_8h_source.html#l00038">38</a> of file <a class="el" href="_i_view_8h_source.html">IView.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" id="a9131e175a5609b14c7ab47133288ddf6"></a>
+<a class="anchor" id="a14713d0a6ce22825df6cb086a8e0e315"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename TModel&gt; </div>
+template&lt;typename TModel &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -150,27 +152,25 @@ template&lt;typename TModel&gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">virtual</span><span class="mlabel">default</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_i_view_8h_source.html#l00044">44</a> of file <a class="el" href="_i_view_8h_source.html">IView.h</a>.</p>
-
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="ac37c66a49115348a69ed92c645c2660e"></a>
+<a class="anchor" id="a91e8b2902d531b1d86647203b77a4185"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename TModel&gt; </div>
+template&lt;typename TModel &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void <a class="el" href="classitc_1_1abstract_1_1_i_view.html">itc::abstract::IView</a>&lt; TModel &gt;::update </td>
+          <td class="memname">virtual void <a class="el" href="classitc_1_1abstract_1_1_i_view.html">itc::abstract::IView</a>&lt; TModel &gt;::onUpdate </td>
           <td>(</td>
           <td class="paramtype">const TModel &amp;&#160;</td>
           <td class="paramname"></td><td>)</td>
@@ -179,7 +179,7 @@ template&lt;typename TModel&gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">pure virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -187,9 +187,46 @@ template&lt;typename TModel&gt; </div>
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="classitc_1_1abstract_1_1_i_view_ac37c66a49115348a69ed92c645c2660e_icgraph.png" border="0" usemap="#classitc_1_1abstract_1_1_i_view_ac37c66a49115348a69ed92c645c2660e_icgraph" alt=""/></div>
-<map name="classitc_1_1abstract_1_1_i_view_ac37c66a49115348a69ed92c645c2660e_icgraph" id="classitc_1_1abstract_1_1_i_view_ac37c66a49115348a69ed92c645c2660e_icgraph">
-<area shape="rect" id="node3" href="classitc_1_1abstract_1_1_i_controller.html#a9612342d7be8540a70775db4a3d4d6f4" title="itc::abstract::IController\l::notify" alt="" coords="188,5,345,51"/></map>
+<div class="center"><img src="classitc_1_1abstract_1_1_i_view_a91e8b2902d531b1d86647203b77a4185_icgraph.png" border="0" usemap="#classitc_1_1abstract_1_1_i_view_a91e8b2902d531b1d86647203b77a4185_icgraph" alt=""/></div>
+<map name="classitc_1_1abstract_1_1_i_view_a91e8b2902d531b1d86647203b77a4185_icgraph" id="classitc_1_1abstract_1_1_i_view_a91e8b2902d531b1d86647203b77a4185_icgraph">
+<area shape="rect" id="node3" href="classitc_1_1abstract_1_1_i_view.html#ae06c53a6d02c393c635d29af17b3df9a" title="itc::abstract::IView\l::update" alt="" coords="188,5,319,51"/></map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="ae06c53a6d02c393c635d29af17b3df9a"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename TModel &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classitc_1_1abstract_1_1_i_view.html">itc::abstract::IView</a>&lt; TModel &gt;::update </td>
+          <td>(</td>
+          <td class="paramtype">const TModel &amp;&#160;</td>
+          <td class="paramname"><em>pM</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="_i_view_8h_source.html#l00041">41</a> of file <a class="el" href="_i_view_8h_source.html">IView.h</a>.</p>
+
+<p><div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classitc_1_1abstract_1_1_i_view_ae06c53a6d02c393c635d29af17b3df9a_cgraph.png" border="0" usemap="#classitc_1_1abstract_1_1_i_view_ae06c53a6d02c393c635d29af17b3df9a_cgraph" alt=""/></div>
+<map name="classitc_1_1abstract_1_1_i_view_ae06c53a6d02c393c635d29af17b3df9a_cgraph" id="classitc_1_1abstract_1_1_i_view_ae06c53a6d02c393c635d29af17b3df9a_cgraph">
+<area shape="rect" id="node3" href="classitc_1_1abstract_1_1_i_view.html#a91e8b2902d531b1d86647203b77a4185" title="itc::abstract::IView\l::onUpdate" alt="" coords="188,5,319,51"/></map>
 </div>
 </p>
 
@@ -204,7 +241,7 @@ Here is the caller graph for this function:</div>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespaceitc.html">itc</a></li><li class="navelem"><a class="el" href="namespaceitc_1_1abstract.html">abstract</a></li><li class="navelem"><a class="el" href="classitc_1_1abstract_1_1_i_view.html">IView</a></li>
-    <li class="footer">Generated on Mon Dec 8 2014 15:15:40 for ITCFramework by
+    <li class="footer">Generated on Wed Mar 4 2015 01:13:37 for ITCFramework by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.3.1 </li>
   </ul>

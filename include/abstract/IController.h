@@ -54,7 +54,7 @@ public:
         }
         else
         {
-            itc::getLog()->debug(__FILE__,__LINE__,"itc::abstract::IController::notify() a view is NULL");
+            itc::getLog()->trace(__FILE__,__LINE__,"itc::abstract::IController::notify() a view is NULL");
         }
     }
 

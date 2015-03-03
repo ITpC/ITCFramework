@@ -48,6 +48,7 @@
 #include <sched.h>
 #include <ThreadPool.h>
 #include <DateFormatter.h>
+#include <sys/SemSleep.h>
 #include <limits>
 
 typedef itc::utils::Date Date;
@@ -157,6 +158,7 @@ namespace itc
 
         void execute()
         {
+          ::itc::sys::SemSleep waithere;
             while(mayRun())
             {
                 try {
@@ -217,15 +219,8 @@ namespace itc
                 {
                     throw e; //rethrow
                 }
-                usleep(100);
+                waithere.usleep(100);
                 mThreadPool->shakePools();
-                /*
-                if((mShakePoolsTO-=100) == 0)
-                {
-                    
-                    mShakePoolsTO=10000;
-                }
-                 */
             }
         }
        

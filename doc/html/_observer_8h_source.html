@@ -92,7 +92,7 @@ $(document).ready(function(){initNavTree('_observer_8h_source.html','');});
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Macros</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Friends</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -113,32 +113,29 @@ $(document).ready(function(){initNavTree('_observer_8h_source.html','');});
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="keyword">namespace </span>itc {</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    <span class="keyword">namespace </span>abstract {</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
-<div class="line"><a name="l00039"></a><span class="lineno"><a class="code" href="classitc_1_1abstract_1_1_observer.html">   39</a></span>&#160;        <span class="keyword">template</span> &lt;<span class="keyword">class</span> EventType, <span class="keyword">template</span> &lt;<span class="keyword">class</span>&gt; <span class="keyword">class </span>TObservable&gt; <span class="keyword">class </span><a class="code" href="classitc_1_1abstract_1_1_observer.html">Observer</a> {</div>
+<div class="line"><a name="l00039"></a><span class="lineno"><a class="code" href="classitc_1_1abstract_1_1_observer.html">   39</a></span>&#160;        <span class="keyword">template</span> &lt;<span class="keyword">typename</span> EventType, <span class="keyword">template</span> &lt;<span class="keyword">class</span>&gt; <span class="keyword">class </span>TObservable&gt; <span class="keyword">class </span><a class="code" href="classitc_1_1abstract_1_1_observer.html">Observer</a> {</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        <span class="keyword">public</span>:</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
 <div class="line"><a name="l00042"></a><span class="lineno"><a class="code" href="classitc_1_1abstract_1_1_observer.html#abb8252e490ee78af8a140cd53370c588">   42</a></span>&#160;            <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code" href="classitc_1_1abstract_1_1_observer.html#abb8252e490ee78af8a140cd53370c588">update</a>(TObservable&lt;EventType&gt; *pObservable, <span class="keyword">const</span> EventType&amp; event) {</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;                <a class="code" href="classitc_1_1abstract_1_1_observer.html#a9dc8399c810b6499b88a18a11795676b">onUpdate</a>(pObservable, event);</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;            }</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
-<div class="line"><a name="l00046"></a><span class="lineno"><a class="code" href="classitc_1_1abstract_1_1_observer.html#af3f5872ccf0e250c6b84b31119280294">   46</a></span>&#160;            <a class="code" href="classitc_1_1abstract_1_1_observer.html#af3f5872ccf0e250c6b84b31119280294">Observer</a>() {</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;            }</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;            <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classitc_1_1abstract_1_1_observer.html#a9dc8399c810b6499b88a18a11795676b">onUpdate</a>(TObservable&lt;EventType&gt; *pObservable, <span class="keyword">const</span> EventType&amp; event) = 0;</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;            <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classitc_1_1abstract_1_1_observer.html#a9dc8399c810b6499b88a18a11795676b">onUpdate</a>(TObservable&lt;EventType&gt; *pObservable, <span class="keyword">const</span> EventType&amp; event) = 0;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;        <span class="keyword">protected</span>:</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;        <span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
-<div class="line"><a name="l00052"></a><span class="lineno"><a class="code" href="classitc_1_1abstract_1_1_observer.html#abe5e505a8859306dfa07ef123dd01c44">   52</a></span>&#160;            <span class="keyword">virtual</span> <a class="code" href="classitc_1_1abstract_1_1_observer.html#abe5e505a8859306dfa07ef123dd01c44">~Observer</a>() {</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;            };</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;        };</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    }</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;}</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="preprocessor">#endif  //_OBSERVER_H_</span></div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;            <span class="keyword">virtual</span> <a class="code" href="classitc_1_1abstract_1_1_observer.html#ab62f39115c77cb5b413f665f9de10067">~Observer</a>()=<span class="keywordflow">default</span>;</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        };</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    }</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;}</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="preprocessor">#endif  //_OBSERVER_H_</span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_5f23f799d5588f950210543d7509e0e2.html">abstract</a></li><li class="navelem"><a class="el" href="_observer_8h.html">Observer.h</a></li>
-    <li class="footer">Generated on Mon Dec 8 2014 15:15:40 for ITCFramework by
+    <li class="footer">Generated on Wed Mar 4 2015 01:13:36 for ITCFramework by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.3.1 </li>
   </ul>

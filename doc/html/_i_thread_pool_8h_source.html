@@ -92,7 +92,7 @@ $(document).ready(function(){initNavTree('_i_thread_pool_8h_source.html','');});
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Macros</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Friends</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -110,59 +110,38 @@ $(document).ready(function(){initNavTree('_i_thread_pool_8h_source.html','');});
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="preprocessor">#ifndef __ITHREADPOOL_H__</span></div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#    define __ITHREADPOOL_H__</span></div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="preprocessor">#    include &lt;Val2Type.h&gt;</span></div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="preprocessor">#    include &lt;<a class="code" href="_pool_thread_8h.html">PoolThread.h</a>&gt;</span></div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="preprocessor">#    include &lt;<a class="code" href="_i_view_8h.html">abstract/IView.h</a>&gt;</span></div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="preprocessor">#    include &lt;abstract/Runnable.h&gt;</span></div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="keyword">namespace </span>itc</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;{</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
-<div class="line"><a name="l00043"></a><span class="lineno"><a class="code" href="namespaceitc.html#ae4a489930492a617e557f9d87f1e9eb6">   43</a></span>&#160;<span class="keyword">enum</span> <a class="code" href="namespaceitc.html#ae4a489930492a617e557f9d87f1e9eb6">EnqueueBlockPolicy</a></div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;{</div>
-<div class="line"><a name="l00045"></a><span class="lineno"><a class="code" href="namespaceitc.html#a46d13cbc84321094535bc7f95ae184b0a769561db5ea37d9d3c1113e3a7b71be9">   45</a></span>&#160;    <a class="code" href="namespaceitc.html#a46d13cbc84321094535bc7f95ae184b0a32a99827a35f0c9b28816a8ebb4ae4ae">ASYNC</a>, <a class="code" href="namespaceitc.html#a46d13cbc84321094535bc7f95ae184b0a769561db5ea37d9d3c1113e3a7b71be9">SYNC</a>, <a class="code" href="namespaceitc.html#ae4a489930492a617e557f9d87f1e9eb6ae500ba7c523d753c0023c87a9f9bfc2a">DISCARD</a></div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;};</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="keyword">namespace </span>itc</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;{</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <span class="keyword">namespace </span>abstract</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    {</div>
+<div class="line"><a name="l00043"></a><span class="lineno"><a class="code" href="classitc_1_1abstract_1_1_i_thread_pool.html">   43</a></span>&#160;        <span class="keyword">class </span><a class="code" href="classitc_1_1abstract_1_1_i_thread_pool.html" title="it is a simple interface of the thread pool.">IThreadPool</a></div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;        {</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;        <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00046"></a><span class="lineno"><a class="code" href="classitc_1_1abstract_1_1_i_thread_pool.html#a887ea7e32a01be6c18041cff91a87e75">   46</a></span>&#160;            <span class="keyword">typedef</span> std::shared_ptr&lt;abstract::IRunnable&gt; <a class="code" href="classitc_1_1abstract_1_1_i_thread_pool.html#a887ea7e32a01be6c18041cff91a87e75">value_type</a>;</div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;</div>
-<div class="line"><a name="l00048"></a><span class="lineno"><a class="code" href="namespaceitc.html#ae750251bcd1e002c04ce083d18bcb1a9">   48</a></span>&#160;<span class="keyword">enum</span> <a class="code" href="namespaceitc.html#ae750251bcd1e002c04ce083d18bcb1a9">EnqueueDiscardPolicy</a></div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;{</div>
-<div class="line"><a name="l00050"></a><span class="lineno"><a class="code" href="namespaceitc.html#ae750251bcd1e002c04ce083d18bcb1a9a429ec35d58b9d4f56ab7f01637083821">   50</a></span>&#160;    <a class="code" href="namespaceitc.html#ae750251bcd1e002c04ce083d18bcb1a9a9032bdeb1dcb4a2824782570a6904dc5">ERROR</a>, <a class="code" href="namespaceitc.html#ae750251bcd1e002c04ce083d18bcb1a9a429ec35d58b9d4f56ab7f01637083821">EXCEPTION</a></div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;};</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="keyword">namespace </span>abstract</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;{</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
-<div class="line"><a name="l00056"></a><span class="lineno"><a class="code" href="classitc_1_1abstract_1_1_i_thread_pool.html">   56</a></span>&#160;<span class="keyword">class </span><a class="code" href="classitc_1_1abstract_1_1_i_thread_pool.html">IThreadPool</a></div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;{</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
-<div class="line"><a name="l00060"></a><span class="lineno"><a class="code" href="classitc_1_1abstract_1_1_i_thread_pool.html#aa7cd5877dbce469c97c54d358ac6f5ca">   60</a></span>&#160;    <a class="code" href="classitc_1_1abstract_1_1_i_thread_pool.html#aa7cd5877dbce469c97c54d358ac6f5ca">IThreadPool</a>()</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    {</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    }</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    <span class="keyword">virtual</span> <span class="keyword">const</span> <span class="keywordtype">size_t</span> <a class="code" href="classitc_1_1abstract_1_1_i_thread_pool.html#ac1eac38900013d370263004a5c541a95">getMinThreads</a>() = 0 <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    <span class="keyword">virtual</span> <span class="keyword">const</span> <span class="keywordtype">size_t</span> <a class="code" href="classitc_1_1abstract_1_1_i_thread_pool.html#ac1791eae687e7d02d498ae9037e7227d">getMaxThreads</a>() = 0 <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classitc_1_1abstract_1_1_i_thread_pool.html#a92d0ec2dbd4fc65a484cba0456c5ec57">extend</a>(<span class="keyword">const</span> <span class="keywordtype">size_t</span>&amp;) = 0;</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classitc_1_1abstract_1_1_i_thread_pool.html#a878883d32a5769748c1a8e79fc32d2d3">reduce</a>(<span class="keyword">const</span> <span class="keywordtype">size_t</span>&amp;) = 0;</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="classitc_1_1abstract_1_1_i_thread_pool.html#acf2fc6b4489ada7a0948c579313b7acf">enqueue</a>(abstract::IRunnable*) = 0;</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;</div>
-<div class="line"><a name="l00074"></a><span class="lineno"><a class="code" href="classitc_1_1abstract_1_1_i_thread_pool.html#acfd16aa5fb9fc9b9817ed24e4c3e6a47">   74</a></span>&#160;    <span class="keyword">virtual</span> <a class="code" href="classitc_1_1abstract_1_1_i_thread_pool.html#acfd16aa5fb9fc9b9817ed24e4c3e6a47">~IThreadPool</a>()</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    {</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    }</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;};</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;}</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;}</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/*ITHREADPOOL_H_*/</span><span class="preprocessor"></span></div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;            <span class="keyword">virtual</span> <span class="keyword">const</span> <span class="keywordtype">bool</span> <a class="code" href="classitc_1_1abstract_1_1_i_thread_pool.html#a3a6071f3f605c8285882752660dbc34d">getAutotune</a>() = 0;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;            <span class="keyword">virtual</span> <span class="keyword">const</span> <span class="keywordtype">size_t</span> <a class="code" href="classitc_1_1abstract_1_1_i_thread_pool.html#a9641850d9006c52019c8346b36d0b141">getThreadsCount</a>() = 0;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;            <span class="keyword">virtual</span> <span class="keyword">const</span> <span class="keywordtype">size_t</span> <a class="code" href="classitc_1_1abstract_1_1_i_thread_pool.html#ade75d0e12977e6e013152fd40cfb1836">getMaxThreads</a>() = 0;</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;            </div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;            <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classitc_1_1abstract_1_1_i_thread_pool.html#a449526b622372e86c704011720f521e6">setAutotune</a>(<span class="keyword">const</span> <span class="keywordtype">bool</span>&amp;) = 0;</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;            <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classitc_1_1abstract_1_1_i_thread_pool.html#a1795a74f3fcb7cc25825f4bf2e8275ac">expand</a>(<span class="keyword">const</span> <span class="keywordtype">size_t</span>&amp;) = 0;</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;            <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classitc_1_1abstract_1_1_i_thread_pool.html#a878883d32a5769748c1a8e79fc32d2d3">reduce</a>(<span class="keyword">const</span> <span class="keywordtype">size_t</span>&amp;) = 0;</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;            <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classitc_1_1abstract_1_1_i_thread_pool.html#a62656e953469d2cac502ae139951dc90">enqueue</a>(<a class="code" href="classitc_1_1abstract_1_1_i_thread_pool.html#a887ea7e32a01be6c18041cff91a87e75">value_type</a>&amp;) = 0;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;            </div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;        <span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;            <span class="keyword">virtual</span> <a class="code" href="classitc_1_1abstract_1_1_i_thread_pool.html#a140a8a6531342d556ad58a7d03b61eb9">~IThreadPool</a>()=<span class="keywordflow">default</span>;</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;        };</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    }</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;}</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/*ITHREADPOOL_H_*/</span><span class="preprocessor"></span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_5f23f799d5588f950210543d7509e0e2.html">abstract</a></li><li class="navelem"><a class="el" href="_i_thread_pool_8h.html">IThreadPool.h</a></li>
-    <li class="footer">Generated on Mon Dec 8 2014 15:15:40 for ITCFramework by
+    <li class="footer">Generated on Wed Mar 4 2015 01:13:36 for ITCFramework by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.3.1 </li>
   </ul>

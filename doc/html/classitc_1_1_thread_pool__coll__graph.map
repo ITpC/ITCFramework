@@ -1,3 +1,3 @@
-<map id="itc::ThreadPool&lt; TBlockPolicy, TDiscardPolicy &gt;" name="itc::ThreadPool&lt; TBlockPolicy, TDiscardPolicy &gt;">
-<area shape="rect" id="node2" href="$classitc_1_1abstract_1_1_i_thread_pool.html" title="itc::abstract::IThreadPool" alt="" coords="5,5,173,35"/>
+<map id="itc::ThreadPool" name="itc::ThreadPool">
+<area shape="rect" id="node2" href="$classitc_1_1abstract_1_1_i_thread_pool.html" title="it is a simple interface of the thread pool." alt="" coords="5,5,181,35"/>
 </map>

@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['wait',['WAIT',['../namespaceitc_1_1sys.html#a57e55e1ed25a8744da20d4eec6553228a0927cd92b2f554c684c4b88d13987515',1,'itc::sys::WAIT()'],['../namespaceitc.html#ae9133ddb40b580ee7153e4cb4c594a96a34d96eb65707b762345cde5fdf93b8f7',1,'itc::WAIT()']]],
   ['wfstorablestatesmap',['WFStorableStatesMap',['../_workflow_control_8h.html#a3c5d9cd88ce1213175b57aad921d5e94',1,'WorkflowControl.h']]],
   ['wfstorablestatessetiterator',['WFStorableStatesSetIterator',['../_workflow_control_8h.html#ad3286771d75e0d5623bcffb2fcbf5956',1,'WorkflowControl.h']]],
   ['what',['what',['../class_sequence_out_of_bounds_exception.html#ae80f7f023dff33fe088d3045c7a1fbe9',1,'SequenceOutOfBoundsException']]],
@@ -17,7 +16,7 @@ var searchData=
   ['workflowentity',['WorkflowEntity',['../classitc_1_1workflow_1_1_workflow_entity.html',1,'itc::workflow']]],
   ['workflowentity',['WorkflowEntity',['../classitc_1_1workflow_1_1_workflow_entity.html#a7d10b6706d8ac496cad45b5c4caf36f5',1,'itc::workflow::WorkflowEntity::WorkflowEntity(const uint32_t id, const uint32_t pPrevState, const uint32_t pNextState, const uint32_t mErrorState)'],['../classitc_1_1workflow_1_1_workflow_entity.html#a191d21bb4ab08ae673494f1ea0e4c2d9',1,'itc::workflow::WorkflowEntity::WorkflowEntity(const WorkflowEntity &amp;ref)']]],
   ['workflowentity_2eh',['WorkflowEntity.h',['../_workflow_entity_8h.html',1,'']]],
-  ['workflowstorablestate',['WorkflowStorableState',['../classitc_1_1workflow_1_1_workflow_storable_state.html#a045c638c9afe6635fbb2ca68ef9e4b42',1,'itc::workflow::WorkflowStorableState::WorkflowStorableState(::itc::abstract::IWorkflowState *ptr)'],['../classitc_1_1workflow_1_1_workflow_storable_state.html#aa7668e33697808d560fcf6c1d884cdde',1,'itc::workflow::WorkflowStorableState::WorkflowStorableState(const WorkflowStorableState &amp;ref)']]],
   ['workflowstorablestate',['WorkflowStorableState',['../classitc_1_1workflow_1_1_workflow_storable_state.html',1,'itc::workflow']]],
+  ['workflowstorablestate',['WorkflowStorableState',['../classitc_1_1workflow_1_1_workflow_storable_state.html#ad85c96d6838a53efcbad62ab6fa8d8a6',1,'itc::workflow::WorkflowStorableState::WorkflowStorableState(IWFStateSPtr ptr)'],['../classitc_1_1workflow_1_1_workflow_storable_state.html#aa7668e33697808d560fcf6c1d884cdde',1,'itc::workflow::WorkflowStorableState::WorkflowStorableState(const WorkflowStorableState &amp;ref)']]],
   ['workflowstorablestate_2eh',['WorkflowStorableState.h',['../_workflow_storable_state_8h.html',1,'']]]
 ];

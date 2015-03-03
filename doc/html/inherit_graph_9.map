@@ -1,3 +1,4 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classitc_1_1_singleton.html" title="Thread safe singleton template Define here, necessary template methods, with more then 2 arguments if..." alt="" coords="5,5,136,35"/>
+<area shape="rect" id="node1" href="$classitc_1_1_queue_interface.html" title="itc::QueueInterface\l\&lt; DataType \&gt;" alt="" coords="5,5,144,51"/>
+<area shape="rect" id="node3" href="$classitc_1_1_thread_safe_local_queue.html" title="itc::ThreadSafeLocalQueue\l\&lt; DataType \&gt;" alt="" coords="192,5,384,51"/>
 </map>

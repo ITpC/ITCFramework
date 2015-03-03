@@ -34,7 +34,7 @@ namespace itc
         public:
             typedef std::map<int,ViewTypeSPtr>          ObserversContainer;
             typedef std::pair<int,ViewTypeSPtr>         PairType;
-            typedef std::queue<PairType>                 RequestListType;
+            typedef std::queue<PairType>                RequestListType;
             typedef struct epoll_event                  ePollEventType;
             typedef std::unique_ptr<ePollEventType[]>   ePollEventUPtr;
             
@@ -88,16 +88,16 @@ namespace itc
                                     if(it->second)
                                     {
                                         notify((events.get())[i].events,it->second);
-                                        itc::getLog()->debug(__FILE__,__LINE__,"ePoll::poll() - observer %jx is notified about event %u",it->second.get(),(events.get())[i].events);
+                                        itc::getLog()->trace(__FILE__,__LINE__,"ePoll::poll() - observer %jx is notified about event %u",it->second.get(),(events.get())[i].events);
                                     }
-                                    itc::getLog()->debug(__FILE__,__LINE__,"ePoll::poll() - erasing observer %jx",it->second.get());
+                                    itc::getLog()->trace(__FILE__,__LINE__,"ePoll::poll() - erasing observer %jx",it->second.get());
                                     mObservers.erase(it);
                                     del((events.get())[i].data.fd);
                                 }
                             }
                             else
                             {
-                                itc::getLog()->debug(
+                                itc::getLog()->trace(
                                     __FILE__,__LINE__,
                                     "ePoll::poll() - notifieng an observer %jx for fd %d of events %u",
                                      mObservers[(events.get())[i].data.fd].get(),

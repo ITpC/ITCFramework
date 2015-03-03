@@ -1,6 +1,7 @@
 var classitc_1_1workflow_1_1_workflow_storable_state =
 [
-    [ "WorkflowStorableState", "classitc_1_1workflow_1_1_workflow_storable_state.html#a045c638c9afe6635fbb2ca68ef9e4b42", null ],
+    [ "IWFStateSPtr", "classitc_1_1workflow_1_1_workflow_storable_state.html#ade50f5e3b1b7f2d265a2cafd08ed6bfd", null ],
+    [ "WorkflowStorableState", "classitc_1_1workflow_1_1_workflow_storable_state.html#ad85c96d6838a53efcbad62ab6fa8d8a6", null ],
     [ "WorkflowStorableState", "classitc_1_1workflow_1_1_workflow_storable_state.html#aa7668e33697808d560fcf6c1d884cdde", null ],
     [ "getWFStateSharedPtr", "classitc_1_1workflow_1_1_workflow_storable_state.html#abfd23c756444f682e39d29cd1488f49d", null ],
     [ "operator uint32_t", "classitc_1_1workflow_1_1_workflow_storable_state.html#ae8777f125a02c5d1fb6beeb89e611aaf", null ],

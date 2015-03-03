@@ -92,7 +92,7 @@ $(document).ready(function(){initNavTree('_i_thread_pool_8h.html','');});
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Macros</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Friends</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -104,29 +104,23 @@ $(document).ready(function(){initNavTree('_i_thread_pool_8h.html','');});
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
-<a href="#namespaces">Namespaces</a> &#124;
-<a href="#enum-members">Enumerations</a>  </div>
+<a href="#namespaces">Namespaces</a>  </div>
   <div class="headertitle">
 <div class="title">IThreadPool.h File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;Val2Type.h&gt;</code><br/>
-<code>#include &lt;<a class="el" href="_pool_thread_8h_source.html">PoolThread.h</a>&gt;</code><br/>
-<code>#include &lt;<a class="el" href="_i_view_8h_source.html">abstract/IView.h</a>&gt;</code><br/>
-<code>#include &lt;abstract/Runnable.h&gt;</code><br/>
+<div class="textblock"><code>#include &lt;memory&gt;</code><br/>
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for IThreadPool.h:</div>
 <div class="dyncontent">
 <div class="center"><img src="_i_thread_pool_8h__incl.png" border="0" usemap="#include_2abstract_2_i_thread_pool_8h" alt=""/></div>
-<map name="include_2abstract_2_i_thread_pool_8h" id="include_2abstract_2_i_thread_pool_8h">
-<area shape="rect" id="node5" href="_pool_thread_8h.html" title="PoolThread.h" alt="" coords="548,101,647,131"/><area shape="rect" id="node21" href="_i_view_8h.html" title="abstract/IView.h" alt="" coords="1027,256,1144,285"/><area shape="rect" id="node19" href="_i_controller_8h.html" title="abstract/IController.h" alt="" coords="848,179,992,208"/></map>
 </div>
 </div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
 <div class="center"><img src="_i_thread_pool_8h__dep__incl.png" border="0" usemap="#include_2abstract_2_i_thread_pool_8hdep" alt=""/></div>
 <map name="include_2abstract_2_i_thread_pool_8hdep" id="include_2abstract_2_i_thread_pool_8hdep">
-<area shape="rect" id="node3" href="_thread_pool_8h.html" title="include/ThreadPool.h" alt="" coords="15,101,159,131"/></map>
+<area shape="rect" id="node3" href="_thread_pool_8h.html" title="include/ThreadPool.h" alt="" coords="108,101,263,131"/><area shape="rect" id="node5" href="_r_scheduler_8h.html" title="include/RScheduler.h" alt="" coords="5,179,160,208"/><area shape="rect" id="node7" href="_thread_pool_manager_8h.html" title="include/ThreadPoolManager.h" alt="" coords="184,179,395,208"/></map>
 </div>
 </div>
 <p><a href="_i_thread_pool_8h_source.html">Go to the source code of this file.</a></p>
@@ -134,6 +128,7 @@ This graph shows which files directly or indirectly include this file:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classitc_1_1abstract_1_1_i_thread_pool.html">itc::abstract::IThreadPool</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">it is a simple interface of the thread pool.  <a href="classitc_1_1abstract_1_1_i_thread_pool.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
@@ -142,18 +137,6 @@ Namespaces</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespaceitc_1_1abstract"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceitc_1_1abstract.html">itc::abstract</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
-Enumerations</h2></td></tr>
-<tr class="memitem:ae4a489930492a617e557f9d87f1e9eb6"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceitc.html#ae4a489930492a617e557f9d87f1e9eb6">itc::EnqueueBlockPolicy</a> { <a class="el" href="namespaceitc.html#a46d13cbc84321094535bc7f95ae184b0a32a99827a35f0c9b28816a8ebb4ae4ae">itc::ASYNC</a>, 
-<a class="el" href="namespaceitc.html#a46d13cbc84321094535bc7f95ae184b0a769561db5ea37d9d3c1113e3a7b71be9">itc::SYNC</a>, 
-<a class="el" href="namespaceitc.html#ae4a489930492a617e557f9d87f1e9eb6ae500ba7c523d753c0023c87a9f9bfc2a">itc::DISCARD</a>
- }</td></tr>
-<tr class="separator:ae4a489930492a617e557f9d87f1e9eb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae750251bcd1e002c04ce083d18bcb1a9"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceitc.html#ae750251bcd1e002c04ce083d18bcb1a9">itc::EnqueueDiscardPolicy</a> { <a class="el" href="namespaceitc.html#ae750251bcd1e002c04ce083d18bcb1a9a9032bdeb1dcb4a2824782570a6904dc5">itc::ERROR</a>, 
-<a class="el" href="namespaceitc.html#ae750251bcd1e002c04ce083d18bcb1a9a429ec35d58b9d4f56ab7f01637083821">itc::EXCEPTION</a>
- }</td></tr>
-<tr class="separator:ae750251bcd1e002c04ce083d18bcb1a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->
@@ -161,7 +144,7 @@ Enumerations</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_5f23f799d5588f950210543d7509e0e2.html">abstract</a></li><li class="navelem"><a class="el" href="_i_thread_pool_8h.html">IThreadPool.h</a></li>
-    <li class="footer">Generated on Mon Dec 8 2014 15:15:40 for ITCFramework by
+    <li class="footer">Generated on Wed Mar 4 2015 01:13:37 for ITCFramework by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.3.1 </li>
   </ul>
