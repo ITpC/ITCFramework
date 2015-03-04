@@ -17,6 +17,7 @@ namespace itc
 	typedef itc::net::Socket<CLN_TCP_KA_TND> ClientSocket;
 	typedef ClientSocketsFactory<CLN_TCP_KA_TND> TCPSocketsFactory;
 	typedef TCPSocketsFactory::SharedClientSocketPtrType SharedCSPtr;
+  typedef TCPSocketsFactory::ClientSocketType  TCPClientSocketType;
 }
 
 

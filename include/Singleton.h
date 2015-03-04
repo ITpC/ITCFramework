@@ -67,31 +67,19 @@ namespace itc {
             if (mInstance.get()) {
                 return mInstance;
             } else {
-                std::shared_ptr<T> tmp(new T());
+                std::shared_ptr<T> tmp=std::make_shared<T>();
                 mInstance.swap(tmp);
                 return mInstance;
             }
         }
 
-        template <typename T1> static std::shared_ptr<T> getInstance(T1 arg) {
+        template <typename... Args> static std::shared_ptr<T> getInstance(Args...args) {
             itc::sys::SyncLock sync(mMutex);
 
             if (mInstance.get()) {
                 return mInstance;
             } else {
-                std::shared_ptr<T> tmp(new T(arg));
-                mInstance.swap(tmp);
-                return mInstance;
-            }
-        }
-
-        template <typename T1, typename T2> static std::shared_ptr<T> getInstance(T1 arg1, T2 arg2) {
-            itc::sys::SyncLock sync(mMutex);
-
-            if (mInstance.get()) {
-                return mInstance;
-            } else {
-                std::shared_ptr<T> tmp(new T(arg1, arg2));
+                std::shared_ptr<T> tmp=std::make_shared<T>(args...);
                 mInstance.swap(tmp);
                 return mInstance;
             }

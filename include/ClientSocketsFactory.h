@@ -36,7 +36,6 @@
 #include <stdint.h>
 #include <InterfaceCheck.h>
 #include <net/NSocket.h>
-
 #include <queue>
 
 

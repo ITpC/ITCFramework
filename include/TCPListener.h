@@ -34,29 +34,41 @@
 #include <sys/Mutex.h>
 #include <sys/SyncLock.h>
 #include <memory>
+#include <string>
+#include <stdint.h>
 #include <TCPSocketDef.h>
+#include <abstract/IController.h>
 
 namespace itc
 {
 
-	class TCPListener: public itc::abstract::IRunnable
-	{
-	private:
-    ServerSocket mServerSocket;
+  class TCPListener: public itc::abstract::IRunnable, itc::abstract::IController<SharedCSPtr>
+  {
+  private:
     itc::sys::Mutex mMutex;
+    ServerSocket    mServerSocket;
+    ViewTypeSPtr    mSocketsHandler;
+    bool            mNotEnd;
 
 	public:
-    explicit TCPListener(const std::string& address,const int port)
-    : mServerSocket(address,port)
+   typedef ModelType value_type;
+   
+    explicit TCPListener(const std::string& address,const int port,const ViewTypeSPtr& sh)
+    : mServerSocket(address,port),mSocketsHandler(sh),mNotEnd(true)
     {   
     }
+    
     void execute()
     {
-      while (1)
+      while (mNotEnd)
       {
         itc::sys::SyncLock sync(mMutex);
 
-        SharedCSPtr newClient(itc::Singleton<TCPSocketsFactory>::getInstance<size_t,size_t>(100,1000)->getBlindSocket());
+        value_type newClient(
+          itc::Singleton<TCPSocketsFactory>::getInstance<
+            size_t,size_t
+          >(100,1000)->getBlindSocket()
+        );
 
         if(int ret=mServerSocket.accept(newClient))
         {
@@ -64,21 +76,23 @@ namespace itc
         }
         else
         {
-          itc::Singleton<itc::SessionPool>::getInstance()->newSession(newClient);
+          notify(newClient,mSocketsHandler);
         }
       }
     }
     void onCancel()
     {
       itc::sys::SyncLock sync(mMutex);
+      mNotEnd=false;
       mServerSocket.close();
     }
     void shutdown()
     {
       itc::sys::SyncLock sync(mMutex);
+      mNotEnd=false;
       mServerSocket.close();
     }
-	};
+  };
 }
 
 

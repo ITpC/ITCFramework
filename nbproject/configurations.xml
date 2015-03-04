@@ -27,7 +27,6 @@
         <itemPath>include/Sequence.h</itemPath>
         <itemPath>include/Singleton.h</itemPath>
         <itemPath>include/TCPListener.h</itemPath>
-        <itemPath>include/TCPSession.h</itemPath>
         <itemPath>include/TCPSocketDef.h</itemPath>
         <itemPath>include/ThreadPool.h</itemPath>
         <itemPath>include/ThreadPoolManager.h</itemPath>
@@ -98,8 +97,6 @@
       <item path="include/Singleton.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/TCPListener.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/TCPSession.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/TCPSocketDef.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -185,8 +182,6 @@
       <item path="include/Singleton.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/TCPListener.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/TCPSession.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/TCPSocketDef.h" ex="false" tool="3" flavor2="0">
       </item>
