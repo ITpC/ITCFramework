@@ -35,7 +35,6 @@
 #include <memory>
 #include <TSLog.h>
 
-
 namespace itc
 {
   namespace abstract

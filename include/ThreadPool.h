@@ -206,7 +206,7 @@ namespace itc
         return mTaskQueue.size();
       }
 
-      ~ThreadPool()
+      ~ThreadPool() noexcept // gcc 4.7.4 compat
       {
           stopRunning();
           cleanInQueue();

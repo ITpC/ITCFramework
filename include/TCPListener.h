@@ -70,7 +70,7 @@ namespace itc
           >(100,1000)->getBlindSocket()
         );
 
-        if(int ret=mServerSocket.accept(newClient))
+        if((int ret=mServerSocket.accept(newClient))==-1)
         {
           throw TITCException<exceptions::InvalidSocketException>(ret);
         }

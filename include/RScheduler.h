@@ -232,7 +232,8 @@ namespace itc
         
         void onCancel()
         {
-            this->shutdown();
+          stopRunning();
+          this->shutdown();
         }
         
         void shutdown()
@@ -241,8 +242,8 @@ namespace itc
             stopAdd();
             while(!isScheduleEmpty())
             {
-                mSchedule.clear();
-                sched_yield();
+              clearSchedule();
+              sched_yield();
             }
             itc::getLog()->debug(__FILE__,__LINE__,"trace <- out <- RScheduler::shutdown()");
         }
@@ -253,6 +254,12 @@ namespace itc
         {
             itc::sys::SyncLock  synchronize(mMutex);
             mMayAdd=false;
+        }
+        
+        void stopRunning()
+        {
+          itc::sys::SyncLock  synchronize(mMutex);
+          mDoRun=false;
         }
         
         void clearSchedule()
