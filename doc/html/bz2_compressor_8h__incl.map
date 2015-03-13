@@ -1,8 +1,0 @@
-<map id="include/bz2Compressor.h" name="include/bz2Compressor.h">
-<area shape="rect" id="node3" href="$_i_message_listener_8h.html" title="abstract/IMessageListener.h" alt="" coords="563,83,749,112"/>
-<area shape="rect" id="node29" href="$_thread_safe_local_queue_8h.html" title="ThreadSafeLocalQueue.h" alt="" coords="1436,83,1604,112"/>
-<area shape="rect" id="node54" href="$_compress_buffer_8h.html" title="CompressBuffer.h" alt="" coords="2365,160,2493,189"/>
-<area shape="rect" id="node69" href="$_comp_common_8h.html" title="CompCommon.h" alt="" coords="1928,83,2048,112"/>
-<area shape="rect" id="node17" href="$_exceptions_8h.html" title="Exceptions.h" alt="" coords="261,160,360,189"/>
-<area shape="rect" id="node27" href="$_queue_interface_8h.html" title="abstract/QueueInterface.h" alt="" coords="656,160,829,189"/>
-</map>

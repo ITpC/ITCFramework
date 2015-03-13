@@ -33,7 +33,7 @@
 #include <Val2Type.h>
 #include <bdmap.h>
 #include <list>
-
+#include <algorithm>
 #include <sys/Mutex.h>
 #include <sys/SyncLock.h>
 #include <abstract/IThreadPool.h>
@@ -145,19 +145,20 @@ namespace itc
 
       inline const size_t getFreeThreadsCount()
       {
-          sys::SyncLock   synchronize(mMutex);
-          ThreadListIterator it=mActiveThreads.begin();
-          size_t ftc=0;
-
-          while(it!=mActiveThreads.end())
+        sys::SyncLock   synchronize(mMutex);
+        size_t ftc=0;
+        std::for_each(
+          mActiveThreads.begin(),
+          mActiveThreads.end(),
+          [&ftc](const std::shared_ptr<itc::sys::PThread>& sptr)
           {
-              if(it->get()->getState() == DONE)
-              {
-                  ftc++;
-              }
-              it++;
+           if(sptr.get()->getState() == DONE)
+           {
+            ftc++;
+           }
           }
-          return mPassiveThreads.size()+ftc;
+        );
+        return mPassiveThreads.size()+ftc;
       }
 
       inline void shakePools()

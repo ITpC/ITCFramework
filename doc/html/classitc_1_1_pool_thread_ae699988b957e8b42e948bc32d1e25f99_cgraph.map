@@ -1,3 +1,0 @@
-<map id="itc::PoolThread::cleanup" name="itc::PoolThread::cleanup">
-<area shape="rect" id="node3" href="$classitc_1_1_pool_thread.html#a7ae58d9803f1fac91c0d0671f9936cc9" title="sets the next runnable to execute. No queueing, jsut reset the member mRunnable to new value if the s..." alt="" coords="217,5,380,51"/>
-</map>

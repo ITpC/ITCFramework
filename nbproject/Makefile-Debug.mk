@@ -66,10 +66,11 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libitcframework.a: ${OBJECTFILES}
 ${OBJECTDIR}/include/ThreadPool.h.gch: include/ThreadPool.h 
 	${MKDIR} -p ${OBJECTDIR}/include
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -Wall -Iinclude -I../ITCLib/include -I../utils/include -std=c++11 -MMD -MP -MF "$@.d" -o "$@" include/ThreadPool.h
+	$(COMPILE.cc) -g -Wall -Iinclude -I../ITCLib/include -I../utils/include -I../mdb/libraries/liblmdb -std=c++11 -MMD -MP -MF "$@.d" -o "$@" include/ThreadPool.h
 
 # Subprojects
 .build-subprojects:
+	cd ../mdb/libraries/liblmdb && ${MAKE} -f Makefile
 
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
@@ -78,6 +79,7 @@ ${OBJECTDIR}/include/ThreadPool.h.gch: include/ThreadPool.h
 
 # Subprojects
 .clean-subprojects:
+	cd ../mdb/libraries/liblmdb && ${MAKE} -f Makefile clean
 
 # Enable dependency checking
 .dep.inc: .depcheck-impl

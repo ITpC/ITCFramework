@@ -1,3 +1,0 @@
-<map id="itc::sys::LazyThread::cleanup" name="itc::sys::LazyThread::cleanup">
-<area shape="rect" id="node3" href="$classitc_1_1sys_1_1_lazy_thread.html#a63b2695685dc3610411e7762ffaf58e2" title="sets the next runnable to execute. No queueing, jsut reset the member Runnable pointer to new value i..." alt="" coords="195,5,336,51"/>
-</map>

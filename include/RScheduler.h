@@ -70,204 +70,188 @@ namespace itc
     class RScheduler : public abstract::IRunnable
     {
     private:
-        typedef ::std::shared_ptr<abstract::IRunnable>  storable;
-        typedef ::std::list<storable>                   storable_container;
-        typedef typename storable_container::iterator   scIterator;
-        typedef ::std::map<Date, storable_container>    map_type;
-        typedef typename map_type::iterator             mapIterator;
-        typedef ::itc::ThreadPool                       ThreadPoolType;
-        typedef ::std::shared_ptr<ThreadPoolType>       ThreadPoolPointer;
-        
+      typedef ::std::shared_ptr<abstract::IRunnable>  storable;
+      typedef ::std::list<storable>                   storable_container;
+      typedef typename storable_container::iterator   scIterator;
+      typedef ::std::map<Date, storable_container>    map_type;
+      typedef typename map_type::iterator             mapIterator;
+      typedef ::itc::ThreadPool                       ThreadPoolType;
+      typedef ::std::shared_ptr<ThreadPoolType>       ThreadPoolPointer;
 
-        sys::Mutex          mMutex;
-        volatile bool       mDoRun;
-        volatile bool       mMayAdd;
-        Time                mNextWake;
-        map_type            mSchedule;
-        size_t              mShakePoolsTO;
-        ThreadPoolPointer   mThreadPool;
-        
-        
 
+      sys::Mutex          mMutex;
+      volatile bool       mDoRun;
+      volatile bool       mMayAdd;
+      Time                mNextWake;
+      map_type            mSchedule;
+      size_t              mShakePoolsTO;
+      ThreadPoolPointer   mThreadPool;
+        
     public:
-        explicit RScheduler(size_t maxthreads=5,float overcommit=5) 
-        : mDoRun(true),mMayAdd(true),mShakePoolsTO(10000),
-          mThreadPool(std::make_shared<ThreadPoolType>(
-                maxthreads,false,overcommit
-            )
-        ){
-            itc::sys::SyncLock  synchronize(mMutex);
-            itc::getLog()->debug(__FILE__,__LINE__,"RScheduler::RScheduler()");
-        }
+      explicit RScheduler(size_t maxthreads=5,float overcommit=5) 
+      : mDoRun(true),mMayAdd(true),mShakePoolsTO(10000),
+        mThreadPool(std::make_shared<ThreadPoolType>(
+          maxthreads,false,overcommit
+        )
+      ){
+        itc::sys::SyncLock  synchronize(mMutex);
+        itc::getLog()->debug(__FILE__,__LINE__,"RScheduler::RScheduler()");
+      }
 
-        inline pthread_t getThreadId() {
-            return ::pthread_self();
-        }
+      inline pthread_t getThreadId() {
+        return ::pthread_self();
+      }
 
-        const void add(uint32_t msoffset, const storable& ref)
+      const void add(uint32_t msoffset, const storable& ref)
+      {
+        itc::sys::SyncLock  synchronize(mMutex);
+
+        if(mDoRun&&mMayAdd)
         {
+          itc::getLog()->debug(__FILE__,__LINE__,"in -> RScheduler::add()");
+          Date aDate;
+          Time aTime(aDate.getTime());
+          time_t usec=aTime.mTimestamp.tv_usec+msoffset*1000;
+          time_t sec=usec/1000000;
+
+          aTime.mTimestamp.tv_sec+=sec;
+          aTime.mTimestamp.tv_usec-=(sec*1000000);
+
+          aDate.set(aTime);
+
+          mapIterator it=mSchedule.find(aDate);
+
+          if(it!=mSchedule.end())
+          {
+            it->second.push_back(ref);
+          }
+          else
+          {
+            storable_container tmp;
+            tmp.push_back(ref);
+            mSchedule.insert(std::pair<Date,storable_container>(aDate,tmp));
+          }
+
+          mNextWake=mSchedule.begin()->first.getTime();
+          itc::getLog()->debug(__FILE__,__LINE__,"out <- RScheduler::add()");
+        }
+      }
+
+      bool mayRun()
+      {
+          itc::sys::SyncLock  synchronize(mMutex);
+          return mDoRun;
+      }
+
+
+      void execute()
+      {
+        ::itc::sys::SemSleep waithere;
+        while(mayRun())
+        {
+          try 
+          {
             itc::sys::SyncLock  synchronize(mMutex);
-            
-            if(mDoRun&&mMayAdd)
+            if(!mSchedule.empty())
             {
-                itc::getLog()->debug(__FILE__,__LINE__,"in -> RScheduler::add()");
-                Date aDate;
-                
-                //DateFormatter now(aDate,"%d-%m-%Y %H:%M:%S");
-                //itc::getLog()->trace(__FILE__,__LINE__,"RScheduler::add() time now: %s",now.toString().c_str());
-                
-                Time aTime(aDate.getTime());
+              // itc::getLog()->trace(__FILE__,__LINE__,"in -> RScheduler::execute() mSchedule is not empty");
+              if(mNextWake > mSchedule.begin()->first.getTime())
+              {
+                  mNextWake=mSchedule.begin()->first.getTime();
+              }
 
-                
-                time_t usec=aTime.mTimestamp.tv_usec+msoffset*1000;
-                time_t sec=usec/1000000;
-                
-                aTime.mTimestamp.tv_sec+=sec;
-                aTime.mTimestamp.tv_usec-=(sec*1000000);
+              Date aDate;
 
-                aDate.set(aTime);
+              if(aDate.getTime()>=mNextWake)
+              {
+                scIterator it=mSchedule.begin()->second.begin();
+                scIterator itend=mSchedule.begin()->second.end();
 
-                mapIterator it=mSchedule.find(aDate);
-
-                if(it!=mSchedule.end())
+                while(it!=itend)
                 {
-                    it->second.push_back(ref);
+                  itc::getLog()->trace(__FILE__,__LINE__,"Thread [%jx] RScheduler::execute() about to be enqueued",pthread_self());
+                  mThreadPool->enqueue(*it);
+                  itc::getLog()->trace(__FILE__,__LINE__,"Thread [%jx] RScheduler::execute() has been enqueued",pthread_self());
+                  sched_yield(); // let the thread start;
+                  mapIterator it1=mSchedule.begin();
+                  itc::getLog()->trace(__FILE__,__LINE__,"Thread [%jx] RScheduler::execute() before remove from map",pthread_self());
+                  mSchedule.erase(it1);
+                  itc::getLog()->trace(__FILE__,__LINE__,"Thread [%jx] RScheduler::execute() after remove from map",pthread_self());
+                  if(mSchedule.begin()==mSchedule.end())
+                  {
+                    break;
+                  }
+                  else
+                  {
+                    it=mSchedule.begin()->second.begin();
+                  }
+                }
+
+                if(mSchedule.begin()!=mSchedule.end())
+                {
+                  mNextWake=mSchedule.begin()->first.getTime();
                 }
                 else
                 {
-                    storable_container tmp;
-                    tmp.push_back(ref);
-                    mSchedule.insert(std::pair<Date,storable_container>(aDate,tmp));
+                  Time future(std::numeric_limits<time_t>::max(),std::numeric_limits<time_t>::max());
+                  mNextWake=future;
                 }
-
-                mNextWake=mSchedule.begin()->first.getTime();
-                
-                //DateFormatter nw(Date(mNextWake),"%d-%m-%Y %H:%M:%S");
-                
-                //itc::getLog()->trace(__FILE__,__LINE__,"RScheduler::add() mNextWake: %s",nw.toString().c_str());
-                itc::getLog()->debug(__FILE__,__LINE__,"out <- RScheduler::add()");
+              }
+              //itc::getLog()->trace(__FILE__,__LINE__,"out <- RScheduler::execute() mSchedule is not empty");
             }
+          }catch(std::exception& e)
+          {
+            throw e; //rethrow
+          }
+          waithere.usleep(100);
+          mThreadPool->shakePools();
         }
+      }
 
-        bool mayRun()
-        {
-            itc::sys::SyncLock  synchronize(mMutex);
-            return mDoRun;
-        }
-        
+      const bool isScheduleEmpty()
+      {
+        itc::sys::SyncLock  synchronize(mMutex);
+        return mSchedule.empty();
+      }
 
-        void execute()
+      void onCancel()
+      {
+        stopRunning();
+        this->shutdown();
+      }
+
+      void shutdown()
+      {
+        itc::getLog()->debug(__FILE__,__LINE__,"trace -> in -> RScheduler::shutdown()");
+        stopAdd();
+        while(!isScheduleEmpty())
         {
-          ::itc::sys::SemSleep waithere;
-            while(mayRun())
-            {
-                try {
-                    itc::sys::SyncLock  synchronize(mMutex);
-                    if(!mSchedule.empty())
-                    {
-                        // itc::getLog()->trace(__FILE__,__LINE__,"in -> RScheduler::execute() mSchedule is not empty");
-                        if(mNextWake > mSchedule.begin()->first.getTime())
-                        {
-                            mNextWake=mSchedule.begin()->first.getTime();
-                        }
-                        
-                        Date aDate;
-                       
-                        if(aDate.getTime()>=mNextWake)
-                        {
-                        
-                            //DateFormatter nwake(Date(mNextWake),"%d-%m-%Y %H:%M:%S");
-                            
-                            //itc::getLog()->debug(__FILE__,__LINE__,"Thread [%jx] RScheduler::execute() NextWake: %s",pthread_self(),nwake.toString().c_str());
-                                    
-                            scIterator it=mSchedule.begin()->second.begin();
-                            scIterator itend=mSchedule.begin()->second.end();
-                            
-                            while(it!=itend)
-                            {
-                                itc::getLog()->trace(__FILE__,__LINE__,"Thread [%jx] RScheduler::execute() about to be enqueued",pthread_self());
-                                mThreadPool->enqueue(*it);
-                                itc::getLog()->trace(__FILE__,__LINE__,"Thread [%jx] RScheduler::execute() has been enqueued",pthread_self());
-                                sched_yield(); // let the thread start;
-                                mapIterator it1=mSchedule.begin();
-                                itc::getLog()->trace(__FILE__,__LINE__,"Thread [%jx] RScheduler::execute() before remove from map",pthread_self());
-                                mSchedule.erase(it1);
-                                itc::getLog()->trace(__FILE__,__LINE__,"Thread [%jx] RScheduler::execute() after remove from map",pthread_self());
-                                if(mSchedule.begin()==mSchedule.end())
-                                {
-                                    break;
-                                }
-                                else
-                                {
-                                    it=mSchedule.begin()->second.begin();
-                                }
-                            }
-                            
-                            if(mSchedule.begin()!=mSchedule.end())
-                            {
-                                mNextWake=mSchedule.begin()->first.getTime();
-                            }
-                            else
-                            {
-                                Time future(std::numeric_limits<time_t>::max(),std::numeric_limits<time_t>::max());
-                                mNextWake=future;
-                            }
-                        }
-                        //itc::getLog()->trace(__FILE__,__LINE__,"out <- RScheduler::execute() mSchedule is not empty");
-                    }
-                }catch(std::exception& e)
-                {
-                    throw e; //rethrow
-                }
-                waithere.usleep(100);
-                mThreadPool->shakePools();
-            }
+          clearSchedule();
+          sched_yield();
         }
-       
-        const bool isScheduleEmpty()
-        {
-            itc::sys::SyncLock  synchronize(mMutex);
-            return mSchedule.empty();
-        }
-        
-        void onCancel()
-        {
-          stopRunning();
-          this->shutdown();
-        }
-        
-        void shutdown()
-        {
-            itc::getLog()->debug(__FILE__,__LINE__,"trace -> in -> RScheduler::shutdown()");
-            stopAdd();
-            while(!isScheduleEmpty())
-            {
-              clearSchedule();
-              sched_yield();
-            }
-            itc::getLog()->debug(__FILE__,__LINE__,"trace <- out <- RScheduler::shutdown()");
-        }
+        itc::getLog()->debug(__FILE__,__LINE__,"trace <- out <- RScheduler::shutdown()");
+      }
         
     private:
         
-        void stopAdd()
-        {
-            itc::sys::SyncLock  synchronize(mMutex);
-            mMayAdd=false;
-        }
-        
-        void stopRunning()
-        {
-          itc::sys::SyncLock  synchronize(mMutex);
-          mDoRun=false;
-        }
-        
-        void clearSchedule()
-        {
-            itc::getLog()->debug(__FILE__,__LINE__,"trace <- out <- RScheduler::clearSchedule()");
-            itc::sys::SyncLock  synchronize(mMutex);
-            mSchedule.clear();
-        }
+      void stopAdd()
+      {
+        itc::sys::SyncLock  synchronize(mMutex);
+        mMayAdd=false;
+      }
+
+      void stopRunning()
+      {
+        itc::sys::SyncLock  synchronize(mMutex);
+        mDoRun=false;
+      }
+
+      void clearSchedule()
+      {
+        itc::getLog()->debug(__FILE__,__LINE__,"trace <- out <- RScheduler::clearSchedule()");
+        itc::sys::SyncLock  synchronize(mMutex);
+        mSchedule.clear();
+      }
     };  
 }
 

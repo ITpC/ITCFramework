@@ -148,7 +148,11 @@ namespace itc
     
     void logStats()
     {
-      ::itc::getLog()->info("tc:%ju  pc:%ju  ac:%ju qd:%ju mt:%ju",mTPStats.tc, mTPStats.tpc, mTPStats.tac, mTPStats.tqdp,mTPStats.maxthreads);
+      ::itc::getLog()->info(
+        "tc:%ju  pc:%ju  ac:%ju qd:%ju mt:%ju",
+        mTPStats.tc, mTPStats.tpc, mTPStats.tac, 
+        mTPStats.tqdp,mTPStats.maxthreads
+      );
     }
     
     void shutdown()

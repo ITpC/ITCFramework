@@ -56,7 +56,12 @@ namespace itc
         using namespace itc::utils;
 /**
  * This class provides 64-bit wide unsigned sequence. The purpose of this class
- * is to prowide MT-Safe and consistent sequence generation.
+ * is to prowide MT-Safe and consistent sequence of numbers. There are two
+ * policies: Rotate and Reverse, those are compile time attributes defining the
+ * sequence behavior. If Rotate policy is true, then the sequence will start over
+ * after reaching the uint64_t maximum value (-1). The Reverse policy dictates that
+ * the sequence starts from max uint64_t and decrementing until reaching 0 or rotates
+ * after 0 if the Rotate policy is in use.
  * 
  * @exception SequenceOutOfBoundsException will be thrown if Rotate is false and
  * sequence reached its highest value.

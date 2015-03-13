@@ -9,7 +9,9 @@
             <cpp-extensions/>
             <header-extensions>h</header-extensions>
             <sourceEncoding>UTF-8</sourceEncoding>
-            <make-dep-projects/>
+            <make-dep-projects>
+                <make-dep-project>../mdb/libraries/liblmdb</make-dep-project>
+            </make-dep-projects>
             <sourceRootList>
                 <sourceRootElem>include</sourceRootElem>
             </sourceRootList>

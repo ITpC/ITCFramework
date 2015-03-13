@@ -14,6 +14,7 @@
           <itemPath>include/abstract/Observable.h</itemPath>
           <itemPath>include/abstract/Observer.h</itemPath>
           <itemPath>include/abstract/QueueInterface.h</itemPath>
+          <itemPath>include/abstract/Service.h</itemPath>
           <itemPath>include/WorkerThread.h</itemPath>
         </logicalFolder>
         <logicalFolder name="f1" displayName="sys" projectFiles="true">
@@ -23,8 +24,12 @@
         <itemPath>include/CompCommon.h</itemPath>
         <itemPath>include/CompressBuffer.h</itemPath>
         <itemPath>include/Exceptions.h</itemPath>
+        <itemPath>include/LMDB.h</itemPath>
+        <itemPath>include/LMDBEnv.h</itemPath>
         <itemPath>include/RScheduler.h</itemPath>
         <itemPath>include/Sequence.h</itemPath>
+        <itemPath>include/ServiceFacade.h</itemPath>
+        <itemPath>include/ServiceManager.h</itemPath>
         <itemPath>include/Singleton.h</itemPath>
         <itemPath>include/TCPListener.h</itemPath>
         <itemPath>include/TCPSocketDef.h</itemPath>
@@ -75,12 +80,25 @@
             <pElem>include</pElem>
             <pElem>../ITCLib/include</pElem>
             <pElem>../utils/include</pElem>
+            <pElem>../mdb/libraries/liblmdb</pElem>
           </incDir>
           <commandLine>-pipe -pthread -D_REENTRANT -D_THREAD_SAFE -O2 -march=native -mtune=native -fomit-frame-pointer -mfpmath=sse -ftree-vectorize -funroll-loops -mno-tls-direct-seg-refs -DBZ_NO_STDIO -DLOG_DEBUG -DMAX_BUFF_SIZE=256 -DTSAFE_LOG=1 -std=c++0x</commandLine>
           <warningLevel>2</warningLevel>
         </ccTool>
         <archiverTool>
         </archiverTool>
+        <requiredProjects>
+          <makeArtifact PL="../mdb/libraries/liblmdb"
+                        CT="0"
+                        CN="Default"
+                        AC="true"
+                        BL="true"
+                        WD="../mdb/libraries/liblmdb"
+                        BC="${MAKE} -f Makefile"
+                        CC="${MAKE} -f Makefile clean"
+                        OP="">
+          </makeArtifact>
+        </requiredProjects>
       </compileType>
       <item path="include/ClientSocketsFactory.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -90,9 +108,17 @@
       </item>
       <item path="include/Exceptions.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/LMDB.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/LMDBEnv.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/RScheduler.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Sequence.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/ServiceFacade.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/ServiceManager.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Singleton.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -132,6 +158,8 @@
       <item path="include/abstract/Observer.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/abstract/QueueInterface.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/abstract/Service.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/bz2Compressor.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -175,9 +203,17 @@
       </item>
       <item path="include/Exceptions.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/LMDB.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/LMDBEnv.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/RScheduler.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Sequence.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/ServiceFacade.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/ServiceManager.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Singleton.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -217,6 +253,8 @@
       <item path="include/abstract/Observer.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/abstract/QueueInterface.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/abstract/Service.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/bz2Compressor.h" ex="false" tool="3" flavor2="0">
       </item>

@@ -36,78 +36,82 @@
 #include <Val2Type.h>
 #include <sys/Mutex.h>
 #include <sys/SyncLock.h>
-#include <sys/Nanosleep.h>
+#include <sys/SemSleep.h>
 #include <memory>
 
 namespace itc {
 
     /**
-     * \brief Thread safe singleton template
-     * Define here, necessary template methods, with more then 2 arguments
-     * if required. Note that use of this class can syncronize your threads
+     * \brief Thread safe singleton template (a singleton holder pattern)
+     * This singletone may not be inherited or instantiated. You have to call 
+     * getInstance() to get a single unique instance of a class T. This template
+     * does not prevent you from instantiating the class T somewhere else.
+     * 
+     * Note that use of this class can syncronize your threads
      * because of mutex locking.
      * 
      **/
     template<class T> class Singleton {
     private:
-
-        explicit Singleton() // Elliminate any instantiations of this class.
-        {
-            throw std::bad_alloc();
-        }
-
-    protected:
-        virtual ~Singleton() = 0;
+      explicit Singleton() // Elliminate any instantiations of this class.
+      {
+        throw std::bad_alloc();
+      }
 
     public:
+      static std::shared_ptr<T> getInstance()
+      {
+        itc::sys::SyncLock sync(mMutex);
 
-        static std::shared_ptr<T> getInstance() {
-            itc::sys::SyncLock sync(mMutex);
-
-            if (mInstance.get()) {
-                return mInstance;
-            } else {
-                std::shared_ptr<T> tmp=std::make_shared<T>();
-                mInstance.swap(tmp);
-                return mInstance;
-            }
+        if (mInstance.get()) {
+          return mInstance;
+        } else {
+          std::shared_ptr<T> tmp=std::make_shared<T>();
+          mInstance.swap(tmp);
+          return mInstance;
         }
+      }
 
-        template <typename... Args> static std::shared_ptr<T> getInstance(Args...args) {
-            itc::sys::SyncLock sync(mMutex);
+      template <typename... Args> static std::shared_ptr<T> getInstance(Args...args)
+      {
+        itc::sys::SyncLock sync(mMutex);
 
-            if (mInstance.get()) {
-                return mInstance;
-            } else {
-                std::shared_ptr<T> tmp=std::make_shared<T>(args...);
-                mInstance.swap(tmp);
-                return mInstance;
-            }
+        if (mInstance.get()) {
+          return mInstance;
+        } else {
+          std::shared_ptr<T> tmp=std::make_shared<T>(args...);
+          mInstance.swap(tmp);
+          return mInstance;
         }
-
-        static bool tryDestroyInstance() {
-            itc::sys::SyncLock sync(mMutex);
-            if (mInstance.unique()) {
-                std::shared_ptr<T> tmp((T*) 0);
-                mInstance.swap(tmp);
-                return true;
-            }
-            return false;
-        }
-
-        static void destroyInstance() {
-            itc::sys::SyncLock sync(mMutex);
-            itc::sys::Sleep aTimer;
-            while ((!mInstance.unique()) && mInstance.use_count()) {
-                aTimer.usleep(10);
-            }
-            std::shared_ptr<T> tmp((T*) 0);
-            mInstance.swap(tmp);
-        }
+      }
 
     protected:
-        static itc::sys::Mutex mMutex;
-        static std::shared_ptr<T> mInstance;
+      static itc::sys::Mutex mMutex;
+      static std::shared_ptr<T> mInstance;
+
+      virtual ~Singleton() = 0;
+
+      static bool tryDestroyInstance()
+      {
+        itc::sys::SyncLock sync(mMutex);
+        if (mInstance.unique()) {
+          std::shared_ptr<T> tmp((T*) 0);
+          mInstance.swap(tmp);
+          return true;
+        }
+        return false;
+      }
+
+      static void destroyInstance()
+      {
+        itc::sys::SyncLock sync(mMutex);
+        itc::sys::SemSleep aTimer;
+        while ((!mInstance.unique()) && mInstance.use_count()) {
+          aTimer.usleep(10);
+        }
+        std::shared_ptr<T> tmp((T*) 0);
+        mInstance.swap(tmp);
+      }
     };
 
     // Initialisation
