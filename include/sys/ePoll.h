@@ -9,6 +9,7 @@
 #define	EPOLL_H
 
 #include <string.h>
+#include <memory>
 #include <map>
 #include <queue>
 #include <sys/epoll.h>

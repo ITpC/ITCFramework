@@ -7,6 +7,7 @@
 
 #ifndef LMDB_H
 #  define	LMDB_H
+#include <string>
 #include <sys/Mutex.h>
 #include <sys/SyncLock.h>
 #include <ServiceFacade.h>
