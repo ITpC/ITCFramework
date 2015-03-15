@@ -105,34 +105,33 @@ namespace itc
       }
     };
 
-    struct Float : public TypedVariable<float>
+    struct Number : public TypedVariable<double>
     {
-      explicit Float(const float& val = 0.0f)
-      : TypedVariable<value_type>("Float", val)
+      explicit Number(const double& val = 0.0f)
+      : TypedVariable<value_type>("Number", val)
       {
       }
 
-      explicit Float(const Float& ref)
-      : TypedVariable<value_type>("Float", ref.getValue())
+      explicit Number(const Number& ref)
+      : TypedVariable<value_type>("Number", ref.getValue())
       {
       }
     };
-    
-    struct Integer : public TypedVariable<int64_t>
+    struct Bool : public TypedVariable<bool>
     {
-      explicit Integer(const float& val = 0LL)
-      : TypedVariable<value_type>("Integer", val)
+      explicit Bool(const bool& val = false)
+      : TypedVariable<value_type>("Bool", val)
       {
       }
 
-      explicit Float(const Float& ref)
-      : TypedVariable<value_type>("Integer", ref.getValue())
+      explicit Bool(const Bool& ref)
+      : TypedVariable<value_type>("Bool", ref.getValue())
       {
       }
     };
   }
 }
-#  define access(x) (x.expose())
+#  define aaccess(x) (x.expose())
 
 /**
  *@brief testcase for reflection   
@@ -142,7 +141,7 @@ namespace itc
  *void printArray(reflection::Array& ref)
   {
     std::for_each(
-      access(ref).begin(),access(ref).end(),
+      aaccess(ref).begin(),access(ref).end(),
       [](const reflection::VariablePairType& var)
       {
         if(var.second.get()->getTypeName() == "Array")

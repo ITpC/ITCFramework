@@ -20,9 +20,22 @@
 #  include <TSLog.h>
 #  include <ITCException.h>
 #  include <ConfigReflection.h>
+#  include <boost/regex.hpp>
+
 namespace itc
 {
   using namespace reflection;
+  
+  std::string rNumber("[[:digit:]]+|([[:digit:]]*[.][[:digit:]]+)|0x[[:xdigit:]]+");
+  std::string rBool("true|false|on|off");
+  std::string rString("[[:print:]]");
+  std::string rName("[[:alpha:]]+[[:alnum:]_]*");
+  
+  boost::regex rxNumber(rNumber,boost::regex::extended);
+  boost::regex rxBool(rBool,boost::regex::extended);
+  boost::regex rxString(rString,boost::regex::extended);
+  boost::regex rxName(rName,boost::regex::extended);
+  
   
   enum Expect
   {
@@ -30,7 +43,7 @@ namespace itc
   };
 
   /**
-   * [MessagePack parser]
+   * [MessagePack-like config parser]
    * 
    * BEGIN_MP = '{'
    * END_MP = '}'
@@ -43,23 +56,33 @@ namespace itc
    * number = "[[:digit:]]+ || ([[:digit:]]+|[[:digit:]]*[.][[:digit:]]+) || 0x[[:xdigit:]]+
    * 
    **/
-
+  
   class Config
   {
    private:
     std::stack<Expect> expected_lexeme;
+    std::stack<std::string> lastname;
     std::list<std::string> tokens;
-    Array mConfigArray;
     std::stack<Array&> mSubArrays;
-    std::string<std::string> lastarrayname;
     std::string lastvalue;
     std::string mConfigFile;
-    std::stack<std::string> lastname;
+    Array mConfigArray;
+
 
    public:
 
-    Config()
+    Config(const std::string& fname)
     {
+      std::fstream fs(fname,std::ios_base::in);
+      std::string input;
+      while(fs.good())
+      {
+        char c;
+        fs.get(c);
+        input.append(1u,c);
+      }
+      tokens=utils::tokenizer(input,"","\",{} \t\n");
+      parser();
     };
     
    protected:
@@ -104,8 +127,14 @@ namespace itc
                 case NAME: // there were no delimiters between name and colon.                  
                   expected_lexeme.pop();
                   expected_lexeme.push(VALUE);
-                  // add the name to stack;
-                  lastname.push(lastvalue);
+                  if(boost::regex_match(lastvalue, result, rxName))
+                  {
+                    lastname.push(lastvalue);
+                  }
+                  else
+                  {
+                    syntaxerror("Inapropriate variable name: "+lastvalue);
+                  }
                   lastvalue.clear();
                 break;
                 case QUOTE:
@@ -125,7 +154,7 @@ namespace itc
                   expected_lexeme.pop();
                   expected_lexeme.pop(); // pop VALUE;
                   // add the name to stack;
-                  access(mConfigFile)[lastname.top()]=std::make_shared<String>(lastvalue);
+                  aaccess(mConfigFile)[lastname.top()]=std::make_shared<String>(lastvalue);
                   lastvalue.clear();
                   lastname.pop();
                 break;
@@ -147,21 +176,22 @@ namespace itc
                 case VALUE:
                   expected_lexeme.push(MPE);
                   expected_lexeme.push(NAME);
-                    if(mSubArrays.empty())
-                    {
-                      Array tmp;
-                      access(tmp)[lastname.top()]=std::make_shared<Array>();
-                      access(mConfigArray)[lastname.top()]=tmp;
-                      mSubArrays.push(
-                        *(static_cast<Array*>(access(mConfigArray)[lastname.top()].get()))
-                      );
-                    }
-                    else
-                    {
-                      access(mSubArrays.top())[lastname.top()]=std::make_shared<Array>();
-                    }
-                    
-                  
+                  if(mSubArrays.empty())
+                  {
+                    Array tmp;
+                    aaccess(tmp)[lastname.top()]=std::make_shared<Array>();
+                    aaccess(mConfigArray)[lastname.top()]=tmp;
+                    mSubArrays.push(
+                      *(static_cast<Array*>(aaccess(mConfigArray)[lastname.top()].get()))
+                    );
+                  }
+                  else
+                  {
+                    aaccess(mSubArrays.top())[lastname.top()]=std::make_shared<Array>();
+                    mSubArrays.push(
+                      *(static_cast<Array*>(aaccess(mSubArrays)[lastname.top()].get()))
+                    );
+                  }
                 break;
                 case QUOTE:
                   lastvalue.append(token);
@@ -176,23 +206,36 @@ namespace itc
               throwOnEmptyLexemesStack();
               switch(expected_lexeme.top())
               {
-                case MPE: // there were some delimiters between last value and '}'
+                case MPE: // MPE after MPE like {a:1,b:{c:{k:1,s:"sss",bb:on},kk:0.f}}
                   expected_lexeme.pop();
-                  find(lastname.top())
-                  
+                  if(!mSubArrays.empty())
+                    mSubArrays.pop();
                 break;
                 case VALUE:
-                  // TODO add value to variable
-                  expected_lexeme.pop();
-                  if(!expected_lexeme.empty()) // stack is not empty
+                  boost::cmatch result;
+                  if(boost::regex_match(lastvalue, result, rxNumber))
                   {
-                    if(expected_lexeme.top()==MPE) // end of conf
-                    {
-                      expected_lexeme.pop();
-                      return;
-                    }
-                    else syntaxerror("Unexpected state in lexer, expecting value for variable, recieved '}'");
+                    aaccess(mSubArrays.top())[lastname.top()]=std::make_shared<Number>(std::strod(lastvalue));
                   }
+                  else if(boost::regex_match(lastvalue, result, rxBool))
+                  {
+                    if(lastvalue == "on" or lastvalue == "true")
+                    {
+                      aaccess(mSubArrays.top())[lastname.top()]=std::make_shared<Bool>(true);
+                    }
+                    else
+                    {
+                      aaccess(mSubArrays.top())[lastname.top()]=std::make_shared<Bool>(false);
+                    }
+                  } 
+                  else if(boost::regex_match(lastvalue, result, rxString))
+                  {
+                    aaccess(mSubArrays.top())[lastname.top()]=std::make_shared<String>(lastvalue);
+                  }
+                  expected_lexeme.pop();
+                  if(!mSubArrays.empty())
+                    mSubArrays.pop();
+                  lastvalue.clear();
                 break;
                 case QUOTE:
                   lastvalue.append(token);
@@ -208,15 +251,35 @@ namespace itc
               throwOnEmptyLexemesStack();
               switch(expected_lexeme.top())
               {
-                case MPE: // end of numeric value
-                  expected_lexeme.push(NAME);
-                break;
                 case VALUE:
-                  // TODO: add value to variable
+                  boost::cmatch result;
+                  if(boost::regex_match(lastvalue, result, rxNumber))
+                  {
+                    aaccess(mSubArrays.top())[lastname.top()]=std::make_shared<Number>(std::strod(lastvalue));
+                  }
+                  else if(boost::regex_match(lastvalue, result, rxBool))
+                  {
+                    if(lastvalue == "on" or lastvalue == "true")
+                    {
+                      aaccess(mSubArrays.top())[lastname.top()]=std::make_shared<Bool>(true);
+                    }
+                    else
+                    {
+                      aaccess(mSubArrays.top())[lastname.top()]=std::make_shared<Bool>(false);
+                    }
+                  } 
+                  else if(boost::regex_match(lastvalue, result, rxString))
+                  {
+                    aaccess(mSubArrays.top())[lastname.top()]=std::make_shared<String>(lastvalue);
+                  }
                   expected_lexeme.pop();
+                  lastvalue.clear();
                   break;
                 case QUOTE:
                   lastvalue.append(token);
+                break;
+                default:
+                  syntaxerror("Unexpected state in lexer, previous state does not expect ',' to appear in the stream at this position");
                 break;
               }
             }
