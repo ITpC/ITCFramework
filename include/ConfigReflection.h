@@ -132,6 +132,7 @@ namespace itc
   }
 }
 #  define aaccess(x) (x.expose())
+#  define paccess(x) (x->expose())
 
 /**
  *@brief testcase for reflection   
@@ -141,7 +142,7 @@ namespace itc
  *void printArray(reflection::Array& ref)
   {
     std::for_each(
-      aaccess(ref).begin(),access(ref).end(),
+      aaccess(ref).begin(),aaccess(ref).end(),
       [](const reflection::VariablePairType& var)
       {
         if(var.second.get()->getTypeName() == "Array")
