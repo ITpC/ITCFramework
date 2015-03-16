@@ -27,9 +27,9 @@ namespace itc
 {
   using namespace reflection;
   
-  std::string rNumber("[[:digit:]]+|([[:digit:]]*[.][[:digit:]]+)|0x[[:xdigit:]]+");
+  std::string rNumber("[-]*[[:digit:]]+|([-]*[[:digit:]]*[.][[:digit:]]+)|0x[[:xdigit:]]+");
   std::string rBool("true|false|on|off");
-  std::string rString("[[:print:]]");
+  std::string rString("[[:print:]]+");
   std::string rName("[[:alpha:]]+[[:alnum:]_]*");
   
   boost::regex rxNumber(rNumber,boost::regex::extended);
@@ -40,11 +40,11 @@ namespace itc
   
   enum Expect
   {
-    MPB, MPE, NAME, COLON, VALUE, QUOTE
+    INPUT_END, MPB, MPE, NAME, COLON, VALUE, QUOTE
   };
 
   /**
-   * [MessagePack-like config parser]
+   * [WIP: JSON-like config facility]
    * 
    * BEGIN_MP = '{'
    * END_MP = '}'
@@ -53,7 +53,7 @@ namespace itc
    * kvpair = NAME ':' value
    * kvpair_list = kvpair_list ',' kvpair
    * value = string || number || mp
-   * string = "[[:print:]]"
+   * string = "[[:print:]]+"
    * number = "[[:digit:]]+ || ([[:digit:]]+|[[:digit:]]*[.][[:digit:]]+) || 0x[[:xdigit:]]+
    * 
    **/
@@ -95,6 +95,9 @@ namespace itc
       std::cout << aaccess(mConfigArray).size() << std::endl;
     }
    protected:
+    /**
+     * @TBR on completion.
+     **/
     void printArray(reflection::Array& ref,std::string indent="")
     {
       std::for_each(
@@ -119,7 +122,7 @@ namespace itc
               std::cout << (static_cast<Number*>(var.second.get()))->getValue() << std::endl;
             } else if(var.second.get()->getTypeName()  == "String" )
             {
-              std::cout << (static_cast<String*>(var.second.get()))->getValue() << std::endl;
+              std::cout << "\"" << (static_cast<String*>(var.second.get()))->getValue() <<"\"" << std::endl;
             } else if(var.second.get()->getTypeName()  == "Bool" )
             {
               std::cout << (static_cast<Bool*>(var.second.get()))->getValue() << std::endl;
@@ -128,6 +131,7 @@ namespace itc
         }
       );
     }
+    
     void throwOnEmptyLexemesStack(const std::string& file, const int line)
     {
       if(expected_lexeme.empty())
@@ -151,53 +155,30 @@ namespace itc
       {
         if(boost::regex_match(lastvalue, rxNumber))
         {
-            if(mSubArrays.empty())
-            {
-              aaccess(mConfigArray)[lastname.top()]=std::make_shared<Number>(std::stod(lastvalue));
-            }
-            else
-            {
-              paccess(mSubArrays.top())[lastname.top()]=std::make_shared<Number>(std::stod(lastvalue));
-            }
+          paccess(mSubArrays.top())[lastname.top()]=std::make_shared<Number>(std::stod(lastvalue));
         }
         else if(boost::regex_match(lastvalue, rxBool))
         {
           if(lastvalue == "on" or lastvalue == "true")
           {
-            if(mSubArrays.empty())
-            {
-              aaccess(mConfigArray)[lastname.top()]=std::make_shared<Bool>(true);
-            }
-            else
-            {
               paccess(mSubArrays.top())[lastname.top()]=std::make_shared<Bool>(true);
-            }
           }
+          else if(lastvalue == "off" or lastvalue == "false")
+          {
+              paccess(mSubArrays.top())[lastname.top()]=std::make_shared<Bool>(false);
+          } 
           else
           {
-            if(mSubArrays.empty())
-            {
-              aaccess(mConfigArray)[lastname.top()]=std::make_shared<Bool>(false);
-            }
-            else
-            {
-              paccess(mSubArrays.top())[lastname.top()]=std::make_shared<Bool>(false);
-            }
+            syntaxerror(__FILE__,__LINE__,"The boolean values are only: on, off, true, false");
           }
         } 
         else if(boost::regex_match(lastvalue, rxString))
         {
-          if(mSubArrays.empty())
-          {
-            aaccess(mConfigArray)[lastname.top()]=std::make_shared<String>(lastvalue);
-          }
-          else
-          {
-            paccess(mSubArrays.top())[lastname.top()]=std::make_shared<String>(lastvalue);
-          }
-        }else
+          paccess(mSubArrays.top())[lastname.top()]=std::make_shared<String>(lastvalue);
+        }
+        else
         {
-          syntaxerror(__FILE__,__LINE__,"can not determine value type");
+          syntaxerror(__FILE__,__LINE__,"can not determine type of the value");
         }
         return true;
       }
@@ -255,8 +236,9 @@ namespace itc
             case QUOTE:
               expected_lexeme.pop();
               expected_lexeme.pop(); // pop VALUE;
-              // add the name to stack;
-              aaccess(mConfigArray)[lastname.top()]=std::make_shared<String>(lastvalue);
+              
+              paccess(mSubArrays.top())[lastname.top()]=std::make_shared<String>(lastvalue);
+              
               lastvalue.clear();
               lastname.pop();
             break;
@@ -282,20 +264,11 @@ namespace itc
             case VALUE:
               expected_lexeme.push(MPE);
               expected_lexeme.push(NAME);
-              if(mSubArrays.empty())
-              {
-                aaccess(mConfigArray)[lastname.top()]=std::make_shared<Array>();;
-                mSubArrays.push(
-                  (static_cast<Array*>(aaccess(mConfigArray)[lastname.top()].get()))
-                );
-              }
-              else
-              {
-                paccess(mSubArrays.top())[lastname.top()]=std::make_shared<Array>();
-                mSubArrays.push(
-                  (static_cast<Array*>(paccess(mSubArrays.top())[lastname.top()].get()))
-                );
-              }
+
+              paccess(mSubArrays.top())[lastname.top()]=std::make_shared<Array>();
+              mSubArrays.push(
+                (static_cast<Array*>(paccess(mSubArrays.top())[lastname.top()].get()))
+              );
             break;
             case QUOTE:
               lastvalue.append(token);
@@ -320,7 +293,8 @@ namespace itc
             break;
             case VALUE:
               saveValue();
-              expected_lexeme.pop();
+              expected_lexeme.pop(); // VALUE POP
+              expected_lexeme.pop(); // MPE POP
               if(!mSubArrays.empty()) mSubArrays.pop();
               lastvalue.clear();
               if(!lastname.empty()) lastname.pop();
@@ -400,7 +374,7 @@ namespace itc
             case QUOTE:
               lastvalue.append(token);
             break;
-            default: // skip until nex terminal
+            default: // skip until nex lexeme
               break;
           }
         break;
@@ -415,12 +389,12 @@ namespace itc
     
     void parser()
     {
-      while(!expected_lexeme.empty())
-      {
-        expected_lexeme.pop();
-      }
-      expected_lexeme.push(MPB);
-      
+      expected_lexeme.push(INPUT_END);
+      expected_lexeme.push(MPB); // '{' is the first terminal, which we expect.
+      aaccess(mConfigArray)["root"]=std::make_shared<Array>();
+      mSubArrays.push(
+        (static_cast<Array*>(aaccess(mConfigArray)["root"].get()))
+      );
       
       for(tokens_iterator it=tokens.begin();it!=tokens.end();++it)
       {
@@ -442,6 +416,25 @@ namespace itc
           throw e;
         }
       }
+      
+      while(!mSubArrays.empty()) // pop array stack pointers;
+      {
+        mSubArrays.pop();
+      }
+
+      if(expected_lexeme.top()!=INPUT_END)
+      {
+        printArray(mConfigArray);
+        
+        std::cout << "========= printing rest of state stack ===========" << std::endl;
+        while(!expected_lexeme.empty())
+        {
+          std::cout << expected_lexeme.top() << std::endl;
+          expected_lexeme.pop();
+        }
+        syntaxerror(__FILE__,__LINE__,"State stack is out of order, parsing is finished and end of input is expected, but there is something else in stack.top()");
+      }
+      expected_lexeme.pop(); // avoid potential memory leak by running config reload over and over :)
     }
   };
 }

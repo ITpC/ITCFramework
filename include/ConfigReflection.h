@@ -22,12 +22,26 @@ namespace itc
 {
   namespace reflection
   {
+    /**
+     * @brief set of classes to emulate reflection for configuration files.
+     * 
+     **/
+    
+    /**
+     * @brief base class for reflection.
+     **/
     struct Variable
     {
       virtual const std::string& getTypeName() const = 0;
       virtual ~Variable() = default;
     };
 
+    /**
+     * @brief The template for types defenitions.
+     * 
+     * @TODO: 1. add a type_code attribute and define a enum for type-codes.
+     * 2. add a method  const TypeCode getType() const.
+     **/
     template <typename T> class TypedVariable : public Variable
     {
      public:
@@ -75,7 +89,11 @@ namespace itc
     typedef std::shared_ptr<Variable> VariableSPtr;
     typedef std::map<std::string, VariableSPtr> VariablesMap;
     typedef std::pair<std::string, VariableSPtr> VariablePairType;
-
+    
+    
+    /**
+     * @brief an Array class wrapper around the std::map
+     **/
     struct Array : public TypedVariable<VariablesMap>
     {
       typedef value_type::iterator iterator;
@@ -105,6 +123,9 @@ namespace itc
       }
     };
 
+    /**
+     * @brief a Number class.
+     **/
     struct Number : public TypedVariable<double>
     {
       explicit Number(const double& val = 0.0f)
@@ -117,6 +138,10 @@ namespace itc
       {
       }
     };
+
+    /**
+     * @brief a Bool class.
+     **/
     struct Bool : public TypedVariable<bool>
     {
       explicit Bool(const bool& val = false)
@@ -131,6 +156,9 @@ namespace itc
     };
   }
 }
+/**
+ * the macro-definitions for decorating the TypedVariable<T>::expose method.
+ **/
 #  define aaccess(x) (x.expose())
 #  define paccess(x) (x->expose())
 
