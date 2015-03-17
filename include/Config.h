@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2009, Pavel Kraynyukhov.
+ * Copyright (c) 2009-2015, Pavel Kraynyukhov.
  *
  * Permission to use, copy, modify, and distribute this software and its
  * documentation for any purpose, without fee, and without a written agreement
@@ -85,9 +85,49 @@ namespace itc
 
     Config(const std::string& fname);
     
+    const VariableSPtr& operator[](const std::string& name)
+    {
+      return getRoot()[name];
+    }
+    
+    template<typename T> T& get(const std::string path)
+    {
+      utils::StringTokenizer tkz;
+      VariableSPtr sptr(mConfigArray["root"]);
+      std::string tmp(path); 
+      std::list<std::string> pathlist(tkz.scan(tmp,"."));
+      std::list<std::string>::iterator it=pathlist.begin();
+      size_t depth=pathlist.size();
+      std::for_each(
+        pathlist.begin(),pathlist.end(),
+        [](const std::string& name)
+        {
+          std::cout <<name << std::endl;
+        }
+      );
+      if(depth>0)
+      {
+        while(depth>1)
+        {
+          --depth;
+          sptr=cast<Array>(sptr)[*it];
+          ++it;
+        }
+        return cast<T>(cast<Array>(sptr)[*it]);
+      }
+      abort();
+      //throw TITCException<exceptions::Reflection>(exceptions::IndexOutOfRange);
+    }
     
 
    protected:
+    
+    Array& getRoot()
+    {
+      return (*static_cast<Array*>(mConfigArray["root"].get()));
+    }
+
+    
     /**
      * @TBR on completion.
      **/

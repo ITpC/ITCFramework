@@ -18,6 +18,7 @@
 #  include <fstream>  
 #  include <iostream>
 #  include <ITCException.h>
+#  include <type_traits>
 
 namespace itc
 {
@@ -110,7 +111,6 @@ namespace itc
     typedef std::map<std::string, VariableSPtr> VariablesMap;
     typedef std::pair<std::string, VariableSPtr> VariablePairType;
 
-
     /**
      * @brief a String class
      **/
@@ -126,7 +126,7 @@ namespace itc
         : TypedVariable<value_type>(STRING, ref.getValue())
       {
       }
-      
+
       const std::string& to_stdstring() const
       {
         return getValue();
@@ -136,7 +136,7 @@ namespace itc
       {
         return getValue() == ref.getValue();
       }
-      
+
       const bool operator!=(const String& ref) const
       {
         return getValue() != ref.getValue();
@@ -169,11 +169,12 @@ namespace itc
         : TypedVariable<value_type>(NUMBER, ref.getValue())
       {
       }
+
       const bool operator==(const Number& ref) const
       {
         return getValue() == ref.getValue();
       }
-      
+
       const bool operator!=(const Number& ref) const
       {
         return getValue() != ref.getValue();
@@ -213,30 +214,30 @@ namespace itc
       {
         return getValue();
       }
-      
+
       const double operator+(const Number& ref) const
       {
-        return toDouble()+ref.toDouble();
+        return toDouble() + ref.toDouble();
       }
 
       const double operator-(const Number& ref) const
       {
-        return getValue()-ref.getValue();
+        return getValue() - ref.getValue();
       }
 
       const double operator/(const Number& ref) const
       {
-        return getValue()/ref.getValue();
+        return getValue() / ref.getValue();
       }
 
       const double operator*(const Number& ref) const
       {
-        return getValue()*ref.getValue();
+        return getValue() * ref.getValue();
       }
 
       const long long operator%(const Number& ref) const
       {
-        return toLongLong()%ref.toLongLong();
+        return toLongLong() % ref.toLongLong();
       }
     };
 
@@ -255,19 +256,18 @@ namespace itc
         : TypedVariable<value_type>(BOOL, ref.getValue())
       {
       }
-      
+
       const bool operator==(const Bool& ref) const
       {
         return getValue() == ref.getValue();
       }
-      
+
       const bool operator!=(const Bool& ref) const
       {
         return getValue() != ref.getValue();
       }
     };
 
-    
     /**
      * @brief an Array class wrapper around the std::map
      **/
@@ -285,85 +285,81 @@ namespace itc
         : TypedVariable<value_type>(ARRAY, ref.getValue())
       {
       }
-      const Array& operator[](const std::string& name)
+
+      VariableSPtr& operator[](const std::string& name)
       {
-        iterator it=expose().find(name);
-        if(it!=expose().end())
+        iterator it = expose().find(name);
+
+        if(it != expose().end())
         {
-          if(Variable* ptr=it->second.get())
-          {
-            if(ptr->getType()==ARRAY)
-            {
-              return *(static_cast<Array*>(it->second.get()));
-            }
-            else
-            {
-              throw TITCException<exceptions::Reflection>(exceptions::InvalidTypecast);
-            }
-          }
-          else
-          {
-            throw TITCException<exceptions::Reflection>(exceptions::IndexOutOfRange);
-          }
-        }
-        else
+          return it->second;
+        }else
         {
           throw TITCException<exceptions::Reflection>(exceptions::IndexOutOfRange);
         }
-        return (*this);
       }
 
       /**
-       * towards C++14 and beyond (17), incompatible with C++11
-      const String& operator[](const std::string& name)
+       * as far as the dectype(auto) is not acceptable in C++11 and not working
+       * correctly in C++1y (gcc 4.8.4) we are forced to use something else :/
+       **/
+      template <typename T> T& access(const std::string& name)
       {
-        iterator it=expose().find();
-        if(it!=expose().end())
+        bool is_a_proper_class = std::is_base_of<Variable, T>::value;
+        
+        if(!is_a_proper_class)
         {
-          if((Variable* ptr=it->second.get())&&(ptr->getType()==STRING))
-          {
-            return *(static_cast<String*>(it->second.get()));
-          }
+          throw TITCException<exceptions::Reflection>(exceptions::InvalidTypecast);
         }
-        else
+
+        iterator it = expose().find(name);
+        T tmp;
+
+        if(it != expose().end())
         {
-          throw TITCException<exceptions::Reflection>(exceptions::InvalidTypecast);;
+          if(Variable * ptr = it->second.get())
+          {
+            if(ptr->getType() == tmp.getType())
+            {
+              return *(static_cast<T*> (it->second.get()));
+            }else
+            {
+              throw TITCException<exceptions::Reflection>(exceptions::InvalidTypecast);
+            }
+          }else
+          {
+            throw TITCException<exceptions::Reflection>(exceptions::IndexOutOfRange);
+          }
+        }else
+        {
+          throw TITCException<exceptions::Reflection>(exceptions::IndexOutOfRange);
         }
       }
-
-      const Number& operator[](const std::string& name)
+    };
+    
+    template <typename T> T& cast(const VariableSPtr& var)
+    {
+      bool is_a_proper_class = std::is_base_of<Variable, T>::value;
+      T tmp;
+      
+      if(!is_a_proper_class)
       {
-        iterator it=expose().find();
-        if(it!=expose().end())
-        {
-          if((Variable* ptr=it->second.get())&&(ptr->getType()==NUMBER))
-          {
-            return *(static_cast<Number*>(it->second.get()));
-          }
-        }
-        else
-        {
-          throw TITCException<exceptions::Reflection>(exceptions::InvalidTypecast);;
-        }
+        throw TITCException<exceptions::Reflection>(exceptions::InvalidTypecast);
       }
       
-      const Bool& operator[](const std::string& name)
+      if(Variable* ptr=var.get())
       {
-        iterator it=expose().find();
-        if(it!=expose().end())
+        if(ptr->getType()==tmp.getType())
         {
-          if((Variable* ptr=it->second.get())&&(ptr->getType()==BOOL))
-          {
-            return *(static_cast<Bool*>(it->second.get()));
-          }
+          return *((static_cast<T*> (ptr)));
         }
         else
         {
-          throw TITCException<exceptions::Reflection>(exceptions::InvalidTypecast);;
+          throw TITCException<exceptions::Reflection>(exceptions::InvalidTypecast);
         }
       }
-    */
-    };
+      throw TITCException<exceptions::Reflection>(exceptions::NullPointerException);
+    }
   }
 }
 /**
