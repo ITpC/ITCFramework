@@ -34,15 +34,18 @@ include Makefile
 OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
-OBJECTFILES=
+OBJECTFILES= \
+	${OBJECTDIR}/src/Config/Config.o \
+	${OBJECTDIR}/src/Config/parse.o \
+	${OBJECTDIR}/src/Config/printArray.o
 
 
 # C Compiler Flags
 CFLAGS=
 
 # CC Compiler Flags
-CCFLAGS=-pipe -pthread -D_REENTRANT -D_THREAD_SAFE -O2 -march=native -mtune=native -fomit-frame-pointer -mfpmath=sse -ftree-vectorize -funroll-loops -mno-tls-direct-seg-refs -DBZ_NO_STDIO -DLOG_DEBUG -DMAX_BUFF_SIZE=256 -DTSAFE_LOG=1 -std=c++0x
-CXXFLAGS=-pipe -pthread -D_REENTRANT -D_THREAD_SAFE -O2 -march=native -mtune=native -fomit-frame-pointer -mfpmath=sse -ftree-vectorize -funroll-loops -mno-tls-direct-seg-refs -DBZ_NO_STDIO -DLOG_DEBUG -DMAX_BUFF_SIZE=256 -DTSAFE_LOG=1 -std=c++0x
+CCFLAGS=-pipe -pthread -D_REENTRANT -D_THREAD_SAFE -O2 -march=native -mtune=native -fomit-frame-pointer -mfpmath=sse -ftree-vectorize -funroll-loops -mno-tls-direct-seg-refs -DBZ_NO_STDIO -DLOG_DEBUG -DMAX_BUFF_SIZE=256 -DTSAFE_LOG=1 -std=c++1y
+CXXFLAGS=-pipe -pthread -D_REENTRANT -D_THREAD_SAFE -O2 -march=native -mtune=native -fomit-frame-pointer -mfpmath=sse -ftree-vectorize -funroll-loops -mno-tls-direct-seg-refs -DBZ_NO_STDIO -DLOG_DEBUG -DMAX_BUFF_SIZE=256 -DTSAFE_LOG=1 -std=c++1y
 
 # Fortran Compiler Flags
 FFLAGS=
@@ -66,7 +69,22 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libitcframework.a: ${OBJECTFILES}
 ${OBJECTDIR}/include/ThreadPool.h.gch: include/ThreadPool.h 
 	${MKDIR} -p ${OBJECTDIR}/include
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -Wall -Iinclude -I../ITCLib/include -I../utils/include -I../mdb/libraries/liblmdb -I../luacpp/include -std=c++11 -MMD -MP -MF "$@.d" -o "$@" include/ThreadPool.h
+	$(COMPILE.cc) -g -Wall -Iinclude -I../ITCLib/include -I../utils/include -I../mdb/libraries/liblmdb -I../luacpp/include -MMD -MP -MF "$@.d" -o "$@" include/ThreadPool.h
+
+${OBJECTDIR}/src/Config/Config.o: src/Config/Config.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/Config
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -Wall -Iinclude -I../ITCLib/include -I../utils/include -I../mdb/libraries/liblmdb -I../luacpp/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/Config/Config.o src/Config/Config.cpp
+
+${OBJECTDIR}/src/Config/parse.o: src/Config/parse.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/Config
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -Wall -Iinclude -I../ITCLib/include -I../utils/include -I../mdb/libraries/liblmdb -I../luacpp/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/Config/parse.o src/Config/parse.cpp
+
+${OBJECTDIR}/src/Config/printArray.o: src/Config/printArray.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/Config
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -Wall -Iinclude -I../ITCLib/include -I../utils/include -I../mdb/libraries/liblmdb -I../luacpp/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/Config/printArray.o src/Config/printArray.cpp
 
 # Subprojects
 .build-subprojects:

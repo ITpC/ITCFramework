@@ -34,7 +34,10 @@ include Makefile
 OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
-OBJECTFILES=
+OBJECTFILES= \
+	${OBJECTDIR}/src/Config/Config.o \
+	${OBJECTDIR}/src/Config/parse.o \
+	${OBJECTDIR}/src/Config/printArray.o
 
 
 # C Compiler Flags
@@ -62,6 +65,21 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libitcframework.a: ${OBJECTFILES}
 	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libitcframework.a
 	${AR} -rv ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libitcframework.a ${OBJECTFILES} 
 	$(RANLIB) ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libitcframework.a
+
+${OBJECTDIR}/src/Config/Config.o: src/Config/Config.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/Config
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -Wall -s -Iinclude -I../ITCLib/include -I../utils/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/Config/Config.o src/Config/Config.cpp
+
+${OBJECTDIR}/src/Config/parse.o: src/Config/parse.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/Config
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -Wall -s -Iinclude -I../ITCLib/include -I../utils/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/Config/parse.o src/Config/parse.cpp
+
+${OBJECTDIR}/src/Config/printArray.o: src/Config/printArray.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/Config
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -Wall -s -Iinclude -I../ITCLib/include -I../utils/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/Config/printArray.o src/Config/printArray.cpp
 
 # Subprojects
 .build-subprojects:

@@ -17,22 +17,29 @@
 #  include <map>
 #  include <fstream>  
 #  include <iostream>
+#  include <ITCException.h>
 
 namespace itc
 {
+  /**
+   * @brief set of classes to emulate reflection for configuration files.
+   * 
+   **/
   namespace reflection
   {
+
+    enum VarType
+    {
+      ARRAY, NUMBER, STRING, BOOL
+    };
+
     /**
-     * @brief set of classes to emulate reflection for configuration files.
-     * 
-     **/
-    
-    /**
-     * @brief base class for reflection.
+     * @brief Variable is interface for reflected types.
      **/
     struct Variable
     {
-      virtual const std::string& getTypeName() const = 0;
+      virtual const std::string getTypeName() const = 0;
+      virtual const VarType& getType() const = 0;
       virtual ~Variable() = default;
     };
 
@@ -47,13 +54,13 @@ namespace itc
      public:
       typedef T value_type;
 
-      explicit TypedVariable(const std::string& tname)
-        : type_name(tname)
+      explicit TypedVariable(const VarType& tc)
+        : type_code(tc)
       {
       }
 
-      explicit TypedVariable(const std::string& tname, const value_type& ref)
-        : type_name(tname), value(ref)
+      explicit TypedVariable(const VarType& tc, const value_type& ref)
+        : type_code(tc), value(ref)
       {
       }
 
@@ -77,19 +84,189 @@ namespace itc
         return value;
       }
 
-      const std::string& getTypeName() const
+      const std::string getTypeName() const
       {
-        return this->type_name;
+        switch(type_code){
+          case ARRAY: return "Array";
+          case NUMBER: return "Number";
+          case STRING: return "String";
+          case BOOL: return "Bool";
+          default:
+            throw TITCException<exceptions::Reflection>(exceptions::UndefinedType);
+        }
       }
+
+      const VarType& getType() const
+      {
+        return type_code;
+      }
+
      private:
-      std::string type_name;
+      VarType type_code;
       value_type value;
     };
 
     typedef std::shared_ptr<Variable> VariableSPtr;
     typedef std::map<std::string, VariableSPtr> VariablesMap;
     typedef std::pair<std::string, VariableSPtr> VariablePairType;
-    
+
+
+    /**
+     * @brief a String class
+     **/
+    struct String : public TypedVariable<std::string>
+    {
+
+      explicit String(const std::string& val = "")
+        : TypedVariable<value_type>(STRING, val)
+      {
+      }
+
+      explicit String(const String& ref)
+        : TypedVariable<value_type>(STRING, ref.getValue())
+      {
+      }
+      
+      const std::string& to_stdstring() const
+      {
+        return getValue();
+      }
+
+      const bool operator==(const String& ref) const
+      {
+        return getValue() == ref.getValue();
+      }
+      
+      const bool operator!=(const String& ref) const
+      {
+        return getValue() != ref.getValue();
+      }
+
+      const bool operator>(const String& ref) const
+      {
+        return getValue() > ref.getValue();
+      }
+
+      const bool operator<(const String& ref) const
+      {
+        return getValue() < ref.getValue();
+      }
+
+    };
+
+    /**
+     * @brief a Number class.
+     **/
+    struct Number : public TypedVariable<double>
+    {
+
+      explicit Number(const double& val = 0.0f)
+        : TypedVariable<value_type>(NUMBER, val)
+      {
+      }
+
+      explicit Number(const Number& ref)
+        : TypedVariable<value_type>(NUMBER, ref.getValue())
+      {
+      }
+      const bool operator==(const Number& ref) const
+      {
+        return getValue() == ref.getValue();
+      }
+      
+      const bool operator!=(const Number& ref) const
+      {
+        return getValue() != ref.getValue();
+      }
+
+      const bool operator>(const Number& ref) const
+      {
+        return getValue() > ref.getValue();
+      }
+
+      const bool operator<(const Number& ref) const
+      {
+        return getValue() < ref.getValue();
+      }
+
+      const int toInt() const
+      {
+        return getValue();
+      }
+
+      const long toLong() const
+      {
+        return getValue();
+      }
+
+      const long long toLongLong() const
+      {
+        return getValue();
+      }
+
+      const float toFloat() const
+      {
+        return getValue();
+      }
+
+      const double& toDouble() const
+      {
+        return getValue();
+      }
+      
+      const double operator+(const Number& ref) const
+      {
+        return toDouble()+ref.toDouble();
+      }
+
+      const double operator-(const Number& ref) const
+      {
+        return getValue()-ref.getValue();
+      }
+
+      const double operator/(const Number& ref) const
+      {
+        return getValue()/ref.getValue();
+      }
+
+      const double operator*(const Number& ref) const
+      {
+        return getValue()*ref.getValue();
+      }
+
+      const long long operator%(const Number& ref) const
+      {
+        return toLongLong()%ref.toLongLong();
+      }
+    };
+
+    /**
+     * @brief a Bool class.
+     **/
+    struct Bool : public TypedVariable<bool>
+    {
+
+      explicit Bool(const bool& val = false)
+        : TypedVariable<value_type>(BOOL, val)
+      {
+      }
+
+      explicit Bool(const Bool& ref)
+        : TypedVariable<value_type>(BOOL, ref.getValue())
+      {
+      }
+      
+      const bool operator==(const Bool& ref) const
+      {
+        return getValue() == ref.getValue();
+      }
+      
+      const bool operator!=(const Bool& ref) const
+      {
+        return getValue() != ref.getValue();
+      }
+    };
+
     
     /**
      * @brief an Array class wrapper around the std::map
@@ -100,59 +277,92 @@ namespace itc
       typedef value_type::const_iterator const_iterator;
 
       explicit Array()
-        : TypedVariable<value_type>("Array")
+        : TypedVariable<value_type>(ARRAY)
       {
       }
 
       explicit Array(const Array& ref)
-        : TypedVariable<value_type>("Array", ref.getValue())
+        : TypedVariable<value_type>(ARRAY, ref.getValue())
       {
       }
-    };
-
-    struct String : public TypedVariable<std::string>
-    {
-      explicit String(const std::string& val = "")
-      : TypedVariable<value_type>("String", val)
+      const Array& operator[](const std::string& name)
       {
-      }
-
-      explicit String(const String& ref)
-      : TypedVariable<value_type>("String", ref.getValue())
-      {
-      }
-    };
-
-    /**
-     * @brief a Number class.
-     **/
-    struct Number : public TypedVariable<double>
-    {
-      explicit Number(const double& val = 0.0f)
-      : TypedVariable<value_type>("Number", val)
-      {
-      }
-
-      explicit Number(const Number& ref)
-      : TypedVariable<value_type>("Number", ref.getValue())
-      {
-      }
-    };
-
-    /**
-     * @brief a Bool class.
-     **/
-    struct Bool : public TypedVariable<bool>
-    {
-      explicit Bool(const bool& val = false)
-      : TypedVariable<value_type>("Bool", val)
-      {
+        iterator it=expose().find(name);
+        if(it!=expose().end())
+        {
+          if(Variable* ptr=it->second.get())
+          {
+            if(ptr->getType()==ARRAY)
+            {
+              return *(static_cast<Array*>(it->second.get()));
+            }
+            else
+            {
+              throw TITCException<exceptions::Reflection>(exceptions::InvalidTypecast);
+            }
+          }
+          else
+          {
+            throw TITCException<exceptions::Reflection>(exceptions::IndexOutOfRange);
+          }
+        }
+        else
+        {
+          throw TITCException<exceptions::Reflection>(exceptions::IndexOutOfRange);
+        }
+        return (*this);
       }
 
-      explicit Bool(const Bool& ref)
-      : TypedVariable<value_type>("Bool", ref.getValue())
+      /**
+       * towards C++14 and beyond (17), incompatible with C++11
+      const String& operator[](const std::string& name)
       {
+        iterator it=expose().find();
+        if(it!=expose().end())
+        {
+          if((Variable* ptr=it->second.get())&&(ptr->getType()==STRING))
+          {
+            return *(static_cast<String*>(it->second.get()));
+          }
+        }
+        else
+        {
+          throw TITCException<exceptions::Reflection>(exceptions::InvalidTypecast);;
+        }
       }
+
+      const Number& operator[](const std::string& name)
+      {
+        iterator it=expose().find();
+        if(it!=expose().end())
+        {
+          if((Variable* ptr=it->second.get())&&(ptr->getType()==NUMBER))
+          {
+            return *(static_cast<Number*>(it->second.get()));
+          }
+        }
+        else
+        {
+          throw TITCException<exceptions::Reflection>(exceptions::InvalidTypecast);;
+        }
+      }
+      
+      const Bool& operator[](const std::string& name)
+      {
+        iterator it=expose().find();
+        if(it!=expose().end())
+        {
+          if((Variable* ptr=it->second.get())&&(ptr->getType()==BOOL))
+          {
+            return *(static_cast<Bool*>(it->second.get()));
+          }
+        }
+        else
+        {
+          throw TITCException<exceptions::Reflection>(exceptions::InvalidTypecast);;
+        }
+      }
+    */
     };
   }
 }
