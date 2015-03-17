@@ -67,21 +67,7 @@ namespace itc
   static boost::regex rxString(rString, boost::regex::extended);
   static boost::regex rxName(rName, boost::regex::extended);
 
-  /**
-   * [WIP: JSON-like config facility. :WIP]
-   * 
-   * BEGIN_MP = '{'
-   * END_MP = '}'
-   * 
-   * mp = BEGIN_MP kvpair_list END_MP
-   * kvpair = NAME ':' value
-   * kvpair_list = kvpair_list ',' kvpair
-   * value = string || number || mp
-   * string = "[[:print:]]+"
-   * number = "[[:digit:]]+ || ([[:digit:]]+|[[:digit:]]*[.][[:digit:]]+) || 0x[[:xdigit:]]+
-   * 
-   **/
-
+  
   class Config
   {
    private:
@@ -98,46 +84,30 @@ namespace itc
    public:
 
     Config(const std::string& fname);
+    
+    
 
    protected:
     /**
      * @TBR on completion.
      **/
     void printArray(reflection::Array& ref, std::string indent="");
-    
-    /** 
-     * WIP !!!!!!!!!!!!
+     
+    /**
+     * @brief JSON-like parser
      * 
-    */
-      
-    /* 
-    template <VarType RType> struct Type
-    {
-      auto get(Variable* ptr, const Val2Type<ARRAY>& fictive)
-      {
-        return ((static_cast<Array*>(ptr))->getValue());
-      }
-    };
-        
-    auto operator[](const std::string& name)
-    {
-      auto it=aaccess(mConfigArray).find(name);
-      if(Variable* ptr=it->second.get())
-      {
-        switch(ptr->getType())
-        {
-          case ARRAY: return decltype(*((static_cast<Array*>(ptr))->getValue()));
-          case NUMBER: return decltype(*((static_cast<Number*>(ptr))->getValue()));
-          case BOOL: return decltype(*((static_cast<Bool*>(ptr))->getValue()));
-          case STRING: return decltype(*((static_cast<String*>(ptr))->getValue()));
-          default:
-            throw TITCException<exceptions::Reflection>(exceptions::UndefinedType);
-        }
-      }
-      throw TITCException<exceptions::Reflection>(exceptions::IndexOutOfRange);
-    }
+     * @param stream - an input sequence of symbols to parse to.
      **/
+    void parser(const std::string& stream);
     
+    /**
+     * @brief JSON-like parser-wrapper with stack and syntax breaks output.
+     **/
+    void parse();
+    
+    /**
+     * @brief throw an exception on parser stack violations (bugs in parser)
+     **/
     void throwOnEmptyLexemesStack(const std::string& file, const int line)
     {
       if(expected_lexeme.empty())
@@ -148,6 +118,9 @@ namespace itc
       }
     }
 
+    /**
+     * @brief throw an exception on syntax errors.
+     **/
     void syntaxerror(const std::string& file, const int line, const std::string& msg)
     {
       itc::getLog()->error(file.c_str(), line, "Syntaxis error on config %s parsing: %s", mConfigFile.c_str(), msg.c_str());
@@ -184,60 +157,6 @@ namespace itc
         return true;
       }
       return false;
-    }
-
-    void parser(const std::string&);
-   
-
-    void parse()
-    {
-      expected_lexeme.push(INPUT_END);
-      expected_lexeme.push(MPB); // '{' is the first terminal, which we expect.
-      aaccess(mConfigArray)["root"] = std::make_shared<Array>();
-      mSubArrays.push(
-        (static_cast<Array*> (aaccess(mConfigArray)["root"].get()))
-        );
-
-      for(tokens_iterator it = tokens.begin(); it != tokens.end(); ++it)
-      {
-        try
-        {
-          parser(*it);
-        }catch(const std::exception& e)
-        {
-          if(!lastname.empty())
-          {
-            std::cerr << "lastname: " << lastname.top() << std::endl;
-          }
-          std::cerr << "lastvalue: " << lastvalue << std::endl;
-
-          for(tokens_iterator nit = tokens.begin(); nit != it; ++nit)
-          {
-            std::cerr << *nit;
-          }
-          std::cerr << "<<<<<<< :" << e.what() << std::endl;
-          throw e;
-        }
-      }
-
-      while(!mSubArrays.empty()) // pop array stack pointers;
-      {
-        mSubArrays.pop();
-      }
-
-      if(expected_lexeme.top() != INPUT_END)
-      {
-        printArray(mConfigArray);
-
-        std::cerr << "========= printing rest of state stack ===========" << std::endl;
-        while(!expected_lexeme.empty())
-        {
-          std::cerr << expected_lexeme.top() << std::endl;
-          expected_lexeme.pop();
-        }
-        syntaxerror(__FILE__, __LINE__, "State stack is out of order, parsing is finished and end of input is expected, but there is something else in stack.top()");
-      }
-      expected_lexeme.pop(); // avoid potential memory leak by running config reload over and over :)
     }
   };
 }
