@@ -67,7 +67,28 @@ namespace itc
   static boost::regex rxString(rString, boost::regex::extended);
   static boost::regex rxName(rName, boost::regex::extended);
 
-  
+  /**
+   * @brief This is a configuration holding class, for JSON-like arrays.
+   * 
+   * <PRE>
+   * The syntax of the configuration file:
+   * 
+   * array: '{' key_value_list '}'
+   *    ;
+   * key_value_list: key_value_list, key_value_pair
+   *    ;
+   * key_value_pair: name ':' value
+   *    ;
+   * value: array | string | NUMBER | BOOL 
+   *    ;
+   * string: '"' string '"' | [[:print:]]+ 
+   *    ;
+   * BOOL: "true" | "false" | "on" | "off"
+   *    ;
+   * NUMBER: [-]*[[:digit:]]+|([-]*[[:digit:]]*[.][[:digit:]]+)|0x[[:xdigit:]]+
+   *    ;
+   * </PRE>
+   **/
   class Config
   {
    private:
@@ -82,7 +103,11 @@ namespace itc
     typedef std::list<std::string>::iterator tokens_iterator;
 
    public:
-
+    /**
+     * @brief constructor
+     * 
+     * @param fname a filename of config file to read the array from.
+     **/
     Config(const std::string& fname);
     
     const VariableSPtr& operator[](const std::string& name)
@@ -90,6 +115,13 @@ namespace itc
       return getRoot()[name];
     }
     
+    /**
+     * @brief get the variable value by path
+     * 
+     * @param path is a dot separated sequence of name representing the path
+     * to variable. Assume the array { a:{b:{c:1}}}, to get the value of c
+     * you have to provide "a.b.c" as a path to this method.
+     **/
     template<typename T> T& get(const std::string path)
     {
       utils::StringTokenizer tkz;
@@ -154,7 +186,7 @@ namespace itc
       {
         itc::getLog()->fatal(file.c_str(), line, "Expected lexemes stack is empty, kick the programmer at the ass (virtualy)");
         itc::getLog()->flush();
-        throw TITCException<exceptions::IndexOutOfRange>(exceptions::MPConfigSyntax);
+        throw TITCException<exceptions::IndexOutOfRange>(exceptions::ConfigSyntax);
       }
     }
 
@@ -165,7 +197,7 @@ namespace itc
     {
       itc::getLog()->error(file.c_str(), line, "Syntaxis error on config %s parsing: %s", mConfigFile.c_str(), msg.c_str());
       itc::getLog()->flush();
-      throw TITCException<exceptions::MPConfigSyntax>(exceptions::ApplicationException);
+      throw TITCException<exceptions::ConfigSyntax>(exceptions::ApplicationException);
     }
 
     bool saveValue()

@@ -7,100 +7,99 @@
 
 #ifndef LMDBENV_H
 #  define	LMDBENV_H
-#include <string>
-#include <lmdb.h>
-#include <memory>
-#include <sys/Mutex.h>
-#include <sys/SyncLock.h>
-#include <ITCException.h>
+#  include <sys/Mutex.h>
+#  include <sys/SyncLock.h>
+#  include <ITCException.h>
+#  include <LMDBException.h>
+
+#  include <string>
+#  include <lmdb.h>
+#  include <memory>
 
 namespace itc
 {
- namespace lmdb
- {
-  class Environment
+  namespace lmdb
   {
-  private:
-    sys::Mutex mMutex;
-    std::string mPath;
-    MDB_Env *mEnv;
-    MDB_txn *mTxn; 
-    bool mActive;
-    
-    void throwAnException(int ret)
+
+    /**
+     * @brief wrapper around Symas LMDB. Environment setup.
+     **/
+    class Environment
     {
-       switch(ret) 
-       {
-         case MDB_VERSION_MISMATCH: 
-           throw TITCException<exceptions::MDBVersionMissmatch>(exceptions::ExternalLibraryException);
-           ;
-         case  MDB_INVALID:
-           throw TITCException<exceptions::MDBInvalid>(exceptions::ExternalLibraryException);
-           ;
-         case ENOENT: 
-           throw TITCException<exceptions::MDBNotFound>(exceptions::ExternalLibraryException);
-           ;
-         case EACCES:
-           throw TITCException<exceptions::MDBEAccess>(exceptions::ExternalLibraryException);
-           ;
-         case EAGAIN:
-           throw TITCException<exceptions::MDBEAgain>(exceptions::ExternalLibraryException);
-           ;
-         default:
-         {
-          throw throw TITCException<exceptions::ExternalLibraryException>(errno);
-         }
-       }
-    }
-    
-  public:
-    Environment(const std::string& path)
-    : mMutex(), mPath(path),mEnv((MDB_env*)0)
-    {
-      sys::SyncLock synchronize(mMutex);
-      
-      if((int ret=mdb_env_create(&mEnv))>0)
+     private:
+      itc::sys::Mutex mMutex;
+      std::string mPath;
+      MDB_env *mEnv;
+      MDB_dbi mDbs;
+      bool mActive;
+
+
+     public:
+
+      /**
+       * @brief constructor for LMDB Environment 
+       * 
+       * @exception TITCException<exceptions::ExternalLibraryException>(errno)
+       * @exception TITCException<exceptions::MDBEAgain>(exceptions::ExternalLibraryException)
+       * @exception TITCException<exceptions::MDBEAccess>(exceptions::ExternalLibraryException)
+       * @exception TITCException<exceptions::MDBNotFound>(exceptions::ExternalLibraryException)
+       * @exception TITCException<exceptions::MDBInvalid>(exceptions::ExternalLibraryException)
+       * @exception TITCException<exceptions::MDBVersionMissmatch>(exceptions::ExternalLibraryException)
+       **/
+      explicit Environment(const std::string& path, const int& dbs)
+        : mMutex(), mPath(path), mEnv((MDB_env*) 0), mDbs(dbs),
+        mActive(false)
       {
-        throwAnException(ret);
-      }
-      
-      if((int ret=mdb_env_open(mEnv, mPath.c_str(), 0, 0664)>0))
+        itc::sys::SyncLock synchronize(mMutex);
+        // Create an LMDB environment handle.
+        int ret = mdb_env_create(&mEnv);
+        if(ret)
+        {
+          throw TITCException<exceptions::ExternalLibraryException>(errno);
+        }
+        ret = mdb_env_set_maxdbs(mEnv, mDbs);
+        if(ret) LMDBExceptionParser onMaxDBsSet(ret);
+        // Open an environment handle
+        ret = mdb_env_open(mEnv, mPath.c_str(), 0, 0664);
+        if(ret)
+        {
+          mdb_env_close(mEnv);
+          LMDBExceptionParser onEnvOpen(ret);
+        }
+        mActive = true;
+      };
+
+      MDB_env* getEnv()
       {
-        mdb_env_close(mEnv);
-        throwAnException(ret);
+        itc::sys::SyncLock synchronize(mMutex);
+        if(mActive)
+        {
+          return mEnv;
+        }
+        throw TITCException<exceptions::MDBClosed>(exceptions::ApplicationException);
       }
-      mdb_txn_begin(mEnv, NULL, 0, &mTxn);
-      mActive=true;
+
+      const bool isActive() const
+      {
+        return mActive;
+      }
+
+      const std::string& getPath() const
+      {
+        return mPath;
+      }
+
+      ~Environment()
+      {
+        itc::sys::SyncLock synchronize(mMutex);
+        if(mActive)
+        {
+          mdb_env_close(mEnv);
+          mActive = false;
+        }
+      }
     };
-    const MDB_env* getEnv()
-    {
-      sys::SyncLock synchronize(mMutex);
-      if(mActive)
-      {
-       return mEnv;
-      }
-      throw throw TITCException<exceptions::MDBClosed>(exceptions::ApplicationException);
-    }
-    const std::string& getPath()
-    {
-     sys::SyncLock synchronize(mMutex);
-      if(mActive)
-      {
-       return mPath;
-      }
-      throw throw TITCException<exceptions::MDBClosed>(exceptions::ApplicationException);
-    }
-    ~Environment()
-    {
-      sys::SyncLock synchronize(mMutex);
-      if(mActive)
-      {
-        mdb_env_close(mEnv);
-        mActive=false;
-      }
-    }
-  };
- }
+  }
 }
 
 

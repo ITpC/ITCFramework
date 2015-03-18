@@ -368,48 +368,6 @@ namespace itc
 #  define aaccess(x) (x.expose())
 #  define paccess(x) (x->expose())
 
-/**
- *@brief testcase for reflection   
- * 
- * using namespace itc;
- * 
- *void printArray(reflection::Array& ref)
-  {
-    std::for_each(
-      aaccess(ref).begin(),aaccess(ref).end(),
-      [](const reflection::VariablePairType& var)
-      {
-        if(var.second.get()->getTypeName() == "Array")
-        {
-          std::cout << "============ printing for subarray  " << var.first << " begin ===================" << std::endl;
-          printArray(*(static_cast<reflection::Array*>(var.second.get())));
-          std::cout << "============ subarray printing  ends here ====================" << std::endl;
-        }
-        else
-        {
-            std::cout << "variable type: " << var.second.get()->getTypeName() << ", with name: " << var.first << std::endl;
-        }
-      }
-    );
-  
- * int main()
-  {
-    reflection::String tmpstr("1234567");
-    reflection::String tmpstr2("1234569");
-    reflection::String tmpstr3("FFF4569");
-
-
-    reflection::Array anArray;
-    access(anArray)["tmpstr"]=std::make_shared<reflection::String>(tmpstr);
-    access(anArray)["tmpstr2"]=std::make_shared<reflection::String>(tmpstr2);
-    reflection::Array anArray1;
-    access(anArray1)["subarray"]=std::make_shared<reflection::Array>(anArray);
-    access(anArray1)["tmpstr3"]=std::make_shared<reflection::String>(tmpstr3);
-
-    printArray(anArray1);
-  }
- *
- **/
 
 #endif	/* CONFIGREFLECTION_H */
 

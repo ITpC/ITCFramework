@@ -32,82 +32,104 @@
 #ifndef SERVICEFACADE_H
 #  define	SERVICEFACADE_H
 
-#include <abstract/Service.h>
-#include <sys/Mutex.h>
-#include <sys/SyncLock.h>
-#include <TSLog.h>
+#  include <abstract/Service.h>
+#  include <sys/Mutex.h>
+#  include <sys/SyncLock.h>
+#  include <TSLog.h>
 
 namespace itc
 {
- /**
-  * @brif The itc::ServiceFacade have to be inherited by classes those are 
-  * intend to act as a services managed by an itc::ServiceManager.
-  * The implementation of service should initialize a ServiceFacade ctor
-  * with std::string value which is a unique name of your service.
-  * The implementation of service should implement 3 methods as well:
-  * onStart, onStop and onDestroy. First two will be called by ServiceFacade
-  * on start and on stop of the service. The method onDestroy is to be used
-  * in the implementation destructor.
-  * 
-  **/
- class ServiceFacade : public itc::abstract::Service
- {
- private:
-    sys::Mutex  mMutex;
-    bool        mUp;
+
+  /**
+   * @brif The itc::ServiceFacade have to be inherited by classes those are 
+   * intend to act as a services managed by an itc::ServiceManager.
+   * The implementation of service should initialize a ServiceFacade ctor
+   * with std::string value which is a unique name of your service.
+   * The implementation of service should implement 3 methods as well:
+   * onStart, onStop and onDestroy. First two will be called by ServiceFacade
+   * on start and on stop of the service. The method onDestroy is to be used
+   * in the implementation destructor.
+   * 
+   **/
+  class ServiceFacade : public itc::abstract::Service
+  {
+   private:
+    sys::Mutex mMutex;
+    bool mUp;
     std::string mName;
- public:
+   public:
+
     explicit ServiceFacade(const std::string& name)
-    : mMutex(),mUp(false), mName(name)
+      : mMutex(), mUp(false), mName(name)
     {
       sys::SyncLock synchronize(mMutex);
-      itc::getLog()->info("Service %s is created",mName.c_str());
+      itc::getLog()->info("Service %s is created", mName.c_str());
     }
+
     const bool isup() const
     {
       return mUp;
     }
+
     void restart()
     {
       stop();
       start();
     }
-    
+
     const bool isdown() const
     {
       return !mUp;
     }
-    
+
     const std::string& getName() const
     {
       return mName;
     }
-    
+
     void stop()
     {
       sys::SyncLock synchronize(mMutex);
-      onStop();
-      this->mUp=false;
+      if(mUp)
+      {
+        try
+        {
+          onStop();
+          this->mUp = false;
+        }catch(const std::exception& e)
+        {
+          itc::getLog()->error(__FILE__, __LINE__, "Cought an exception on service %s start: %s", mName.c_str(), e.what());
+        }
+      }
     }
 
     void start()
     {
       sys::SyncLock synchronize(mMutex);
-      onStart();
-      this->mUp=true;
+      if(!mUp)
+      {
+        try
+        {
+          onStart();
+          this->mUp = true;
+        }catch(const std::exception& e)
+        {
+          this->mUp = false;
+          itc::getLog()->error(__FILE__, __LINE__, "Cought an exception on service %s start: %s", mName.c_str(), e.what());
+        }
+      }
     }
 
-    virtual void onStart()=0;
-    virtual void onStop()=0;
-    virtual void onDestroy()=0;    
+    virtual void onStart() = 0;
+    virtual void onStop() = 0;
+    virtual void onDestroy() = 0;
 
- 
     ~ServiceFacade()
     {
-     sys::SyncLock synchronize(mMutex);
-     itc::getLog()->info("Service %s is destroyed",mName.c_str());
+      sys::SyncLock synchronize(mMutex);
+      itc::getLog()->info("Service %s is destroyed", mName.c_str());
     }
- };
+  };
 }
 
 #endif	/* SERVICEFACADE_H */
