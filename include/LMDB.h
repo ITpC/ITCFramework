@@ -14,12 +14,14 @@
 #  include <LMDBEnv.h>
 #  include <lmdb.h>
 #  include <LMDBException.h>
+#  include <Config.h>
 
 namespace itc
 {
+  using namespace reflection;
   namespace lmdb
   {
-
+    using namespace reflection;
     class Database : public ServiceFacade
     {
      private:
@@ -28,39 +30,35 @@ namespace itc
       std::string mDBName;
       MDB_dbi dbi;
       MDB_txn *txn;
-      bool canSet;
 
      public:
 
       /**
-       * @brief Symas LMDB wrapper around DB functionality
+       * @brief Symas LMDB wrapper around DB functionality [WIP, nothing good yet here]
        * 
-       * @param env_path - path do mdb environment
-       * @param db_name - the name of the database
-       * 
-       * @exception TITCException<exceptions::ExternalLibraryException>(errno)
-       * @exception TITCException<exceptions::MDBEAgain>(exceptions::ExternalLibraryException)
-       * @exception TITCException<exceptions::MDBEAccess>(exceptions::ExternalLibraryException)
-       * @exception TITCException<exceptions::MDBNotFound>(exceptions::ExternalLibraryException)
-       * @exception TITCException<exceptions::MDBInvalid>(exceptions::ExternalLibraryException)
-       * @exception TITCException<exceptions::MDBVersionMissmatch>(exceptions::ExternalLibraryException)
        **/
       explicit Database()
         : ServiceFacade("itc::lmdb::Database"),
-        mL2Mutex(),canSet(true)
+        mL2Mutex()
       {
-      }
-      
-        void setInstancePath(const std::string& env_path, const std::string& db_name)
+        sys::SyncLock synchronize(mL2Mutex);
+        char* lmdb_base=getenv("LMDB_BASE");
+        if(lmdb_base == NULL)
         {
-          if(canSet)
-          {
-            mEnvironment=std::make_shared<Environment>(env_path,1);
-            mDBName=db_name;
-            canSet=false;
-          }
+          itc::getLog()->error(__FILE__,__LINE__,"LMDB_BASE is undefined");
+          throw TITCException<exceptions::MDBNotFound>(exceptions::FileNotFound);
         }
-      
+          
+        std::string lmdb_instance_home(lmdb_base);
+        itc::Config aLMDBConfig(lmdb_instance_home + "/etc/lmdb.conf");
+        String datastore(aLMDBConfig.get<String>("datastore"));
+        String database(aLMDBConfig.get<String>("database"));
+        Number dbsnr(aLMDBConfig.get<Number>("dbsnr"));
+        mDBName = datastore.to_stdstring()+"/"+database.to_stdstring();
+        itc::getLog()->debug(__FILE__,__LINE__,"Trying to open a database in %s",mDBName.c_str());
+        mEnvironment = std::make_shared<Environment>(datastore.to_stdstring(), dbsnr.toInt());
+      }
+
       /**
        * @brief implementation of onStart of ServiceFacade. This method opens the LMDB database
        * or throws an exception.
@@ -68,11 +66,11 @@ namespace itc
       void onStart()
       {
         sys::SyncLock synchronize(mL2Mutex);
-        if(!canSet) throw TITCException<exceptions::MDBGeneral>(exceptions::MDBEAgain);
+      
         int ret = mdb_txn_begin(mEnvironment.get()->getEnv(), NULL, 0, &txn);
         if(ret) LMDBExceptionParser onTxnOpen(ret);
 
-        ret = mdb_dbi_open(txn, mDBName.c_str(), 0, &dbi);
+        ret = mdb_dbi_open(txn, mDBName.c_str(), MDB_CREATE | MDB_REVERSEKEY, &dbi);
         if(ret) LMDBExceptionParser onDbiOpen(ret);
       }
 

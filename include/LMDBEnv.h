@@ -39,12 +39,6 @@ namespace itc
       /**
        * @brief constructor for LMDB Environment 
        * 
-       * @exception TITCException<exceptions::ExternalLibraryException>(errno)
-       * @exception TITCException<exceptions::MDBEAgain>(exceptions::ExternalLibraryException)
-       * @exception TITCException<exceptions::MDBEAccess>(exceptions::ExternalLibraryException)
-       * @exception TITCException<exceptions::MDBNotFound>(exceptions::ExternalLibraryException)
-       * @exception TITCException<exceptions::MDBInvalid>(exceptions::ExternalLibraryException)
-       * @exception TITCException<exceptions::MDBVersionMissmatch>(exceptions::ExternalLibraryException)
        **/
       explicit Environment(const std::string& path, const int& dbs)
         : mMutex(), mPath(path), mEnv((MDB_env*) 0), mDbs(dbs),
@@ -55,14 +49,20 @@ namespace itc
         int ret = mdb_env_create(&mEnv);
         if(ret)
         {
+          itc::getLog()->error(__FILE__,__LINE__,"LMDB: Can not create database environment in %s",mPath.c_str());
           throw TITCException<exceptions::ExternalLibraryException>(errno);
         }
         ret = mdb_env_set_maxdbs(mEnv, mDbs);
-        if(ret) LMDBExceptionParser onMaxDBsSet(ret);
+        if(ret) 
+        {
+          itc::getLog()->error(__FILE__,__LINE__,"LMDB: Can not set max_dbs for %s",mPath.c_str());
+          LMDBExceptionParser onMaxDBsSet(ret);
+        }
         // Open an environment handle
         ret = mdb_env_open(mEnv, mPath.c_str(), 0, 0664);
         if(ret)
         {
+          itc::getLog()->error(__FILE__,__LINE__,"LMDB: Can not open environment %s",mPath.c_str());
           mdb_env_close(mEnv);
           LMDBExceptionParser onEnvOpen(ret);
         }
