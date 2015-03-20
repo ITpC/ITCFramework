@@ -29,6 +29,7 @@
         <itemPath>include/LMDB.h</itemPath>
         <itemPath>include/LMDBEnv.h</itemPath>
         <itemPath>include/LMDBException.h</itemPath>
+        <itemPath>include/LMDBTxn.h</itemPath>
         <itemPath>include/Properties.h</itemPath>
         <itemPath>include/RScheduler.h</itemPath>
         <itemPath>include/Sequence.h</itemPath>
@@ -128,6 +129,8 @@
       <item path="include/LMDBEnv.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/LMDBException.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/LMDBTxn.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Properties.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -237,6 +240,8 @@
       <item path="include/LMDBEnv.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/LMDBException.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/LMDBTxn.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Properties.h" ex="false" tool="3" flavor2="0">
       </item>
