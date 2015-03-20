@@ -29,7 +29,9 @@
         <itemPath>include/LMDB.h</itemPath>
         <itemPath>include/LMDBEnv.h</itemPath>
         <itemPath>include/LMDBException.h</itemPath>
+        <itemPath>include/LMDBROTxn.h</itemPath>
         <itemPath>include/LMDBTxn.h</itemPath>
+        <itemPath>include/LMDBWOTxn.h</itemPath>
         <itemPath>include/Properties.h</itemPath>
         <itemPath>include/RScheduler.h</itemPath>
         <itemPath>include/Sequence.h</itemPath>
@@ -94,7 +96,7 @@
             <pElem>../mdb/libraries/liblmdb</pElem>
             <pElem>../luacpp/include</pElem>
           </incDir>
-          <commandLine>-pipe -pthread -D_REENTRANT -D_THREAD_SAFE -O2 -march=native -mtune=native -fomit-frame-pointer -mfpmath=sse -ftree-vectorize -funroll-loops -mno-tls-direct-seg-refs -DBZ_NO_STDIO -DLOG_DEBUG -DMAX_BUFF_SIZE=256 -DTSAFE_LOG=1 -std=c++1y</commandLine>
+          <commandLine>-pipe -pthread -D_REENTRANT -D_THREAD_SAFE -O2 -mtune=generic -fomit-frame-pointer -mfpmath=sse -ftree-vectorize -funroll-loops -mno-tls-direct-seg-refs -DBZ_NO_STDIO -DLOG_DEBUG -DMAX_BUFF_SIZE=256 -DTSAFE_LOG=1 -std=c++1y</commandLine>
           <warningLevel>2</warningLevel>
         </ccTool>
         <archiverTool>
@@ -130,7 +132,11 @@
       </item>
       <item path="include/LMDBException.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/LMDBROTxn.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/LMDBTxn.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/LMDBWOTxn.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Properties.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -241,7 +247,11 @@
       </item>
       <item path="include/LMDBException.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/LMDBROTxn.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/LMDBTxn.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/LMDBWOTxn.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Properties.h" ex="false" tool="3" flavor2="0">
       </item>

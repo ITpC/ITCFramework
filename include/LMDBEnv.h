@@ -13,7 +13,6 @@
 #  include <LMDBException.h>
 #  include <TSLog.h>
 
-#  include <string>
 #  include <lmdb.h>
 #  include <memory>
 #  include <queue>
@@ -22,7 +21,6 @@ namespace itc
 {
   namespace lmdb
   {
-
     /**
      * @brief wrapper around Symas LMDB. Environment setup.
      **/
@@ -33,7 +31,6 @@ namespace itc
       typedef std::shared_ptr<MDB_envinfo> MDBEnvInfo;
      private:
       itc::sys::Mutex mMutex;
-
       std::string mPath;
       MDB_env *mEnv;
       MDB_dbi mDbs;
@@ -41,7 +38,6 @@ namespace itc
       MDBEnvStats mStats;
       MDBEnvInfo mInfo;
       std::queue<MDB_txn*> mROTxnsPool;
-
 
      public:
 
@@ -186,6 +182,11 @@ namespace itc
         }
       }
 
+      /** =====================================================================
+       * @brief commit (reset) RO transaction
+       * 
+       * @param prt - a transaction handle
+       **/
       void ROTxnCommit(MDB_txn *ptr)
       {
         sys::SyncLock synchronize(mMutex);
@@ -203,6 +204,11 @@ namespace itc
         }else throw TITCException<exceptions::ITCGeneral>(exceptions::MDBTxnNULL);
       }
 
+      /**
+       * @brief begin write-only transaction
+       * @param parent a parent transaction
+       * @return 
+       */
       MDB_txn* beginWOTxn(MDB_txn *parent = static_cast<MDB_txn*> (0))
       {
         itc::sys::SyncLock synchronize(mMutex);
@@ -236,7 +242,7 @@ namespace itc
               case 0:
                 return;
               default:
-                itc::getLog()->fatal(__FILE__, __LINE__, "[666]: in Database::WOTxnCommit() something is generally wrong. This message should never appear in the log. Seems that the LMDB API has been changed or extended with new error codes. Please file a bug-report");
+                ::itc::getLog()->fatal(__FILE__, __LINE__, "[666]: in Database::WOTxnCommit() something is generally wrong. This message should never appear in the log. Seems that the LMDB API has been changed or extended with new error codes. Please file a bug-report");
                 throw TITCException<exceptions::MDBGeneral>(exceptions::InvalidException);
             }
           }else

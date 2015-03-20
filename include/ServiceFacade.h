@@ -63,7 +63,7 @@ namespace itc
       : mMutex(), mUp(false), mName(name)
     {
       sys::SyncLock synchronize(mMutex);
-      itc::getLog()->info("Service %s is created", mName.c_str());
+      ::itc::getLog()->info("Service %s is created", mName.c_str());
     }
 
     const bool isup() const
@@ -98,7 +98,7 @@ namespace itc
           this->mUp = false;
         }catch(const std::exception& e)
         {
-          itc::getLog()->error(__FILE__, __LINE__, "Cought an exception on service %s start: %s", mName.c_str(), e.what());
+          ::itc::getLog()->error(__FILE__, __LINE__, "Cought an exception on service %s start: %s", mName.c_str(), e.what());
         }
       }
     }
@@ -115,7 +115,7 @@ namespace itc
         }catch(const std::exception& e)
         {
           this->mUp = false;
-          itc::getLog()->error(__FILE__, __LINE__, "Cought an exception on service %s start: %s", mName.c_str(), e.what());
+          ::itc::getLog()->error(__FILE__, __LINE__, "Cought an exception on service %s start: %s", mName.c_str(), e.what());
         }
       }
     }
@@ -127,7 +127,7 @@ namespace itc
     ~ServiceFacade()
     {
       sys::SyncLock synchronize(mMutex);
-      itc::getLog()->info("Service %s is destroyed", mName.c_str());
+      ::itc::getLog()->info("Service %s is destroyed", mName.c_str());
     }
   };
 }
