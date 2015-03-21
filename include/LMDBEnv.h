@@ -212,12 +212,12 @@ namespace itc
       MDB_txn* beginWOTxn(MDB_txn *parent = static_cast<MDB_txn*> (0))
       {
         itc::sys::SyncLock synchronize(mMutex);
-        itc::getLog()->debug(__FILE__, __LINE__, "[trace] -> in Database::beginWOTxn()");
+        itc::getLog()->trace(__FILE__, __LINE__, "[trace] -> in Database::beginWOTxn()");
 
         MDB_txn *tmp;
         int ret = mdb_txn_begin(mEnv, parent, 0, &tmp);
         if(ret) LMDBExceptionParser onTxnBegin(ret);
-        itc::getLog()->debug(__FILE__, __LINE__, "[trace] <- normal out of Database::beginWOTxn()");
+        itc::getLog()->trace(__FILE__, __LINE__, "[trace] <- normal out of Database::beginWOTxn()");
         return tmp;
       }
 

@@ -46,7 +46,9 @@ namespace itc
       {
         try
         {
+          ::itc::getLog()->trace(__FILE__, __LINE__, "Transaction aquire time mark in");
           handle = (mDB.get()->mEnvironment.get())->beginWOTxn();
+          ::itc::getLog()->trace(__FILE__, __LINE__, "Transaction aquire time mark out");
         }catch(std::exception& e)
         {
           ::itc::getLog()->error(__FILE__, __LINE__, "Transaction may not begin, reason: %s\n", e.what());
@@ -123,7 +125,7 @@ namespace itc
       {
         if(is_not_aborted)
         {
-          ::itc::getLog()->debug(__FILE__, __LINE__, "~WOTxn() commit transaction");
+          ::itc::getLog()->trace(__FILE__, __LINE__, "~WOTxn() commit transaction");
           (mDB.get()->mEnvironment.get())->WOTxnCommit(handle);
         }
       }
