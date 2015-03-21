@@ -13,6 +13,7 @@
 #  include <TSLog.h>
 #  include <LMDBROTxn.h>
 #  include <LMDBWOTxn.h>
+#  include <LMDBException.h>
 
 #endif	/* LMDBTXN_H */
 

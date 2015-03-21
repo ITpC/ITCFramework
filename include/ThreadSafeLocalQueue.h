@@ -61,7 +61,7 @@ namespace itc {
 
     public:
 
-        ThreadSafeLocalQueue()
+        explicit ThreadSafeLocalQueue()
         : QueueInterface<DataType>(),
         mMutex(),
         mMsgTrigger() {

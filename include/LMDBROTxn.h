@@ -30,7 +30,109 @@ namespace itc
      private:
       MDB_txn* handle;
       std::shared_ptr<Database> mDB;
+
      public:
+
+      class Cursor
+      {
+       private:
+        MDB_cursor* cursor;
+        MDB_dbi dbi;
+        MDB_txn *handle;
+
+       public:
+
+        explicit Cursor(const MDB_dbi& pdbi, MDB_txn *phandle)
+          : dbi(pdbi), handle(phandle)
+        {
+          int ret = mdb_cursor_open(handle, dbi, &cursor);
+          if(ret)
+          {
+            if(ret == EINVAL)
+            {
+              throw TITCException<exceptions::MDBGeneral>(exceptions::MDBInvalParam);
+            }else
+            {
+              itc::getLog()->fatal(__FILE__, __LINE__, "[666]:ROCursor::ROCursor() something is generally wrong. This message should never appear in the log. Seems that the LMDB API has been changed or extended with new error codes. Please file a bug-report");
+              throw TITCException<exceptions::MDBGeneral>(exceptions::InvalidException);
+            }
+          }
+        }
+
+        explicit Cursor(const Cursor& ref)=delete;
+
+        template <typename T> const size_t getFirst(T& data)
+        {
+          return get<T>(data, MDB_FIRST);
+        }
+
+        template <typename T> const size_t getLast(T& data)
+        {
+          return get<T>(data, MDB_LAST);
+        }
+
+        template <typename T> const size_t getCurrent(T& data)
+        {
+          return get<T>(data, MDB_GET_CURRENT);
+        }
+
+        template <typename T> const size_t getNext(T& data)
+        {
+          return get<T>(data, MDB_NEXT);
+        }
+
+        template <typename T> const size_t getPrev(T& data)
+        {
+          return get<T>(data, MDB_PREV);
+        }
+
+        template <typename T> const size_t find(const size_t& pkey, T& data)
+        {
+          MDB_val key = pkey, dbdata;
+          int ret = mdb_cursor_get(cursor, &key, &dbdata, MDB_SET_KEY);
+          switch(ret){
+            case 0:
+            {
+              memcpy(&data, dbdata.mv_data, sizeof(data));
+              mdb_cursor_close(cursor);
+              return key;
+            }
+            case MDB_NOTFOUND:
+              throw TITCException<exceptions::MDBGeneral>(exceptions::MDBNotFound);
+            case EINVAL:
+              throw TITCException<exceptions::MDBGeneral>(exceptions::MDBInvalParam);
+          }
+          itc::getLog()->fatal(__FILE__, __LINE__, "[666]:ROTxn::Cursor::find() something is generally wrong. This message should never appear in the log. Seems that the LMDB API has been changed or extended with new error codes. Please file a bug-report");
+          throw TITCException<exceptions::MDBGeneral>(exceptions::InvalidException);
+        }
+
+        ~Cursor()
+        {
+          mdb_cursor_close(cursor);
+        }
+       private:
+
+        template <typename T> const size_t get(T& data, const MDB_cursor_op& op)
+        {
+          MDB_val key, dbdata;
+          int ret = mdb_cursor_get(cursor, &key, &dbdata, op);
+          switch(ret){
+            case 0:
+            {
+              memcpy(&data, dbdata.mv_data, sizeof(data));
+              size_t reskey=0;
+              memcpy(&reskey, key.mv_data, key.mv_size);
+              return reskey;
+            }
+            case MDB_NOTFOUND:
+              throw TITCException<exceptions::MDBKeyNotFound>(exceptions::MDBGeneral);
+            case EINVAL:
+              throw TITCException<exceptions::MDBGeneral>(exceptions::MDBInvalParam);
+          }
+          itc::getLog()->fatal(__FILE__, __LINE__, "[666]:ROTxn::Cursor::get() something is generally wrong. This message should never appear in the log. Seems that the LMDB API has been changed or extended with new error codes. Please file a bug-report");
+          throw TITCException<exceptions::MDBGeneral>(exceptions::InvalidException);
+        }
+      };
 
       /**
        * @brief constructor
@@ -115,8 +217,13 @@ namespace itc
         }
       }
 
+      std::shared_ptr<Cursor> getCursor()
+      {
+        return std::make_shared<Cursor>(mDB.get()->dbi,handle);
+      }
+
       /**
-       * @brief dtor, - the transactin handle
+       * @brief commit transaction/reset
        * 
        **/
       ~ROTxn()

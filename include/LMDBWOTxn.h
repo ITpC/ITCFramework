@@ -67,7 +67,7 @@ namespace itc
       {
         try
         {
-          handle = (mDB.get()->mEnvironment.get())->beginROTxn(parent.handle);
+          handle = (mDB.get()->mEnvironment.get())->beginWOTxn(parent.handle);
         }catch(std::exception& e)
         {
           ::itc::getLog()->error(__FILE__, __LINE__, "Transaction may not begin, reason: %s\n", e.what());
@@ -95,11 +95,19 @@ namespace itc
         switch(ret){
           case MDB_MAP_FULL:
             throw TITCException<exceptions::MDBGeneral>(exceptions::MDBMapFull);
+            is_not_aborted=false;
+            (mDB.get()->mEnvironment.get())->WOTxnAbort(handle);
           case MDB_TXN_FULL:
             throw TITCException<exceptions::MDBGeneral>(exceptions::MDBTxnFull);
+            is_not_aborted=false;
+            (mDB.get()->mEnvironment.get())->WOTxnAbort(handle);
           case EACCES:
+            is_not_aborted=false;
+            (mDB.get()->mEnvironment.get())->WOTxnAbort(handle);
             throw TITCException<exceptions::MDBGeneral>(exceptions::MDBTEAccess);
           case EINVAL:
+            is_not_aborted=false;
+            (mDB.get()->mEnvironment.get())->WOTxnAbort(handle);
             throw TITCException<exceptions::MDBGeneral>(exceptions::MDBInvalParam);
           case 0:
             return true;
@@ -109,13 +117,47 @@ namespace itc
         ::itc::getLog()->fatal(__FILE__, __LINE__, "[666]:ROTxn::get() something is generally wrong. This message should never appear in the log. Seems that the LMDB API has been changed or extended with new error codes. Please file a bug-report");
         throw TITCException<exceptions::MDBGeneral>(exceptions::InvalidException);
       }
-
+      
+      void abort()
+      {
+        is_not_aborted=false;
+        (mDB.get()->mEnvironment.get())->WOTxnAbort(handle);
+      }
+      
+      const bool del(size_t key)
+      {
+        MDB_val dbkey;
+        dbkey.mv_data=&key;
+        dbkey.mv_size=sizeof(key);
+        
+        int ret=mdb_del(handle,mDB.get()->dbi,&dbkey,NULL);
+        switch(ret)
+        {
+          case MDB_NOTFOUND:
+            is_not_aborted=false;
+            (mDB.get()->mEnvironment.get())->WOTxnAbort(handle);
+            return false;
+          case EACCES:
+            is_not_aborted=false;
+            (mDB.get()->mEnvironment.get())->WOTxnAbort(handle);
+            throw TITCException<exceptions::MDBTEAccess>(exceptions::MDBGeneral);
+          case EINVAL:
+            is_not_aborted=false;
+            (mDB.get()->mEnvironment.get())->WOTxnAbort(handle);
+            throw TITCException<exceptions::MDBGeneral>(exceptions::MDBInvalParam);
+          case 0:
+            return true;
+        }
+        ::itc::getLog()->fatal(__FILE__, __LINE__, "[666]:ROTxn::del() something is generally wrong. This message should never appear in the log. Seems that the LMDB API has been changed or extended with new error codes. Please file a bug-report");
+        throw TITCException<exceptions::MDBGeneral>(exceptions::InvalidException);
+      }
       /**
        * @brief forbid copy constructor
        * 
        * @param reference
        **/
-      WOTxn(const WOTxn& ref) = delete;
+      explicit WOTxn(const WOTxn& ref) = delete;
+      explicit WOTxn(WOTxn& ref) = delete;
 
       /**
        * @brief dtor, - the transactin handle

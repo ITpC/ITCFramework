@@ -29,6 +29,7 @@
         <itemPath>include/LMDB.h</itemPath>
         <itemPath>include/LMDBEnv.h</itemPath>
         <itemPath>include/LMDBException.h</itemPath>
+        <itemPath>include/LMDBPersistentQueue.h</itemPath>
         <itemPath>include/LMDBROTxn.h</itemPath>
         <itemPath>include/LMDBTxn.h</itemPath>
         <itemPath>include/LMDBWOTxn.h</itemPath>
@@ -131,6 +132,8 @@
       <item path="include/LMDBEnv.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/LMDBException.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/LMDBPersistentQueue.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/LMDBROTxn.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -246,6 +249,8 @@
       <item path="include/LMDBEnv.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/LMDBException.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/LMDBPersistentQueue.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/LMDBROTxn.h" ex="false" tool="3" flavor2="0">
       </item>
