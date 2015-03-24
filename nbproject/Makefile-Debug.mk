@@ -44,8 +44,8 @@ OBJECTFILES= \
 CFLAGS=
 
 # CC Compiler Flags
-CCFLAGS=-pipe -pthread -D_REENTRANT -D_THREAD_SAFE -O2 -mtune=generic -fomit-frame-pointer -mfpmath=sse -ftree-vectorize -funroll-loops -mno-tls-direct-seg-refs -DBZ_NO_STDIO -DLOG_DEBUG -DMAX_BUFF_SIZE=256 -DTSAFE_LOG=1 -std=c++1y
-CXXFLAGS=-pipe -pthread -D_REENTRANT -D_THREAD_SAFE -O2 -mtune=generic -fomit-frame-pointer -mfpmath=sse -ftree-vectorize -funroll-loops -mno-tls-direct-seg-refs -DBZ_NO_STDIO -DLOG_DEBUG -DMAX_BUFF_SIZE=256 -DTSAFE_LOG=1 -std=c++1y
+CCFLAGS=-pipe -pthread -D_REENTRANT -D_THREAD_SAFE -O2 -mtune=generic -fomit-frame-pointer -mfpmath=sse -ftree-vectorize -funroll-loops -mno-tls-direct-seg-refs -DBZ_NO_STDIO -DLOG_DEBUG -DMAX_BUFF_SIZE=256 -DTSAFE_LOG=1
+CXXFLAGS=-pipe -pthread -D_REENTRANT -D_THREAD_SAFE -O2 -mtune=generic -fomit-frame-pointer -mfpmath=sse -ftree-vectorize -funroll-loops -mno-tls-direct-seg-refs -DBZ_NO_STDIO -DLOG_DEBUG -DMAX_BUFF_SIZE=256 -DTSAFE_LOG=1
 
 # Fortran Compiler Flags
 FFLAGS=
@@ -69,26 +69,25 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libitcframework.a: ${OBJECTFILES}
 ${OBJECTDIR}/include/ThreadPool.h.gch: include/ThreadPool.h 
 	${MKDIR} -p ${OBJECTDIR}/include
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -Wall -Iinclude -I../ITCLib/include -I../utils/include -I../mdb/libraries/liblmdb -I../luacpp/include -MMD -MP -MF "$@.d" -o "$@" include/ThreadPool.h
+	$(COMPILE.cc) -g -Wall -Iinclude -I../ITCLib/include -I../utils/include -I../luacpp/include -std=c++11 -MMD -MP -MF "$@.d" -o "$@" include/ThreadPool.h
 
 ${OBJECTDIR}/src/Config/Config.o: src/Config/Config.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/Config
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -Wall -Iinclude -I../ITCLib/include -I../utils/include -I../mdb/libraries/liblmdb -I../luacpp/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/Config/Config.o src/Config/Config.cpp
+	$(COMPILE.cc) -g -Wall -Iinclude -I../ITCLib/include -I../utils/include -I../luacpp/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/Config/Config.o src/Config/Config.cpp
 
 ${OBJECTDIR}/src/Config/parser.o: src/Config/parser.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/Config
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -Wall -Iinclude -I../ITCLib/include -I../utils/include -I../mdb/libraries/liblmdb -I../luacpp/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/Config/parser.o src/Config/parser.cpp
+	$(COMPILE.cc) -g -Wall -Iinclude -I../ITCLib/include -I../utils/include -I../luacpp/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/Config/parser.o src/Config/parser.cpp
 
 ${OBJECTDIR}/src/Config/printArray.o: src/Config/printArray.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/Config
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -Wall -Iinclude -I../ITCLib/include -I../utils/include -I../mdb/libraries/liblmdb -I../luacpp/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/Config/printArray.o src/Config/printArray.cpp
+	$(COMPILE.cc) -g -Wall -Iinclude -I../ITCLib/include -I../utils/include -I../luacpp/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/Config/printArray.o src/Config/printArray.cpp
 
 # Subprojects
 .build-subprojects:
-	cd ../mdb/libraries/liblmdb && ${MAKE} -f Makefile
 
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
@@ -97,7 +96,6 @@ ${OBJECTDIR}/src/Config/printArray.o: src/Config/printArray.cpp
 
 # Subprojects
 .clean-subprojects:
-	cd ../mdb/libraries/liblmdb && ${MAKE} -f Makefile clean
 
 # Enable dependency checking
 .dep.inc: .depcheck-impl

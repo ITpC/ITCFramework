@@ -38,12 +38,6 @@ namespace itc
       friend ROTxn;
       friend WOTxn;
 
-      const std::shared_ptr<Environment>& getDBEnv()
-      {
-        return mEnvironment;
-      }
-
-
      public:
 
       /**
@@ -103,6 +97,11 @@ namespace itc
         if(ret) LMDBExceptionParser onDbiOpen(ret);
         mdb_txn_commit(txn);
         isopen = true;
+      }
+
+      const std::shared_ptr<Environment>& getDBEnv()
+      {
+        return mEnvironment;
       }
 
       const std::string& getName() const

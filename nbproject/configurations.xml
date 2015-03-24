@@ -94,30 +94,18 @@
       </toolsSet>
       <compileType>
         <ccTool>
+          <standard>8</standard>
           <incDir>
             <pElem>include</pElem>
             <pElem>../ITCLib/include</pElem>
             <pElem>../utils/include</pElem>
-            <pElem>../mdb/libraries/liblmdb</pElem>
             <pElem>../luacpp/include</pElem>
           </incDir>
-          <commandLine>-pipe -pthread -D_REENTRANT -D_THREAD_SAFE -O2 -mtune=generic -fomit-frame-pointer -mfpmath=sse -ftree-vectorize -funroll-loops -mno-tls-direct-seg-refs -DBZ_NO_STDIO -DLOG_DEBUG -DMAX_BUFF_SIZE=256 -DTSAFE_LOG=1 -std=c++1y</commandLine>
+          <commandLine>-pipe -pthread -D_REENTRANT -D_THREAD_SAFE -O2 -mtune=generic -fomit-frame-pointer -mfpmath=sse -ftree-vectorize -funroll-loops -mno-tls-direct-seg-refs -DBZ_NO_STDIO -DLOG_DEBUG -DMAX_BUFF_SIZE=256 -DTSAFE_LOG=1</commandLine>
           <warningLevel>2</warningLevel>
         </ccTool>
         <archiverTool>
         </archiverTool>
-        <requiredProjects>
-          <makeArtifact PL="../mdb/libraries/liblmdb"
-                        CT="0"
-                        CN="Default"
-                        AC="true"
-                        BL="true"
-                        WD="../mdb/libraries/liblmdb"
-                        BC="${MAKE} -f Makefile"
-                        CC="${MAKE} -f Makefile clean"
-                        OP="">
-          </makeArtifact>
-        </requiredProjects>
       </compileType>
       <item path="include/ClientSocketsFactory.h" ex="false" tool="3" flavor2="0">
       </item>

@@ -75,17 +75,25 @@ namespace itc
         mSMap.insert(SubscriberDescriptor(key, vref));
         push(ref);
         mQEvent.post();
+        //mQEvent.post();
+        //mQEvent.post();
       }
-
+      
+      const size_t size()
+      {
+        sys::SyncLock dosync(mQueueProtect);
+        return mQueue.size();        
+      }
+      
       void execute()
       {
         while(mayRun)
         {
-          itc::getLog()->debug(__FILE__, __LINE__, "DBWriter::execue(): qDepth %ju; SemDepth: %ju", mQueue.size(), mQEvent.getValue());
+          //itc::getLog()->debug(__FILE__, __LINE__, "DBWriter::execue(): qDepth %ju; SemDepth: %ju", mQueue.size(), mQEvent.getValue());
           mQEvent.wait();
           if(empty())
           {
-            throw TITCException<exceptions::QueueOutOfSync>(exceptions::ITCGeneral);
+            // throw TITCException<exceptions::QueueOutOfSync>(exceptions::ITCGeneral); // I don't care.
           }
           try
           {
@@ -132,6 +140,7 @@ namespace itc
         return mDB;
       }
 
+     
      private:
 
       void push(const WObjectSPtr& ref)
@@ -156,15 +165,7 @@ namespace itc
       {
         sys::SyncLock dosync(mQueueProtect);
         return mQueue.empty();
-      }
-
-      /*
-       WObjectsQueue& front()
-       {
-         sys::SyncLock dosync(mQueueProtect);
-         return mQueue.front();
-       }
-       */
+      }      
 
       void wait_save()
       {
@@ -177,6 +178,10 @@ namespace itc
 
       void dbWrite()
       {
+        if(empty())
+        {
+          return;
+        }
         WObject* ptr = front().get();
         uint64_t key;
         if(ptr)
@@ -189,6 +194,7 @@ namespace itc
               case ADD:
                 if(aTxn.put(ptr->key, ptr->data))
                 {
+                  sys::SyncLock synchronize(mWriteProtect);
                   SubscribersMap::iterator it = mSMap.find(key);
                   if(it != mSMap.end())
                   {
@@ -200,6 +206,7 @@ namespace itc
               case DEL:
                 if(aTxn.del(ptr->key))
                 {
+                  sys::SyncLock synchronize(mWriteProtect);
                   SubscribersMap::iterator it = mSMap.find(key);
                   if(it != mSMap.end())
                   {
@@ -212,15 +219,16 @@ namespace itc
                 throw TITCException<exceptions::ITCGeneral>(exceptions::IndexOutOfRange);
             }
             pop();
-            itc::getLog()->debug(__FILE__, __LINE__, "Before WOTxn commit");
           }catch(TITCException<exceptions::MDBKeyNotFound>& e)
           {
+            sys::SyncLock synchronize(mWriteProtect);
             if(mSMap.find(key) != mSMap.end())
             {
               notify(Model(true, key), mSMap[key]); //  report ok, when the key wasn't found
             }
           }catch(std::exception& e)
           {
+            sys::SyncLock synchronize(mWriteProtect);
             if(mSMap.find(key) != mSMap.end())
             {
               notify(Model(false, key), mSMap[key]); // report subscriber about write error
@@ -271,6 +279,7 @@ namespace itc
             mDBW.get()->write(ref, shared_from_this());
           }catch(...)
           {
+            itc::getLog()->error(__FILE__,__LINE__,"Unexpected exception");
             throw;
           }
           mWaitWriteEnd.wait();

@@ -128,7 +128,7 @@ namespace itc
     }
   }
   
-  template <typename T> const std::shared_ptr<T>& getService(const std::string& name)
+  const ServiceSPtr&  getService(const std::string& name)
   {
     sys::RecursiveSyncLock synchronize(mMutex);
     SRMIterator srmit=mServiceRegistry.find(name);
