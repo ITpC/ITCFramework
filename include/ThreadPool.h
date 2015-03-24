@@ -36,6 +36,7 @@
 #include <algorithm>
 #include <sys/Mutex.h>
 #include <sys/SyncLock.h>
+#include <abstract/Runnable.h>
 #include <abstract/IThreadPool.h>
 #include <sys/PThread.h>
 #include <TSLog.h>
@@ -169,7 +170,7 @@ namespace itc
           {
               shakePoolsPrivate();
 
-              if(mPassiveThreads.empty()&&(mTaskQueue.size()>0)&&mAutotune)
+              if(mPassiveThreads.empty()&&(!mTaskQueue.empty())&&mAutotune)
               {
                   size_t absMax =(size_t)(mMaxThreads * mOvercommitRatio);
 
@@ -256,7 +257,7 @@ namespace itc
                   mActiveThreads.erase(it);
                   it=mActiveThreads.begin();
               }
-              else it++;
+              else ++it;
           }
 
           while(mPassiveThreads.size()>mMaxThreads)

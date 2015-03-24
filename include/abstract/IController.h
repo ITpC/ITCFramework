@@ -39,6 +39,9 @@ namespace itc
 {
   namespace abstract
   {
+    /**
+     * @ uhmm it is not an interface anymore ...
+     **/
     template <typename TModel> class IController
     {
     public:

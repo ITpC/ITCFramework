@@ -122,7 +122,7 @@ namespace itc
      * to variable. Assume the array { a:{b:{c:1}}}, to get the value of c
      * you have to provide "a.b.c" as a path to this method.
      **/
-    template<typename T> T& get(const std::string path)
+    template<typename T> T& get(const std::string& path)
     {
       utils::StringTokenizer tkz;
       VariableSPtr sptr(mConfigArray["root"]);

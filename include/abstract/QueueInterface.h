@@ -30,19 +30,20 @@
  **/
 
 #ifndef __QUEUE_INTERFACE_H__
-#    define __QUEUE_INTERFACE_H__
+#  define __QUEUE_INTERFACE_H__
+#  include <stdint.h>
 
 namespace itc
 {
 
-enum QueueBlockPolicy
-{
+  enum QueueBlockPolicy
+  {
     ASYNC, SYNC
-};
+  };
 
-template <typename DataType> class QueueInterface
-{
-public:
+  template <typename DataType> class QueueInterface
+  {
+   public:
 
     QueueInterface()
     {
@@ -52,11 +53,9 @@ public:
     virtual size_t depth() = 0;
     virtual void destroy() = 0;
 
-protected:
+   protected:
 
-    virtual ~QueueInterface()
-    {
-    };
-};
+    virtual ~QueueInterface() = default;
+  };
 }
 #endif /*__QUEUE_INTERFACE_H__*/

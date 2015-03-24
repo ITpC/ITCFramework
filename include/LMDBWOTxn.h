@@ -12,6 +12,7 @@
 #  include <LMDB.h>
 #  include <LMDBException.h>
 #  include <TSLog.h>
+#  include <stdint.h>
 
 
 namespace itc
@@ -63,7 +64,7 @@ namespace itc
        * @param parent - parent transaction
        **/
       explicit WOTxn(const std::shared_ptr<Database>& ref, const WOTxn& parent)
-        : mDB(ref),is_not_aborted(true)
+        : mDB(ref), is_not_aborted(true)
       {
         try
         {
@@ -84,7 +85,7 @@ namespace itc
        * @param data - a value
        * @return true on success, exception otherwise.
        **/
-      template <typename T> const bool put(size_t& key, T& data)
+      template <typename T> const bool put(uint64_t& key, T& data)
       {
         MDB_val dbkey, dbdata;
         dbkey.mv_size = sizeof(key);
@@ -94,20 +95,19 @@ namespace itc
         int ret = mdb_put(handle, mDB.get()->dbi, &dbkey, &dbdata, 0);
         switch(ret){
           case MDB_MAP_FULL:
+            is_not_aborted = false;
             throw TITCException<exceptions::MDBGeneral>(exceptions::MDBMapFull);
-            is_not_aborted=false;
-            (mDB.get()->mEnvironment.get())->WOTxnAbort(handle);
+            break;
           case MDB_TXN_FULL:
+            is_not_aborted = false;
             throw TITCException<exceptions::MDBGeneral>(exceptions::MDBTxnFull);
-            is_not_aborted=false;
-            (mDB.get()->mEnvironment.get())->WOTxnAbort(handle);
+            break;
           case EACCES:
-            is_not_aborted=false;
-            (mDB.get()->mEnvironment.get())->WOTxnAbort(handle);
+            is_not_aborted = false;
             throw TITCException<exceptions::MDBGeneral>(exceptions::MDBTEAccess);
+            break;
           case EINVAL:
-            is_not_aborted=false;
-            (mDB.get()->mEnvironment.get())->WOTxnAbort(handle);
+            is_not_aborted = false;
             throw TITCException<exceptions::MDBGeneral>(exceptions::MDBInvalParam);
           case 0:
             return true;
@@ -117,40 +117,99 @@ namespace itc
         ::itc::getLog()->fatal(__FILE__, __LINE__, "[666]:ROTxn::get() something is generally wrong. This message should never appear in the log. Seems that the LMDB API has been changed or extended with new error codes. Please file a bug-report");
         throw TITCException<exceptions::MDBGeneral>(exceptions::InvalidException);
       }
-      
+
+      /**
+       * @brief put data into the database (insert or update). The data related
+       * the key which is already in the database, will be updated. New key-value
+       * pair will be inserted.
+       * 
+       * @param key - a key
+       * @param data - a value
+       * @return true on success, exception otherwise.
+       **/
+      bool put(MDB_val& key, MDB_val& data)
+      {
+        int ret = mdb_put(handle, mDB.get()->dbi, &key, &data, 0);
+        switch(ret){
+          case MDB_MAP_FULL:
+            is_not_aborted = false;
+            throw TITCException<exceptions::MDBGeneral>(exceptions::MDBMapFull);
+            break;
+          case MDB_TXN_FULL:
+            is_not_aborted = false;
+            throw TITCException<exceptions::MDBGeneral>(exceptions::MDBTxnFull);
+            break;
+          case EACCES:
+            is_not_aborted = false;
+            throw TITCException<exceptions::MDBGeneral>(exceptions::MDBTEAccess);
+            break;
+          case EINVAL:
+            is_not_aborted = false;
+            throw TITCException<exceptions::MDBGeneral>(exceptions::MDBInvalParam);
+            break;
+          case 0:
+            return true;
+          default:
+            break;
+        }
+        ::itc::getLog()->fatal(__FILE__, __LINE__, "[666]:ROTxn::get() something is generally wrong. This message should never appear in the log. Seems that the LMDB API has been changed or extended with new error codes. Please file a bug-report");
+        throw TITCException<exceptions::MDBGeneral>(exceptions::InvalidException);
+      }
+
       void abort()
       {
-        is_not_aborted=false;
+        is_not_aborted = false;
         (mDB.get()->mEnvironment.get())->WOTxnAbort(handle);
       }
-      
-      const bool del(size_t key)
+
+      const bool del(uint64_t key)
       {
         MDB_val dbkey;
-        dbkey.mv_data=&key;
-        dbkey.mv_size=sizeof(key);
-        
-        int ret=mdb_del(handle,mDB.get()->dbi,&dbkey,NULL);
-        switch(ret)
-        {
+        dbkey.mv_data = &key;
+        dbkey.mv_size = sizeof(key);
+
+        int ret = mdb_del(handle, mDB.get()->dbi, &dbkey, NULL);
+        switch(ret){
           case MDB_NOTFOUND:
-            is_not_aborted=false;
-            (mDB.get()->mEnvironment.get())->WOTxnAbort(handle);
+            is_not_aborted = false;
             return false;
           case EACCES:
-            is_not_aborted=false;
-            (mDB.get()->mEnvironment.get())->WOTxnAbort(handle);
+            is_not_aborted = false;
             throw TITCException<exceptions::MDBTEAccess>(exceptions::MDBGeneral);
+            break;
           case EINVAL:
-            is_not_aborted=false;
-            (mDB.get()->mEnvironment.get())->WOTxnAbort(handle);
+            is_not_aborted = false;
             throw TITCException<exceptions::MDBGeneral>(exceptions::MDBInvalParam);
+            break;
           case 0:
             return true;
         }
         ::itc::getLog()->fatal(__FILE__, __LINE__, "[666]:ROTxn::del() something is generally wrong. This message should never appear in the log. Seems that the LMDB API has been changed or extended with new error codes. Please file a bug-report");
         throw TITCException<exceptions::MDBGeneral>(exceptions::InvalidException);
       }
+
+      const bool del(MDB_val& dbkey)
+      {
+        int ret = mdb_del(handle, mDB.get()->dbi, &dbkey, NULL);
+        switch(ret){
+          case MDB_NOTFOUND:
+            is_not_aborted = false;
+            return false;
+          case EACCES:
+            is_not_aborted = false;
+            throw TITCException<exceptions::MDBTEAccess>(exceptions::MDBGeneral);
+            break;
+          case EINVAL:
+            is_not_aborted = false;
+            throw TITCException<exceptions::MDBGeneral>(exceptions::MDBInvalParam);
+            break;
+          case 0:
+            return true;
+        }
+        ::itc::getLog()->fatal(__FILE__, __LINE__, "[666]:ROTxn::del() something is generally wrong. This message should never appear in the log. Seems that the LMDB API has been changed or extended with new error codes. Please file a bug-report");
+        throw TITCException<exceptions::MDBGeneral>(exceptions::InvalidException);
+      }
+
       /**
        * @brief forbid copy constructor
        * 
@@ -169,6 +228,7 @@ namespace itc
         {
           ::itc::getLog()->trace(__FILE__, __LINE__, "~WOTxn() commit transaction");
           (mDB.get()->mEnvironment.get())->WOTxnCommit(handle);
+          ::itc::getLog()->trace(__FILE__, __LINE__, "~WOTxn() transaction commited");
         }
       }
     };

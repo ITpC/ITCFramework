@@ -29,11 +29,15 @@
         <itemPath>include/LMDB.h</itemPath>
         <itemPath>include/LMDBEnv.h</itemPath>
         <itemPath>include/LMDBException.h</itemPath>
-        <itemPath>include/LMDBPersistentQueue.h</itemPath>
         <itemPath>include/LMDBROTxn.h</itemPath>
         <itemPath>include/LMDBTxn.h</itemPath>
         <itemPath>include/LMDBWOTxn.h</itemPath>
+        <itemPath>include/LMDBWObject.h</itemPath>
+        <itemPath>include/LMDBWriter.h</itemPath>
+        <itemPath>include/PQMessageListener.h</itemPath>
+        <itemPath>include/PersistentQueue.h</itemPath>
         <itemPath>include/Properties.h</itemPath>
+        <itemPath>include/QueueTxn.h</itemPath>
         <itemPath>include/RScheduler.h</itemPath>
         <itemPath>include/Sequence.h</itemPath>
         <itemPath>include/ServiceFacade.h</itemPath>
@@ -133,15 +137,23 @@
       </item>
       <item path="include/LMDBException.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/LMDBPersistentQueue.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="include/LMDBROTxn.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/LMDBTxn.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/LMDBWOTxn.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/LMDBWObject.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/LMDBWriter.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/PQMessageListener.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/PersistentQueue.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/Properties.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/QueueTxn.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/RScheduler.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -250,15 +262,23 @@
       </item>
       <item path="include/LMDBException.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/LMDBPersistentQueue.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="include/LMDBROTxn.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/LMDBTxn.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/LMDBWOTxn.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/LMDBWObject.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/LMDBWriter.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/PQMessageListener.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/PersistentQueue.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/Properties.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/QueueTxn.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/RScheduler.h" ex="false" tool="3" flavor2="0">
       </item>

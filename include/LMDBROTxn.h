@@ -12,6 +12,7 @@
 #  include <LMDB.h>
 #  include <LMDBException.h>
 #  include <TSLog.h>
+#  include <stdint.h>
 
 namespace itc
 {
@@ -59,46 +60,48 @@ namespace itc
           }
         }
 
-        explicit Cursor(const Cursor& ref)=delete;
+        explicit Cursor(const Cursor& ref) = delete;
 
-        template <typename T> const size_t getFirst(T& data)
+        template <typename T> const uint64_t getFirst(T& data)
         {
           return get<T>(data, MDB_FIRST);
         }
 
-        template <typename T> const size_t getLast(T& data)
+        template <typename T> const uint64_t getLast(T& data)
         {
           return get<T>(data, MDB_LAST);
         }
 
-        template <typename T> const size_t getCurrent(T& data)
+        template <typename T> const uint64_t getCurrent(T& data)
         {
           return get<T>(data, MDB_GET_CURRENT);
         }
 
-        template <typename T> const size_t getNext(T& data)
+        template <typename T> const uint64_t getNext(T& data)
         {
           return get<T>(data, MDB_NEXT);
         }
 
-        template <typename T> const size_t getPrev(T& data)
+        template <typename T> const uint64_t getPrev(T& data)
         {
           return get<T>(data, MDB_PREV);
         }
 
-        template <typename T> const size_t find(const size_t& pkey, T& data)
+        template <typename T> const uint64_t find(const uint64_t& pkey, T& data)
         {
-          MDB_val key = pkey, dbdata;
+          MDB_val key , dbdata;
+          key.mv_data=(void*)(&pkey);
+          key.mv_size=sizeof(uint64_t);
           int ret = mdb_cursor_get(cursor, &key, &dbdata, MDB_SET_KEY);
           switch(ret){
             case 0:
             {
               memcpy(&data, dbdata.mv_data, sizeof(data));
               mdb_cursor_close(cursor);
-              return key;
+              return pkey;
             }
             case MDB_NOTFOUND:
-              throw TITCException<exceptions::MDBGeneral>(exceptions::MDBNotFound);
+              throw TITCException<exceptions::MDBKeyNotFound>(exceptions::MDBGeneral);
             case EINVAL:
               throw TITCException<exceptions::MDBGeneral>(exceptions::MDBInvalParam);
           }
@@ -112,7 +115,7 @@ namespace itc
         }
        private:
 
-        template <typename T> const size_t get(T& data, const MDB_cursor_op& op)
+        template <typename T> const uint64_t get(T& data, const MDB_cursor_op& op)
         {
           MDB_val key, dbdata;
           int ret = mdb_cursor_get(cursor, &key, &dbdata, op);
@@ -120,7 +123,7 @@ namespace itc
             case 0:
             {
               memcpy(&data, dbdata.mv_data, sizeof(data));
-              size_t reskey=0;
+              uint64_t reskey = 0;
               memcpy(&reskey, key.mv_data, key.mv_size);
               return reskey;
             }
@@ -188,7 +191,7 @@ namespace itc
        * @exception TITCException<exceptions::MDBGeneral>(exceptions::MDBInvalParam)
        * @exception TITCException<exceptions::MDBGeneral>(exceptions::InvalidException)
        **/
-      template <typename T> bool get(const size_t& key, T& result)
+      template <typename T> bool get(const uint64_t& key, T& result)
       {
         MDB_val data;
         MDB_val dbkey;
@@ -219,7 +222,7 @@ namespace itc
 
       std::shared_ptr<Cursor> getCursor()
       {
-        return std::make_shared<Cursor>(mDB.get()->dbi,handle);
+        return std::make_shared<Cursor>(mDB.get()->dbi, handle);
       }
 
       /**

@@ -127,7 +127,21 @@ namespace itc
       mOrder.insert(OrderMapPair(name,tmp));
     }
   }
-
+  
+  template <typename T> const std::shared_ptr<T>& getService(const std::string& name)
+  {
+    sys::RecursiveSyncLock synchronize(mMutex);
+    SRMIterator srmit=mServiceRegistry.find(name);
+    if(srmit!=mServiceRegistry.end())
+    {
+      if(srmit->second.get())
+      {
+        return srmit->second;
+      }
+    }
+    throw TITCException<exceptions::NullPointerException>(exceptions::ITCGeneral);
+  }
+  
   bool OMCrossDep(const std::string& svc1, const std::string& svc2)
   {
     OMIterator omit=mOrder.find(svc1);

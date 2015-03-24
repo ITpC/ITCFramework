@@ -31,25 +31,28 @@
 
 
 #ifndef  __IVIEW_H__
-#define	__IVIEW_H__
-#include <memory>
+#  define	__IVIEW_H__
+#  include <memory>
 
-namespace itc {
-namespace abstract {
-  template <typename TModel> class IView
+namespace itc
+{
+  namespace abstract
   {
-  public:
-    
-    void update(const TModel& pM)
+
+    template <typename TModel> class IView
     {
+     public:
+
+      void update(const TModel& pM)
+      {
         onUpdate(pM);
-    }
+      }
 
-  protected:
-    virtual void onUpdate(const TModel&)=0;
+     protected:
+      virtual void onUpdate(const TModel&) = 0;
 
-    virtual ~IView()=default;
-  };
+      virtual ~IView() = default;
+    };
   }
 }
 

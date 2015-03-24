@@ -12,15 +12,17 @@
 #  include <ITCException.h>
 #  include <LMDBException.h>
 #  include <TSLog.h>
-
+#  include <stdint.h>
 #  include <lmdb.h>
 #  include <memory>
 #  include <queue>
+#  include <stdint.h>
 
 namespace itc
 {
   namespace lmdb
   {
+
     /**
      * @brief wrapper around Symas LMDB. Environment setup.
      **/
@@ -258,10 +260,12 @@ namespace itc
       void WOTxnAbort(MDB_txn *ptr)
       {
         itc::sys::SyncLock synchronize(mMutex);
+        itc::getLog()->trace(__FILE__, __LINE__, "[trace] -> in Database::WOTxnAbort()");
         if(ptr)
         {
           mdb_txn_abort(ptr);
         }
+        itc::getLog()->trace(__FILE__, __LINE__, "[trace] <-out Database::WOTxnAbort()");
       }
 
       /*=====================================================================*/

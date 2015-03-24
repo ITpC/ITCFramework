@@ -140,7 +140,7 @@ namespace itc
           }
         }catch (std::exception& e)
         {
-          throw e;
+          throw;
         }
         mSleep.usleep(mPurgeTm);
       }

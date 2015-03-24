@@ -15,6 +15,7 @@
 #  include <LMDBEnv.h>
 #  include <LMDBException.h>
 #  include <queue>
+#  include <stdint.h>
 
 namespace itc
 {
@@ -52,7 +53,7 @@ namespace itc
        * @param path - LMDB database environment path
        * @param dbname - name of the database (optional)
        * @param mode - database open mode and settings (optional, default: create
-       * database if it is not exists, the keys are of size_t type
+       * database if it is not exists, the keys are of uint64_t type
        **/
       explicit Database(
         const std::string& path,
@@ -102,6 +103,11 @@ namespace itc
         if(ret) LMDBExceptionParser onDbiOpen(ret);
         mdb_txn_commit(txn);
         isopen = true;
+      }
+
+      const std::string& getName() const
+      {
+        return mDBName;
       }
 
       void shutdown()

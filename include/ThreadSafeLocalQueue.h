@@ -30,74 +30,83 @@
  **/
 
 #ifndef __THREADSAFELOCALQUEUE_H__
-#define __THREADSAFELOCALQUEUE_H__
+#  define __THREADSAFELOCALQUEUE_H__
 
-#include <time.h>
-#include <errno.h>
-#include <string.h>
-#include <sched.h>
-#include <queue>
+#  include <time.h>
+#  include <errno.h>
+#  include <string.h>
+#  include <sched.h>
+#  include <queue>
 
-#include <abstract/QueueInterface.h>
-#include <sys/Semaphore.h>
-#include <sys/Mutex.h>
-#include <sys/SyncLock.h>
-#include <TSLog.h>
-#include <Val2Type.h>
-#include <abstract/Cleanable.h>
-#include <ITCException.h>
-#include <sys/AtomicDigital.h>
+#  include <abstract/QueueInterface.h>
+#  include <sys/Semaphore.h>
+#  include <sys/Mutex.h>
+#  include <sys/SyncLock.h>
+#  include <TSLog.h>
+#  include <Val2Type.h>
+#  include <abstract/Cleanable.h>
+#  include <ITCException.h>
+#  include <sys/AtomicDigital.h>
 
 
-namespace itc {
+namespace itc
+{
 
-    template <
-    typename DataType
-    > class ThreadSafeLocalQueue : public QueueInterface<DataType> {
-    private:
-        sys::Mutex mMutex;
-        sys::Semaphore mMsgTrigger;
-        std::queue<DataType> mQueue;
+  template <
+  typename DataType
+  > class ThreadSafeLocalQueue : public QueueInterface<DataType>
+  {
+   private:
+    sys::Mutex mMutex;
+    sys::Semaphore mMsgTrigger;
+    std::queue<DataType> mQueue;
 
-    public:
+   public:
 
-        explicit ThreadSafeLocalQueue()
-        : QueueInterface<DataType>(),
-        mMutex(),
-        mMsgTrigger() {
-        }
+    explicit ThreadSafeLocalQueue()
+      : QueueInterface<DataType>(),
+      mMutex(),
+      mMsgTrigger()
+    {
+    }
 
-        inline bool send(const DataType& pData) {
-            sys::SyncLock sync(mMutex);
-            mQueue.push(pData);
-            mMsgTrigger.post();
-            return true;
-        }
+    bool send(const DataType& pData)
+    {
+      sys::SyncLock sync(mMutex);
+      mQueue.push(pData);
+      mMsgTrigger.post();
+      return true;
+    }
 
-        inline bool recv(DataType& pData) {
-            mMsgTrigger.wait();
-            sys::SyncLock synchronize(mMutex);
-            if (!mQueue.empty()) {
-                pData = mQueue.front();
-                mQueue.pop();
-                return true;
-            }
-            return false;
-        }
+    bool recv(DataType& pData)
+    {
+      mMsgTrigger.wait();
+      sys::SyncLock synchronize(mMutex);
+      if(!mQueue.empty())
+      {
+        pData = mQueue.front();
+        mQueue.pop();
+        return true;
+      }
+      return false;
+    }
 
-        inline size_t depth() {
-            sys::SyncLock synchronize(mMutex);
-            return mQueue.size();
-        }
+    size_t depth()
+    {
+      sys::SyncLock synchronize(mMutex);
+      return mQueue.size();
+    }
 
-        inline void destroy() {
-            mMsgTrigger.destroy();
-        }
+    void destroy()
+    {
+      mMsgTrigger.destroy();
+    }
 
-        ~ThreadSafeLocalQueue() {
-            destroy();
-        }
-    };
+    ~ThreadSafeLocalQueue()
+    {
+      destroy();
+    }
+  };
 }
 
 #endif /*THREADSAFELOCALQUEUE_H_*/
