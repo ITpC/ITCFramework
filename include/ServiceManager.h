@@ -81,14 +81,14 @@ namespace itc
   {
   }
 
-  template <typename T> void addService()
+  template <typename T, typename... Args> void addService(Args...args)
   {
     sys::RecursiveSyncLock synchronize(mMutex);
-    mServiceRegistry.insert(ServicePair(Singleton<T>::getInstance()->getName(),Singleton<T>::getInstance()));
+    mServiceRegistry.insert(ServicePair(Singleton<T>::getInstance()->getName(),Singleton<T>::getInstance(args...)));
     mOrder[Singleton<T>::getInstance()->getName()]=std::set<std::string>();
   }
 
-  template <typename T> void addServiceAfter(const std::string& name)
+  template <typename T, typename... Args> void addServiceAfter(const std::string& name, Args...args)
   {
     sys::RecursiveSyncLock synchronize(mMutex);
     SRMIterator srmit=mServiceRegistry.find(name);
@@ -103,7 +103,7 @@ namespace itc
     }
     mServiceRegistry.insert(
       ServicePair(
-        Singleton<T>::getInstance()->getName(),Singleton<T>::getInstance()
+        Singleton<T>::getInstance()->getName(),Singleton<T>::getInstance(args...)
       )
     );
     if(OMCrossDep(name,Singleton<T>::getInstance()->getName()))

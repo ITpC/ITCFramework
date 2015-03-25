@@ -63,11 +63,14 @@ namespace itc
    private:
     sys::AtomicBool mayRun;
     QueueWeakPtr mQueue;
+    sys::AtomicBool mPauseListener;
+    sys::Semaphore mPauseEnd;
 
    public:
 
     explicit PQMessageListener(QueueSharedPtr& pQueue)
-      : mayRun(false), mQueue(pQueue)
+      : mayRun(false), mQueue(pQueue),mPauseListener(false),
+        mPauseEnd()
     {
       if(!(mQueue.lock().get()))
         throw NullPointerException(EFAULT);
@@ -88,6 +91,8 @@ namespace itc
 
     void execute()
     {
+      if(mPauseListener)
+        mPauseEnd.wait();
       itc::getLog()->debug(__FILE__, __LINE__, "%s at address %x", "PQMessageListener::execute() has been started", this);
       while(mayRun)
       {
@@ -99,27 +104,36 @@ namespace itc
           {
             mayRun = false;
             itc::getLog()->error(__FILE__, __LINE__, "Listener at address %x, has cought an exception on queue recieve and following message processing: %s", this, e.what());
-            onQueueDestroy();
           }
         }else
         {
           mayRun = false;
           itc::getLog()->error(__FILE__, __LINE__, "%s at address %x", "PQMessageListener::execute() - QueueWeakPtr does not exists anymore, calling oQueueDestroy", this);
-          onQueueDestroy();
         }
       }
       itc::getLog()->error(__FILE__, __LINE__, "%s at address %x", "PQMessageListener::execute() has been finished", this);
     }
 
+    void pause()
+    {
+      mPauseListener=true;
+    }
+    void go()
+    {
+      mPauseListener=false;
+      mPauseEnd.post();
+    }
    protected:
     virtual void onMessage(const QueueTxnSPtr&) = 0;
     virtual void onQueueDestroy() = 0;
 
-    virtual ~PQMessageListener()
+    virtual ~PQMessageListener()=default;
+    /*
     {
-      shutdown();
+      onQueueDestroy();
       itc::getLog()->debug(__FILE__, __LINE__, "%s at address %x", "~PQMessageListener()", this);
     }
+     */
   };
 }
 

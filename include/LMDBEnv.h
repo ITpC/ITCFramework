@@ -211,7 +211,7 @@ namespace itc
        * @param parent a parent transaction
        * @return 
        */
-      MDB_txn* beginWOTxn(MDB_txn *parent = static_cast<MDB_txn*> (0))
+      MDB_txn* beginWOTxn(MDB_txn *parent = nullptr)
       {
         itc::sys::SyncLock synchronize(mMutex);
         itc::getLog()->trace(__FILE__, __LINE__, "[trace] -> in Database::beginWOTxn()");
@@ -219,6 +219,11 @@ namespace itc
         MDB_txn *tmp;
         int ret = mdb_txn_begin(mEnv, parent, 0, &tmp);
         if(ret) LMDBExceptionParser onTxnBegin(ret);
+        if(tmp == nullptr)
+        {
+          ::itc::getLog()->fatal(__FILE__, __LINE__, "[666]: in Database::beginWOTxn() something is generally wrong. The transaction handle is null.");
+          throw TITCException<exceptions::ExternalLibraryException>(errno);
+        }
         itc::getLog()->trace(__FILE__, __LINE__, "[trace] <- normal out of Database::beginWOTxn()");
         return tmp;
       }
@@ -253,6 +258,7 @@ namespace itc
           }
         }else
         {
+          ::itc::getLog()->fatal(__FILE__, __LINE__, "[666]: in Database::WOTxnCommit() something is generally wrong. The transaction handle is null.");
           throw TITCException<exceptions::ITCGeneral>(exceptions::MDBEInval);
         }
       }
