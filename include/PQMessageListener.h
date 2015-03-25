@@ -61,23 +61,23 @@ namespace itc
 
 
    private:
-    sys::AtomicBool doWork;
+    sys::AtomicBool mayRun;
     QueueWeakPtr mQueue;
 
    public:
 
     explicit PQMessageListener(QueueSharedPtr& pQueue)
-      : doWork(false), mQueue(pQueue)
+      : mayRun(false), mQueue(pQueue)
     {
       if(!(mQueue.lock().get()))
         throw NullPointerException(EFAULT);
-      doWork = true;
+      mayRun = true;
       itc::getLog()->debug(__FILE__, __LINE__, "%s at address %x", "PQMessageListener::PQMessageListener(QueueSharedPtr& pQueue)", this);
     }
 
     void shutdown()
     {
-      doWork = false;
+      mayRun = false;
       itc::getLog()->debug(__FILE__, __LINE__, "%s at address %x", "PQMessageListener::shutdown()", this);
     }
 
@@ -89,7 +89,7 @@ namespace itc
     void execute()
     {
       itc::getLog()->debug(__FILE__, __LINE__, "%s at address %x", "PQMessageListener::execute() has been started", this);
-      while(doWork)
+      while(mayRun)
       {
         if(TQueueImpl * queue_addr = mQueue.lock().get())
         {
@@ -97,13 +97,13 @@ namespace itc
             onMessage(queue_addr->recv());
           }catch(std::exception& e)
           {
-            doWork = false;
+            mayRun = false;
             itc::getLog()->error(__FILE__, __LINE__, "Listener at address %x, has cought an exception on queue recieve and following message processing: %s", this, e.what());
             onQueueDestroy();
           }
         }else
         {
-          doWork = false;
+          mayRun = false;
           itc::getLog()->error(__FILE__, __LINE__, "%s at address %x", "PQMessageListener::execute() - QueueWeakPtr does not exists anymore, calling oQueueDestroy", this);
           onQueueDestroy();
         }

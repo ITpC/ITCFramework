@@ -87,10 +87,9 @@ namespace itc
       
       void execute()
       {
+        mQEvent.wait();
         while(mayRun)
-        {
-          //itc::getLog()->debug(__FILE__, __LINE__, "DBWriter::execue(): qDepth %ju; SemDepth: %ju", mQueue.size(), mQEvent.getValue());
-          mQEvent.wait();
+        { 
           if(empty())
           {
             // throw TITCException<exceptions::QueueOutOfSync>(exceptions::ITCGeneral); // I don't care.
@@ -120,17 +119,20 @@ namespace itc
 
       void onCancel()
       {
+        mQEvent.post();
         wait_save();
       }
 
       void shutdown()
       {
+        mQEvent.post();
         wait_save();
       }
 
       ~DBWriter()
       {
         itc::getLog()->info("[trace] in -> DBWriter::~DBWriter(): Writing remaining objects into database %s", mDB.get()->getName().c_str());
+        mQEvent.post();
         wait_save();
         itc::getLog()->info("[trace] out <- DBWriter::~DBWriter(). All remining objects are written into database.");
       }

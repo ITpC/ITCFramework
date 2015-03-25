@@ -53,10 +53,9 @@ namespace itc {
      **/
     template<class T> class Singleton {
     private:
-      explicit Singleton() // Elliminate any instantiations of this class.
-      {
-        throw std::bad_alloc();
-      }
+      explicit Singleton()=delete;
+      explicit Singleton(const Singleton&)=delete;
+      explicit Singleton(Singleton&)=delete;
 
     public:
       static std::shared_ptr<T> getInstance()
@@ -116,7 +115,7 @@ namespace itc {
 
     // Initialisation
     template <typename T> itc::sys::Mutex Singleton<T>::mMutex;
-    template <typename T> std::shared_ptr<T> Singleton<T>::mInstance((T*) 0);
+    template <typename T> std::shared_ptr<T> Singleton<T>::mInstance(static_cast<T*>(nullptr));
 }
 
 #endif
