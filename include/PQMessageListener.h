@@ -63,14 +63,11 @@ namespace itc
    private:
     sys::AtomicBool mayRun;
     QueueWeakPtr mQueue;
-    sys::AtomicBool mPauseListener;
-    sys::Semaphore mPauseEnd;
 
    public:
 
     explicit PQMessageListener(QueueSharedPtr& pQueue)
-      : mayRun(false), mQueue(pQueue),mPauseListener(false),
-        mPauseEnd()
+      : mayRun(false), mQueue(pQueue)
     {
       if(!(mQueue.lock().get()))
         throw NullPointerException(EFAULT);
@@ -91,8 +88,6 @@ namespace itc
 
     void execute()
     {
-      if(mPauseListener)
-        mPauseEnd.wait();
       itc::getLog()->debug(__FILE__, __LINE__, "%s at address %x", "PQMessageListener::execute() has been started", this);
       while(mayRun)
       {
@@ -114,26 +109,15 @@ namespace itc
       itc::getLog()->error(__FILE__, __LINE__, "%s at address %x", "PQMessageListener::execute() has been finished", this);
     }
 
-    void pause()
-    {
-      mPauseListener=true;
-    }
-    void go()
-    {
-      mPauseListener=false;
-      mPauseEnd.post();
-    }
    protected:
     virtual void onMessage(const QueueTxnSPtr&) = 0;
     virtual void onQueueDestroy() = 0;
 
-    virtual ~PQMessageListener()=default;
-    /*
+    virtual ~PQMessageListener()
     {
-      onQueueDestroy();
+      shutdown();
       itc::getLog()->debug(__FILE__, __LINE__, "%s at address %x", "~PQMessageListener()", this);
     }
-     */
   };
 }
 
