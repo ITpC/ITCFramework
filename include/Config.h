@@ -1,32 +1,13 @@
 /**
- * Copyright (c) 2009-2015, Pavel Kraynyukhov.
- *
- * Permission to use, copy, modify, and distribute this software and its
- * documentation for any purpose, without fee, and without a written agreement
- * is hereby granted under the terms of the General Public License version 2
- * (GPLv2), provided that the above copyright notice and this paragraph and the
- * following two paragraphs and the "LICENSE" file appear in all modified or
- * unmodified copies of the software "AS IS" and without any changes.
- *
- * IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE TO ANY PARTY FOR
- * DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING
- * LOST PROFITS, ARISING OUT OF THE USE OF THIS SOFTWARE AND ITS
- * DOCUMENTATION, EVEN IF THE COPYRIGHT HOLDER HAS BEEN ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- *
- * THE COPYRIGHT HOLDER SPECIFICALLY DISCLAIMS ANY WARRANTIES,
- * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
- * AND FITNESS FOR A PARTICULAR PURPOSE.  THE SOFTWARE PROVIDED HEREUNDER IS
- * ON AN "AS IS" BASIS, AND THE COPYRIGHT HOLDER HAS NO OBLIGATIONS TO
- * PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *
- *
+ * Copyright Pavel Kraynyukhov 2007 - 2015.
+ * Distributed under the Boost Software License, Version 1.0.
+ * (See accompanying file LICENSE_1_0.txt or copy at
+ *          http://www.boost.org/LICENSE_1_0.txt)
+ * 
  * $Id: Config.h 22 2015-03-13 23:24:33Z pk $
- *
+ * 
+ * EMail: pavel.kraynyukhov@gmail.com
+ * 
  **/
 
 #ifndef __JSNON_LIKE_CONFIG_H__
@@ -39,14 +20,13 @@
 #  include <stack>
 #  include <map>
 #  include <fstream>
-#  include <sys/Mutex.h>
-#  include <sys/SyncLock.h>
 #  include <TSLog.h>
 #  include <ITCException.h>
 #  include <ConfigReflection.h>
 #  include <boost/regex.hpp>
 #  include <StringTokenizer.h>
-#include <Val2Type.h>
+#  include <Val2Type.h>
+#  include <sstream>
 
 namespace itc
 {
@@ -109,74 +89,50 @@ namespace itc
      * @param fname a filename of config file to read the array from.
      **/
     Config(const std::string& fname);
-    
-    const VariableSPtr& operator[](const std::string& name)
+
+    const Variable& operator[](const std::string& name)
     {
       return getRoot()[name];
     }
-    
-    /**
-     * @brief get the variable value by path
-     * 
-     * @param path is a dot separated sequence of name representing the path
-     * to variable. Assume the array { a:{b:{c:1}}}, to get the value of c
-     * you have to provide "a.b.c" as a path to this method.
-     **/
-    template<typename T> T& get(const std::string& path)
+
+    void save(const std::string& newname)
     {
-      utils::StringTokenizer tkz;
-      VariableSPtr sptr(mConfigArray["root"]);
-      std::string tmp(path); 
-      std::list<std::string> pathlist(tkz.scan(tmp,"."));
-      std::list<std::string>::iterator it=pathlist.begin();
-      size_t depth=pathlist.size();
-      std::for_each(
-        pathlist.begin(),pathlist.end(),
-        [](const std::string& name)
-        {
-          std::cout <<name << std::endl;
-        }
-      );
-      if(depth>0)
-      {
-        while(depth>1)
-        {
-          --depth;
-          sptr=cast<Array>(sptr)[*it];
-          ++it;
-        }
-        return cast<T>(cast<Array>(sptr)[*it]);
-      }
-      abort();
-      //throw TITCException<exceptions::Reflection>(exceptions::IndexOutOfRange);
+      std::fstream fs(newname,std::ios_base::out|std::ios_base::trunc);
+      fs << save();
+      fs.close();      
     }
     
-
-   protected:
+    const std::string save()
+    {
+      std::stringstream fs;
+      fs << "{" << std::endl;
+      save(fs, getRoot(), "  ");
+      fs << "}" << std::endl;
+      return fs.str();
+    }
     
+   protected:
+
     Array& getRoot()
     {
-      return (*static_cast<Array*>(mConfigArray["root"].get()));
+      return *static_cast<Array*>(&(mConfigArray["root"]));
     }
 
-    
-    /**
-     * @TBR on completion.
-     **/
-    void printArray(reflection::Array& ref, std::string indent="");
-     
+    void printArray(reflection::Array&, std::string indent="  ");
+    void save(std::stringstream&, reflection::Array&, std::string indent = "", bool first = true);
+
     /**
      * @brief JSON-like parser
      * 
      * @param stream - an input sequence of symbols to parse to.
      **/
     void parser(const std::string& stream);
-    
+
     /**
      * @brief JSON-like parser-wrapper with stack and syntax breaks output.
      **/
     void parse();
-    
+
     /**
      * @brief throw an exception on parser stack violations (bugs in parser)
      **/

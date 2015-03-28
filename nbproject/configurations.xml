@@ -8,6 +8,7 @@
         <logicalFolder name="abstract" displayName="abstract" projectFiles="true">
           <itemPath>include/abstract/IController.h</itemPath>
           <itemPath>include/abstract/IMessageListener.h</itemPath>
+          <itemPath>include/abstract/IQTxn.h</itemPath>
           <itemPath>include/abstract/IThreadPool.h</itemPath>
           <itemPath>include/abstract/IView.h</itemPath>
           <itemPath>include/abstract/IWorkflowState.h</itemPath>
@@ -15,6 +16,7 @@
           <itemPath>include/abstract/Observer.h</itemPath>
           <itemPath>include/abstract/QueueInterface.h</itemPath>
           <itemPath>include/abstract/Service.h</itemPath>
+          <itemPath>include/abstract/TxnOwner.h</itemPath>
           <itemPath>include/WorkerThread.h</itemPath>
         </logicalFolder>
         <logicalFolder name="f1" displayName="sys" projectFiles="true">
@@ -38,11 +40,13 @@
         <itemPath>include/PersistentQueue.h</itemPath>
         <itemPath>include/Properties.h</itemPath>
         <itemPath>include/QueueTxn.h</itemPath>
+        <itemPath>include/QueuesHolder.h</itemPath>
         <itemPath>include/RScheduler.h</itemPath>
         <itemPath>include/Sequence.h</itemPath>
         <itemPath>include/ServiceFacade.h</itemPath>
         <itemPath>include/ServiceManager.h</itemPath>
         <itemPath>include/Singleton.h</itemPath>
+        <itemPath>include/SyncWriterAdapter.h</itemPath>
         <itemPath>include/TCPListener.h</itemPath>
         <itemPath>include/TCPSocketDef.h</itemPath>
         <itemPath>include/ThreadPool.h</itemPath>
@@ -65,8 +69,10 @@
       <logicalFolder name="f1" displayName="src" projectFiles="true">
         <logicalFolder name="f1" displayName="Config" projectFiles="true">
           <itemPath>src/Config/Config.cpp</itemPath>
+          <itemPath>src/Config/ConfigReflection.cpp</itemPath>
           <itemPath>src/Config/parser.cpp</itemPath>
           <itemPath>src/Config/printArray.cpp</itemPath>
+          <itemPath>src/Config/save.cpp</itemPath>
         </logicalFolder>
       </logicalFolder>
     </logicalFolder>
@@ -100,12 +106,35 @@
             <pElem>../ITCLib/include</pElem>
             <pElem>../utils/include</pElem>
             <pElem>../luacpp/include</pElem>
+            <pElem>../mdb/libraries/liblmdb</pElem>
           </incDir>
           <commandLine>-pipe -pthread -D_REENTRANT -D_THREAD_SAFE -O2 -mtune=generic -fomit-frame-pointer -mfpmath=sse -ftree-vectorize -funroll-loops -mno-tls-direct-seg-refs -DBZ_NO_STDIO -DLOG_DEBUG -DMAX_BUFF_SIZE=256 -DTSAFE_LOG=1</commandLine>
           <warningLevel>2</warningLevel>
         </ccTool>
         <archiverTool>
         </archiverTool>
+        <requiredProjects>
+          <makeArtifact PL="../ITCLib"
+                        CT="3"
+                        CN="Debug"
+                        AC="true"
+                        BL="true"
+                        WD="../ITCLib"
+                        BC="${MAKE}  -f Makefile CONF=Debug"
+                        CC="${MAKE}  -f Makefile CONF=Debug clean"
+                        OP="${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libitclib.a">
+          </makeArtifact>
+          <makeArtifact PL="../mdb/libraries/liblmdb"
+                        CT="0"
+                        CN="Default"
+                        AC="true"
+                        BL="true"
+                        WD="../mdb/libraries/liblmdb"
+                        BC="${MAKE} -f Makefile"
+                        CC="${MAKE} -f Makefile clean"
+                        OP="">
+          </makeArtifact>
+        </requiredProjects>
       </compileType>
       <item path="include/ClientSocketsFactory.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -143,6 +172,8 @@
       </item>
       <item path="include/QueueTxn.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/QueuesHolder.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/RScheduler.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Sequence.h" ex="false" tool="3" flavor2="0">
@@ -152,6 +183,8 @@
       <item path="include/ServiceManager.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Singleton.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/SyncWriterAdapter.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/TCPListener.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -178,6 +211,8 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="include/abstract/IQTxn.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/abstract/IThreadPool.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/abstract/IView.h" ex="false" tool="3" flavor2="0">
@@ -192,6 +227,8 @@
       </item>
       <item path="include/abstract/Service.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/abstract/TxnOwner.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/bz2Compressor.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/bz2Decompressor.h" ex="false" tool="3" flavor2="0">
@@ -200,9 +237,13 @@
       </item>
       <item path="src/Config/Config.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="src/Config/ConfigReflection.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="src/Config/parser.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/Config/printArray.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/Config/save.cpp" ex="false" tool="1" flavor2="0">
       </item>
     </conf>
     <conf name="Release" type="3">
@@ -268,6 +309,8 @@
       </item>
       <item path="include/QueueTxn.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/QueuesHolder.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/RScheduler.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Sequence.h" ex="false" tool="3" flavor2="0">
@@ -277,6 +320,8 @@
       <item path="include/ServiceManager.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Singleton.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/SyncWriterAdapter.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/TCPListener.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -303,6 +348,8 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="include/abstract/IQTxn.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/abstract/IThreadPool.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/abstract/IView.h" ex="false" tool="3" flavor2="0">
@@ -317,6 +364,8 @@
       </item>
       <item path="include/abstract/Service.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/abstract/TxnOwner.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/bz2Compressor.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/bz2Decompressor.h" ex="false" tool="3" flavor2="0">
@@ -325,9 +374,13 @@
       </item>
       <item path="src/Config/Config.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="src/Config/ConfigReflection.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="src/Config/parser.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/Config/printArray.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/Config/save.cpp" ex="false" tool="1" flavor2="0">
       </item>
     </conf>
   </confs>

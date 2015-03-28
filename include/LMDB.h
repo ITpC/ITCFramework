@@ -1,21 +1,25 @@
-/* 
- * File:   LMDB.h
- * Author: pk
- *
- * Created on 12 Март 2015 г., 17:07
- */
+/**
+ * Copyright Pavel Kraynyukhov 2007 - 2015.
+ * Distributed under the Boost Software License, Version 1.0.
+ * (See accompanying file LICENSE_1_0.txt or copy at
+ *          http://www.boost.org/LICENSE_1_0.txt)
+ * 
+ * $Id: LMDB.h 1 12 Март 2015 г., 17:07 pk $
+ * 
+ * EMail: pavel.kraynyukhov@gmail.com
+ * 
+ **/
 
 #ifndef LMDB_H
 #  define	LMDB_H
 #  include <TSLog.h>
 #  include <string>
-#  include <sys/Mutex.h>
-#  include <sys/SyncLock.h>
 #  include <lmdb.h>
 #  include <LMDBEnv.h>
 #  include <LMDBException.h>
 #  include <queue>
 #  include <stdint.h>
+#  include <mutex>
 
 namespace itc
 {
@@ -27,7 +31,7 @@ namespace itc
     class Database
     {
      private:
-      sys::Mutex mMutex;
+      std::mutex mMutex;
       std::shared_ptr<Environment> mEnvironment;
       std::string mDBEnvPath;
       std::string mDBName;
@@ -57,7 +61,7 @@ namespace itc
         : mMutex(), mDBEnvPath(path),
         mDBMode(mode), isopen(false)
       {
-        sys::SyncLock synchronize(mMutex);
+        std::lock_guard<std::mutex> dosync(mMutex);
 
         if(dbname.empty())
         {
@@ -77,7 +81,7 @@ namespace itc
       void open()
       {
         itc::getLog()->debug(__FILE__, __LINE__, "[trace] -> Database::open()");
-        sys::SyncLock synchRO(mMutex);
+        std::lock_guard<std::mutex> dosync(mMutex);
 
         if(isopen)
         {
@@ -111,7 +115,7 @@ namespace itc
 
       void shutdown()
       {
-        sys::SyncLock synchRO(mMutex);
+        std::lock_guard<std::mutex> dosync(mMutex);
         isopen = false;
       }
 

@@ -1,18 +1,24 @@
-/* 
- * File:   LMDBWriter.h
- * Author: pk
- *
- * Created on 22 Март 2015 г., 13:44
- */
+/**
+ * Copyright Pavel Kraynyukhov 2007 - 2015.
+ * Distributed under the Boost Software License, Version 1.0.
+ * (See accompanying file LICENSE_1_0.txt or copy at
+ *          http://www.boost.org/LICENSE_1_0.txt)
+ * 
+ * $Id: LMDBWriter.h 1 2015-03-22 13:44:11Z pk $
+ * 
+ * EMail: pavel.kraynyukhov@gmail.com
+ * 
+ **/
+
+
 
 #ifndef LMDBWRITER_H
 #  define	LMDBWRITER_H
 
 #  include <abstract/Runnable.h>
-#  include <sys/Mutex.h>
-#  include <sys/SyncLock.h>
 #  include <memory>
 #  include <queue>
+#  include <mutex>
 #  include <algorithm>
 #  include <functional>
 #  include <LMDBEnv.h>
@@ -20,10 +26,10 @@
 #  include <LMDBWOTxn.h>
 #  include <LMDBWObject.h>
 #  include <abstract/IController.h>
-#  include <sys/AtomicBool.h>
-#  include <sys/AtomicDigital.h>
 #  include <map>
 #  include <stdint.h> 
+#  include <atomic>
+#  include <limits>
 
 
 namespace itc
@@ -43,20 +49,22 @@ namespace itc
       typedef std::pair<uint64_t, ViewTypeSPtr> SubscriberDescriptor;
 
      private:
-      sys::Mutex mQueueProtect;
-      sys::Mutex mWriteProtect;
-      sys::Semaphore mQEvent;
+      std::mutex mWriteProtect;
+      std::mutex mServiceQMutex;
+      std::recursive_mutex mWorkQueueMutex;
       LMDBSPtr mDB;
-      WObjectsQueue mQueue;
-      sys::AtomicBool mayDestroy;
-      sys::AtomicBool mayRun;
+      WObjectsQueue mServiceQueue;
+      WObjectsQueue mWorkQueue;
+      std::atomic<bool> mayRun;
       SubscribersMap mSMap;
+      sys::Semaphore mQEvent;
+      std::list<uint64_t> mTrackKeys;
 
      public:
 
       explicit DBWriter(const LMDBSPtr& ref)
-        : mQueueProtect(), mWriteProtect(), mDB(ref),
-        mayDestroy(false), mayRun(true)
+      : mWriteProtect(), mServiceQMutex(), mWorkQueueMutex(), 
+        mDB(ref), mayRun(true),mQEvent()
       {
         itc::getLog()->info("DBWriter::DBWriter(): Starting a database writer for database %s", mDB.get()->getName().c_str());
       }
@@ -65,76 +73,89 @@ namespace itc
 
       void write(const WObjectSPtr& ref, const ViewTypeSPtr& vref)
       {
+        std::lock_guard<std::mutex> dosync(mServiceQMutex);
         if(!mayRun)
         {
           throw TITCException<exceptions::MDBWriteFailed>(exceptions::MDBGeneral);
+        }else
+        {
+          std::lock_guard<std::mutex> maplock(mWriteProtect);
+          uint64_t key;
+          memcpy(&key, ref.get()->key.mv_data, sizeof(uint64_t));
+          mSMap.insert(SubscriberDescriptor(key, vref));
+          mServiceQueue.push(ref);
+          mTrackKeys.push_back(key);
+          mQEvent.post();
         }
-        sys::SyncLock synchronize(mWriteProtect);
-        uint64_t key;
-        memcpy(&key, ref.get()->key.mv_data, sizeof(uint64_t));
-        mSMap.insert(SubscriberDescriptor(key, vref));
-        push(ref);
-        mQEvent.post();
-        //mQEvent.post();
-        //mQEvent.post();
       }
-      
-      const size_t size()
+
+      const size_t service_queue_depth()
       {
-        sys::SyncLock dosync(mQueueProtect);
-        return mQueue.size();        
+        std::lock_guard<std::mutex> dosync(mServiceQMutex);
+        return mServiceQueue.size();
       }
-      
+
       void execute()
       {
         mQEvent.wait();
         while(mayRun)
-        { 
-          if(empty())
+        {
+          std::lock_guard<std::recursive_mutex> dosync(mWorkQueueMutex);
+          try
           {
-            // throw TITCException<exceptions::QueueOutOfSync>(exceptions::ITCGeneral); // I don't care.
+            std::lock_guard<std::mutex> dosync(mServiceQMutex);
+            while(!mServiceQueue.empty())
+            {
+              mWorkQueue.push(mServiceQueue.front());
+              mServiceQueue.pop();
+            }
+          }catch(const std::exception& e)
+          {
+            itc::getLog()->error(__FILE__, __LINE__, "Unexpected error: %s", e.what());
+            itc::getLog()->fatal(__FILE__, __LINE__, "[666]: Queues are out of order. DBWriter at address %jx is shutdown.", this);
+            mayRun = false;
           }
           try
           {
-            dbWrite();
-          }catch(TITCException<exceptions::MDBKeyNotFound>& e)
+            processWorkQueue();
+          }catch(const TITCException<exceptions::MDBKeyNotFound>& e)
           {
             itc::getLog()->debug(__FILE__, __LINE__, "Ignoring exception %s.", e.what());
           }
         }
-        // write all remaining messages
-        try
-        {
-          while(!empty())
-          {
-            dbWrite();
-          }
-        }catch(std::exception& e)
-        {
-          //log all another exceptions; can't do anything now 
-          itc::getLog()->error(__FILE__, __LINE__, "Exception writing remaining messages into LMDB: %s", e.what());
-        }
-        mayDestroy = true;
       }
 
       void onCancel()
       {
-        mQEvent.post();
-        wait_save();
+        shutdown();
       }
 
       void shutdown()
       {
+        
+        itc::getLog()->info("[trace] -> DBWriter::shutdown() for database %s is in progress",mDB.get()->getName().c_str());
+        mayRun=false;
+        sys::SemSleep s;
+        while((mQEvent.getValue()>0)&&(service_queue_depth()>0))
+        {
+          s.usleep(100000);
+        }
         mQEvent.post();
-        wait_save();
+        mQEvent.post();
+        mQEvent.post();
+        std::lock_guard<std::recursive_mutex> dosync(mWorkQueueMutex);
+        mQEvent.post();
+        mQEvent.post();
+        mQEvent.post();
       }
 
       ~DBWriter()
       {
-        itc::getLog()->info("[trace] in -> DBWriter::~DBWriter(): Writing remaining objects into database %s", mDB.get()->getName().c_str());
-        mQEvent.post();
-        wait_save();
-        itc::getLog()->info("[trace] out <- DBWriter::~DBWriter(). All remining objects are written into database.");
+        shutdown();
+        std::lock_guard<std::recursive_mutex> syncwq(mWorkQueueMutex);
+        std::lock_guard<std::mutex> dosync(mServiceQMutex);
+        std::lock_guard<std::mutex> maplock(mWriteProtect);
+        itc::getLog()->info("[trace] out <- DBWriter for database %s is down",mDB.get()->getName().c_str());
       }
 
       const LMDBSPtr& getDatabase() const
@@ -142,204 +163,95 @@ namespace itc
         return mDB;
       }
 
-     
+
      private:
 
-      void push(const WObjectSPtr& ref)
+      void processWorkQueue()
       {
-        sys::SyncLock dosync(mQueueProtect);
-        mQueue.push(ref);
-      }
-
-      void pop()
-      {
-        sys::SyncLock dosync(mQueueProtect);
-        mQueue.pop();
-      }
-
-      const WObjectSPtr& front()
-      {
-        sys::SyncLock dosync(mQueueProtect);
-        return mQueue.front();
-      }
-
-      bool empty()
-      {
-        sys::SyncLock dosync(mQueueProtect);
-        return mQueue.empty();
-      }      
-
-      void wait_save()
-      {
-        mayRun = false;
-        while(!mayDestroy)
+        std::lock_guard<std::recursive_mutex> dosync(mWorkQueueMutex); // be overprotective about memory barriers
+        while(!mWorkQueue.empty())
         {
-          sched_yield();
-        }
-      }
-
-      void dbWrite()
-      {
-        if(empty())
-        {
-          return;
-        }
-        WObject* ptr = front().get();
-        uint64_t key;
-        if(ptr)
-        {
+          uint64_t key=std::numeric_limits<uint64_t>::max();
+          WObjectSPtr ptr(mWorkQueue.front());
+          mWorkQueue.pop();
+          if(ptr.get() == nullptr)
+          {
+            itc::getLog()->error(__FILE__, __LINE__, "Invalid shared pointer to writable object has been found in DBWriter's processing queue");
+            
+            throw TITCException<exceptions::ITCGeneral>(exceptions::NullPointerException);
+          }
+          memcpy(&key, ptr->key.mv_data, sizeof(uint64_t));
           try
           {
             WOTransaction aTxn(mDB);
-            memcpy(&key, ptr->key.mv_data, sizeof(uint64_t));
             switch(ptr->theOP){
               case ADD:
                 if(aTxn.put(ptr->key, ptr->data))
                 {
-                  sys::SyncLock synchronize(mWriteProtect);
-                  SubscribersMap::iterator it = mSMap.find(key);
-                  if(it != mSMap.end())
-                  {
-                    notify(Model(true, it->first), it->second);
-                    mSMap.erase(it);
-                  }
+                  notify(key,true);
                 }
                 break;
               case DEL:
                 if(aTxn.del(ptr->key))
                 {
-                  sys::SyncLock synchronize(mWriteProtect);
-                  SubscribersMap::iterator it = mSMap.find(key);
-                  if(it != mSMap.end())
-                  {
-                    notify(Model(true, it->first), it->second);
-                    mSMap.erase(it);
-                  }
+                  notify(key,true);
                 }
                 break;
               default:
-                throw TITCException<exceptions::ITCGeneral>(exceptions::IndexOutOfRange);
+                itc::getLog()->error(__FILE__, __LINE__, "Unexpected instruction for transactions processing. Kick the programmer in the ass!");
+                throw TITCException<exceptions::IndexOutOfRange>(exceptions::ITCGeneral);
             }
-            pop();
-          }catch(TITCException<exceptions::MDBKeyNotFound>& e)
+          }catch(const TITCException<exceptions::MDBKeyNotFound>& e)
           {
-            sys::SyncLock synchronize(mWriteProtect);
-            if(mSMap.find(key) != mSMap.end())
-            {
-              notify(Model(true, key), mSMap[key]); //  report ok, when the key wasn't found
-            }
-          }catch(std::exception& e)
+            notify(key,true);
+            throw;
+          }catch(const std::exception& e)
           {
-            sys::SyncLock synchronize(mWriteProtect);
-            if(mSMap.find(key) != mSMap.end())
-            {
-              notify(Model(false, key), mSMap[key]); // report subscriber about write error
-            }
+            notify(key,false);
             throw; //rethrow the exception
           }
         }
       }
-    };
-
-    typedef std::shared_ptr<DBWriter> DBWriterSPtr;
-
-    class SyncDBWriterAdapter : public abstract::IView<Model>, public std::enable_shared_from_this<SyncDBWriterAdapter>
-    {
-     private:
-      sys::Mutex mWriteMutex;
-      sys::Mutex mQueueProtect;
-      sys::Semaphore mWaitWriteEnd;
-      DBWriterSPtr mDBW;
-      std::queue<Model> retQueue;
-      sys::AtomicBool mayWrite;
-
-      typedef itc::abstract::IView<Model> ViewModelType;
-
-     public:
-
-      explicit SyncDBWriterAdapter(const DBWriterSPtr& dbref)
-        : mWriteMutex(), mQueueProtect(), mDBW(dbref), mayWrite(true)
+      
+      void notify(const uint64_t key, const bool& res)
       {
-        sys::SyncLock dosync(mQueueProtect);
-        sys::SyncLock synchOnWrite(mWriteMutex);
-      }
-        
-      explicit SyncDBWriterAdapter(const SyncDBWriterAdapter&) = delete;
-      explicit SyncDBWriterAdapter(SyncDBWriterAdapter&) = delete;
+        std::lock_guard<std::mutex> maplock(mWriteProtect);
 
-      /**
-       * @brief simulates synchronous write
-       * @param ref
-       */
-      void write(const WObjectSPtr& ref)
-      {
-        if(mayWrite)
+        SubscribersMap::iterator it = mSMap.find(key);
+        if(it != mSMap.end())
         {
-          try
-          {
-            sys::SyncLock synchOnWrite(mWriteMutex);
-            mDBW.get()->write(ref, shared_from_this());
-          }catch(...)
-          {
-            itc::getLog()->error(__FILE__,__LINE__,"Unexpected exception");
-            throw;
-          }
-          mWaitWriteEnd.wait();
-          try // push stack
-          {
-            sys::AtomicBool result(front().first);
-            pop();
-            if(result == false)
-            {
-              itc::getLog()->error(__FILE__, __LINE__, "Write operation failed for key %ju", retQueue.front().second);
-              throw TITCException<exceptions::CanNotWrite>(exceptions::ITCGeneral);
-            }
-          }catch(...) // rethrow
-          {
-            throw;
-          }
+          static_cast<::itc::abstract::IController<Model>*>(this)->notify(Model(res, it->first), it->second);
+          mSMap.erase(it);
         }else
-          throw TITCException<exceptions::CanNotWrite>(exceptions::ITCGeneral);
+        {
+          logSubscribers(key);
+          throw TITCException<exceptions::IndexOutOfRange>(exceptions::ITCGeneral);
+        }
       }
-
-      void onUpdate(const Model& ref)
+      
+      void logSubscribers(const uint64_t& key)
       {
-        push(ref);
-        mWaitWriteEnd.post();
-      }
-
-      ~SyncDBWriterAdapter()
-      {
-        mayWrite = false;
-        sys::SyncLock dosync(mQueueProtect);
-        sys::SyncLock synchOnWrite(mWriteMutex);
-      }
-     private:
-
-      void push(const Model& ref)
-      {
-        sys::SyncLock dosync(mQueueProtect);
-        retQueue.push(ref);
-      }
-
-      void pop()
-      {
-        sys::SyncLock dosync(mQueueProtect);
-        retQueue.pop();
-      }
-
-      const Model& front()
-      {
-        sys::SyncLock dosync(mQueueProtect);
-        return retQueue.front();
-      }
-
-      bool empty()
-      {
-        sys::SyncLock dosync(mQueueProtect);
-        return retQueue.empty();
+        itc::getLog()->error(__FILE__, __LINE__, "There is no owner for transaction with the key: %ju", key);
+        itc::getLog()->error(__FILE__, __LINE__, "See the following list of subscribers.");
+        std::for_each(mSMap.begin(), mSMap.end(),
+          [](const SubscriberDescriptor & desc){
+            itc::getLog()->error(__FILE__, __LINE__, "Key %ju , subscriber %jx", desc.first, desc.second.get());
+          }
+        );
+        size_t count = 0;
+        std::for_each(mTrackKeys.begin(), mTrackKeys.end(),
+          [&count, &key](const uint64_t refkey){
+            if(refkey == key)
+            {
+              itc::getLog()->error(__FILE__, __LINE__, "The key %ju, is recorded in the tracklist, at position %ju", refkey, count);
+            }
+            ++count;
+          }
+        );
+        itc::getLog()->flush();
       }
     };
+    typedef std::shared_ptr<DBWriter> DBWriterSPtrType;
   }
 }
 

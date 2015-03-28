@@ -1,32 +1,13 @@
 /**
- * Copyright (c) 2007-2015, Pavel Kraynyukhov.
- *  
- * Permission to use, copy, modify, and distribute this software and its
- * documentation for any purpose, without fee, and without a written agreement
- * is hereby granted under the terms of the General Public License version 2
- * (GPLv2), provided that the above copyright notice and this paragraph and the
- * following two paragraphs and the "LICENSE" file appear in all modified or
- * unmodified copies of the software "AS IS" and without any changes.
- *
- * IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE TO ANY PARTY FOR
- * DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING
- * LOST PROFITS, ARISING OUT OF THE USE OF THIS SOFTWARE AND ITS
- * DOCUMENTATION, EVEN IF THE COPYRIGHT HOLDER HAS BEEN ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- *
- * THE COPYRIGHT HOLDER SPECIFICALLY DISCLAIMS ANY WARRANTIES,
- * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
- * AND FITNESS FOR A PARTICULAR PURPOSE.  THE SOFTWARE PROVIDED HEREUNDER IS
- * ON AN "AS IS" BASIS, AND THE COPYRIGHT HOLDER HAS NO OBLIGATIONS TO
- * PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
- * 
+ * Copyright Pavel Kraynyukhov 2007 - 2015.
+ * Distributed under the Boost Software License, Version 1.0.
+ * (See accompanying file LICENSE_1_0.txt or copy at
+ *          http://www.boost.org/LICENSE_1_0.txt)
  * 
  * $Id: ServiceManager.h 22 2015-03-11 00:01:03Z pk $
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *  
+ * 
+ * EMail: pavel.kraynyukhov@gmail.com
+ * 
  **/
 
 
@@ -36,12 +17,12 @@
 #include <exception>
 #include <algorithm>
 #include <Singleton.h>
-#include <sys/Mutex.h>
-#include <sys/SyncLock.h>
 #include <map>
 #include <set>
 #include <list>
 #include <TSLog.h>
+#include <mutex>
+#include <atomic>
 
 namespace itc
 {
@@ -83,14 +64,14 @@ namespace itc
 
   template <typename T, typename... Args> void addService(Args...args)
   {
-    sys::RecursiveSyncLock synchronize(mMutex);
+    std::lock_guard<std::recursive_mutex> sync(mMutex);
     mServiceRegistry.insert(ServicePair(Singleton<T>::getInstance()->getName(),Singleton<T>::getInstance(args...)));
     mOrder[Singleton<T>::getInstance()->getName()]=std::set<std::string>();
   }
 
   template <typename T, typename... Args> void addServiceAfter(const std::string& name, Args...args)
   {
-    sys::RecursiveSyncLock synchronize(mMutex);
+    std::lock_guard<std::recursive_mutex> sync(mMutex);
     SRMIterator srmit=mServiceRegistry.find(name);
     if(srmit==mServiceRegistry.end())
     {
@@ -130,7 +111,7 @@ namespace itc
   
   const ServiceSPtr&  getService(const std::string& name)
   {
-    sys::RecursiveSyncLock synchronize(mMutex);
+    std::lock_guard<std::recursive_mutex> sync(mMutex);
     SRMIterator srmit=mServiceRegistry.find(name);
     if(srmit!=mServiceRegistry.end())
     {
@@ -167,7 +148,7 @@ namespace itc
   
   void startAll()
   {
-   sys::RecursiveSyncLock synchronize(mMutex);
+   std::lock_guard<std::recursive_mutex> sync(mMutex);
    std::for_each(
       mServiceRegistry.begin(),mServiceRegistry.end(),
       [this](const ServicePair& ref)
@@ -179,7 +160,7 @@ namespace itc
   
   std::list<std::string> finddeps(const std::string& name)
   {
-    sys::RecursiveSyncLock synchronize(mMutex);
+    std::lock_guard<std::recursive_mutex> sync(mMutex);
     std::list<std::string> result;
     
     std::for_each(
@@ -199,7 +180,7 @@ namespace itc
   
   void startService(const std::string& ref)
   {
-    sys::RecursiveSyncLock synchronize(mMutex);
+    std::lock_guard<std::recursive_mutex> sync(mMutex);
     OMIterator it=mOrder.find(ref);
     if(it!=mOrder.end()) // we found the service
     {
@@ -233,7 +214,7 @@ namespace itc
   
   void stopService(const std::string& name)
   {
-    sys::RecursiveSyncLock synchronize(mMutex);
+    std::lock_guard<std::recursive_mutex> sync(mMutex);
     OMIterator omit=mOrder.find(name);
     if(omit!=mOrder.end()) //recursively stopping dependent services
     {
@@ -252,7 +233,7 @@ namespace itc
   
   void stopAll()
   {
-    sys::RecursiveSyncLock synchronize(mMutex);
+    std::lock_guard<std::recursive_mutex> sync(mMutex);
     std::for_each(
        mServiceRegistry.begin(),mServiceRegistry.end(),
        [this](const ServicePair& ref)
@@ -264,7 +245,7 @@ namespace itc
   
   void showservices()
   {
-   sys::RecursiveSyncLock synchronize(mMutex);
+   std::lock_guard<std::recursive_mutex> sync(mMutex);
    itc::getLog()->info("The ollowing services are registered:");
     std::for_each(
        mServiceRegistry.begin(),mServiceRegistry.end(),
@@ -276,7 +257,7 @@ namespace itc
   }
   void showdeps()
   {
-   sys::RecursiveSyncLock synchronize(mMutex);
+   std::lock_guard<std::recursive_mutex> sync(mMutex);
    std::for_each
    (
     mOrder.begin(),mOrder.end(), 
@@ -301,7 +282,7 @@ namespace itc
     destroyAll();
   }
  private:
-    sys::RecursiveMutex  mMutex;
+    std::recursive_mutex  mMutex;
     ServiceRegistryMap mServiceRegistry;
     OrderMap mOrder;
 
@@ -354,7 +335,7 @@ namespace itc
     }
     void destroyService(const std::string& name)
     {
-      sys::RecursiveSyncLock synchronize(mMutex);
+      std::lock_guard<std::recursive_mutex> sync(mMutex);
       
       SRMIterator srmit=mServiceRegistry.find(name);
       if(srmit!=mServiceRegistry.end())
@@ -375,7 +356,7 @@ namespace itc
 
     void destroyAll()
     {
-      sys::RecursiveSyncLock synchronize(mMutex);
+      std::lock_guard<std::recursive_mutex> sync(mMutex);
       SRMIterator srmit=mServiceRegistry.begin();
       while(srmit!=mServiceRegistry.end())
       {

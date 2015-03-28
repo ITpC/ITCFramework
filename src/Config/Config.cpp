@@ -22,7 +22,9 @@ namespace itc
 
     tokens = aTokenizer.scan(input, "", "\",{}: \t\n");
     parse();
-    printArray(mConfigArray);
+    fs.close();
+    save("./newconf.conf");
+    std::cout << save();
   };
 
 }

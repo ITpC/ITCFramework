@@ -35,13 +35,13 @@
 #    include <memory>
 
 #    include <sys/Thread.h>
-#    include <sys/AtomicBool.h>
 #    include <sys/Mutex.h>
 #    include <sys/SyncLock.h>
 #    include <abstract/Runnable.h>
 #    include <Exceptions.h>
 #    include <TSLog.h>
 #    include <abstract/QueueInterface.h>
+#    include <atomic>
 
 namespace itc
 {
@@ -57,7 +57,7 @@ public:
     typedef typename std::weak_ptr<TQueueImpl> QueueWeakPtr;
 
 private:
-    sys::AtomicBool doWork;
+    std::atomic<bool> doWork;
     QueueWeakPtr mQueue;
 
 public:

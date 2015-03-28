@@ -41,14 +41,18 @@ namespace itc
     {
       virtual const std::string getTypeName() const = 0;
       virtual const VarType& getType() const = 0;
-      virtual ~Variable() = default;
+      Variable& operator[](const std::string&);    
+      const Variable& operator[](const std::string&) const;
+      virtual ~Variable() = default;    
     };
-
+    
+    typedef std::shared_ptr<Variable> VariableSPtr;
+    typedef std::map<std::string, VariableSPtr> VariablesMap;
+    typedef std::pair<std::string, VariableSPtr> VariablePairType;    
+    
     /**
      * @brief The template for types defenitions.
      * 
-     * @TODO: 1. add a type_code attribute and define a enum for type-codes.
-     * 2. add a method  const TypeCode getType() const.
      **/
     template <typename T> class TypedVariable : public Variable
     {
@@ -80,11 +84,34 @@ namespace itc
         return value;
       }
 
+      const value_type& expose() const
+      {
+        return value;
+      }
+      
       const value_type& getValue() const
       {
         return value;
       }
+      
+      Variable& operator[](const std::string& var)
+      {
+        if(type_code == ARRAY)
+        {
+          return *(((static_cast<VariablesMap>(value))[var]).get());
+        }
+        throw TITCException<exceptions::InvalidTypecast>(exceptions::Reflection);
+      }
 
+      const Variable& operator[](const std::string& var) const
+      {
+        if(type_code == ARRAY)
+        {
+          return *(((static_cast<VariablesMap>(value))[var]).get());
+        }
+        throw TITCException<exceptions::InvalidTypecast>(exceptions::Reflection);
+      }
+      
       const std::string getTypeName() const
       {
         switch(type_code){
@@ -93,7 +120,7 @@ namespace itc
           case STRING: return "String";
           case BOOL: return "Bool";
           default:
-            throw TITCException<exceptions::Reflection>(exceptions::UndefinedType);
+            throw TITCException<exceptions::UndefinedType>(exceptions::Reflection);
         }
       }
 
@@ -107,9 +134,6 @@ namespace itc
       value_type value;
     };
 
-    typedef std::shared_ptr<Variable> VariableSPtr;
-    typedef std::map<std::string, VariableSPtr> VariablesMap;
-    typedef std::pair<std::string, VariableSPtr> VariablePairType;
 
     /**
      * @brief a String class
@@ -127,7 +151,7 @@ namespace itc
       {
       }
 
-      const std::string& to_stdstring() const
+      const std::string& str() const
       {
         return getValue();
       }
@@ -285,7 +309,7 @@ namespace itc
         : TypedVariable<value_type>(ARRAY, ref.getValue())
       {
       }
-
+/*
       VariableSPtr& operator[](const std::string& name)
       {
         iterator it = expose().find(name);
@@ -295,8 +319,18 @@ namespace itc
           return it->second;
         }else
         {
-          throw TITCException<exceptions::Reflection>(exceptions::IndexOutOfRange);
+          throw TITCException<exceptions::IndexOutOfRange>(exceptions::Reflection);
         }
+      }
+*/
+      Variable& operator[](const std::string& name)
+      {
+        return *(expose()[name].get());
+      }
+
+      const Variable& operator[](const std::string& name) const
+      {
+        return *((static_cast<VariablesMap>(expose()))[name].get());
       }
 
       /**
@@ -309,7 +343,7 @@ namespace itc
         
         if(!is_a_proper_class)
         {
-          throw TITCException<exceptions::Reflection>(exceptions::InvalidTypecast);
+          throw TITCException<exceptions::InvalidTypecast>(exceptions::Reflection);
         }
 
         iterator it = expose().find(name);
@@ -324,18 +358,58 @@ namespace itc
               return *(static_cast<T*> (it->second.get()));
             }else
             {
-              throw TITCException<exceptions::Reflection>(exceptions::InvalidTypecast);
+              throw TITCException<exceptions::InvalidTypecast>(exceptions::Reflection);
             }
           }else
           {
-            throw TITCException<exceptions::Reflection>(exceptions::IndexOutOfRange);
+            throw TITCException<exceptions::IndexOutOfRange>(exceptions::Reflection);
           }
         }else
         {
-          throw TITCException<exceptions::Reflection>(exceptions::IndexOutOfRange);
+          throw TITCException<exceptions::IndexOutOfRange>(exceptions::Reflection);
         }
       }
     };
+    
+    template <typename T> T& cast(Variable& var)
+    {
+      bool is_a_proper_class = std::is_base_of<Variable, T>::value;
+      T tmp;
+      
+      if(!is_a_proper_class)
+      {
+        throw TITCException<exceptions::InvalidTypecast>(exceptions::Reflection);
+      }
+      
+      if(var.getType()==tmp.getType())
+      {
+        return *((static_cast<T*>(&var)));
+      }
+      else
+      {
+        throw TITCException<exceptions::InvalidTypecast>(exceptions::Reflection);
+      }
+    }
+
+    template <typename T> const T& cast(const Variable& var)
+    {
+      bool is_a_proper_class = std::is_base_of<Variable, T>::value;
+      T tmp;
+      
+      if(!is_a_proper_class)
+      {
+        throw TITCException<exceptions::InvalidTypecast>(exceptions::Reflection);
+      }
+      
+      if(var.getType()==tmp.getType())
+      {
+        return *((static_cast<const T*>(&var)));
+      }
+      else
+      {
+        throw TITCException<exceptions::InvalidTypecast>(exceptions::Reflection);
+      }
+    }
     
     template <typename T> T& cast(const VariableSPtr& var)
     {
@@ -344,7 +418,7 @@ namespace itc
       
       if(!is_a_proper_class)
       {
-        throw TITCException<exceptions::Reflection>(exceptions::InvalidTypecast);
+        throw TITCException<exceptions::InvalidTypecast>(exceptions::Reflection);
       }
       
       if(Variable* ptr=var.get())
@@ -355,11 +429,11 @@ namespace itc
         }
         else
         {
-          throw TITCException<exceptions::Reflection>(exceptions::InvalidTypecast);
+          throw TITCException<exceptions::InvalidTypecast>(exceptions::Reflection);
         }
       }
-      throw TITCException<exceptions::Reflection>(exceptions::NullPointerException);
-    }
+      throw TITCException<exceptions::NullPointerException>(exceptions::Reflection);
+    }    
   }
 }
 /**

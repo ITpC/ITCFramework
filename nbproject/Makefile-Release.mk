@@ -36,8 +36,10 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 # Object Files
 OBJECTFILES= \
 	${OBJECTDIR}/src/Config/Config.o \
+	${OBJECTDIR}/src/Config/ConfigReflection.o \
 	${OBJECTDIR}/src/Config/parser.o \
-	${OBJECTDIR}/src/Config/printArray.o
+	${OBJECTDIR}/src/Config/printArray.o \
+	${OBJECTDIR}/src/Config/save.o
 
 
 # C Compiler Flags
@@ -71,6 +73,11 @@ ${OBJECTDIR}/src/Config/Config.o: src/Config/Config.cpp
 	${RM} "$@.d"
 	$(COMPILE.cc) -O2 -Wall -s -Iinclude -I../ITCLib/include -I../utils/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/Config/Config.o src/Config/Config.cpp
 
+${OBJECTDIR}/src/Config/ConfigReflection.o: src/Config/ConfigReflection.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/Config
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -Wall -s -Iinclude -I../ITCLib/include -I../utils/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/Config/ConfigReflection.o src/Config/ConfigReflection.cpp
+
 ${OBJECTDIR}/src/Config/parser.o: src/Config/parser.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/Config
 	${RM} "$@.d"
@@ -80,6 +87,11 @@ ${OBJECTDIR}/src/Config/printArray.o: src/Config/printArray.cpp
 	${MKDIR} -p ${OBJECTDIR}/src/Config
 	${RM} "$@.d"
 	$(COMPILE.cc) -O2 -Wall -s -Iinclude -I../ITCLib/include -I../utils/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/Config/printArray.o src/Config/printArray.cpp
+
+${OBJECTDIR}/src/Config/save.o: src/Config/save.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/Config
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -Wall -s -Iinclude -I../ITCLib/include -I../utils/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/Config/save.o src/Config/save.cpp
 
 # Subprojects
 .build-subprojects:

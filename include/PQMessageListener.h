@@ -1,33 +1,15 @@
 /**
- * Copyright (c) 2007-2015, Pavel Kraynyukhov.
- *  
- * Permission to use, copy, modify, and distribute this software and its
- * documentation for any purpose, without fee, and without a written agreement
- * is hereby granted under the terms of the General Public License version 2
- * (GPLv2), provided that the above copyright notice and this paragraph and the
- * following two paragraphs and the "LICENSE" file appear in all modified or
- * unmodified copies of the software "AS IS" and without any changes.
- *
- * IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE TO ANY PARTY FOR
- * DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING
- * LOST PROFITS, ARISING OUT OF THE USE OF THIS SOFTWARE AND ITS
- * DOCUMENTATION, EVEN IF THE COPYRIGHT HOLDER HAS BEEN ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- *
- * THE COPYRIGHT HOLDER SPECIFICALLY DISCLAIMS ANY WARRANTIES,
- * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
- * AND FITNESS FOR A PARTICULAR PURPOSE.  THE SOFTWARE PROVIDED HEREUNDER IS
- * ON AN "AS IS" BASIS, AND THE COPYRIGHT HOLDER HAS NO OBLIGATIONS TO
- * PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
- * 
+ * Copyright Pavel Kraynyukhov 2007 - 2015.
+ * Distributed under the Boost Software License, Version 1.0.
+ * (See accompanying file LICENSE_1_0.txt or copy at
+ *          http://www.boost.org/LICENSE_1_0.txt)
  * 
  * $Id: PQMessageListener.h 1 2015-03-20 10:53:11Z pk $
  * 
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * EMail: pavel.kraynyukhov@gmail.com
  * 
  **/
+
 
 #ifndef __PQMESSAGELISTENER_H__
 #  define __PQMESSAGELISTENER_H__
@@ -35,14 +17,14 @@
 #  include <memory>
 
 #  include <sys/Thread.h>
-#  include <sys/AtomicBool.h>
-#  include <sys/Mutex.h>
-#  include <sys/SyncLock.h>
 #  include <abstract/Runnable.h>
 #  include <Exceptions.h>
 #  include <TSLog.h>
 #  include <abstract/QueueInterface.h>
 #  include <QueueTxn.h>
+#  include <LMDBWObject.h>
+#  include <mutex>
+#  include <memory>
 
 namespace itc
 {
@@ -56,12 +38,14 @@ namespace itc
     typedef QueueImpl<DataType> TQueueImpl;
     typedef typename std::shared_ptr<TQueueImpl> QueueSharedPtr;
     typedef typename std::weak_ptr<TQueueImpl> QueueWeakPtr;
-    typedef QueueTxn<DataType>  QueueTxnType;
-    typedef std::shared_ptr<QueueTxnType> QueueTxnSPtr;
+    typedef QueueTxn<DataType, lmdb::DEL> QueueTxnDelType;
+    typedef std::shared_ptr<QueueTxnDelType> QueueTxnDELSPtr;
+
 
 
    private:
-    sys::AtomicBool mayRun;
+    std::mutex mMutex;
+    std::atomic<bool> mayRun;
     QueueWeakPtr mQueue;
 
    public:
@@ -69,6 +53,7 @@ namespace itc
     explicit PQMessageListener(QueueSharedPtr& pQueue)
       : mayRun(false), mQueue(pQueue)
     {
+      std::lock_guard<std::mutex> dosync(mMutex);
       if(!(mQueue.lock().get()))
         throw NullPointerException(EFAULT);
       mayRun = true;
@@ -78,10 +63,11 @@ namespace itc
     void shutdown()
     {
       mayRun = false;
+      std::lock_guard<std::mutex> dosync(mMutex);
       itc::getLog()->debug(__FILE__, __LINE__, "%s at address %x", "PQMessageListener::shutdown()", this);
     }
 
-    inline QueueWeakPtr getQueueWeakPtr()
+    QueueWeakPtr getQueueWeakPtr()
     {
       return mQueue;
     }
@@ -91,26 +77,34 @@ namespace itc
       itc::getLog()->debug(__FILE__, __LINE__, "%s at address %x", "PQMessageListener::execute() has been started", this);
       while(mayRun)
       {
-        if(TQueueImpl * queue_addr = mQueue.lock().get())
+        std::lock_guard<std::mutex> dosync(mMutex);
+        try
         {
-          try {
-            onMessage(queue_addr->recv());
-          }catch(std::exception& e)
+          if(TQueueImpl * queue_addr = mQueue.lock().get())
+          {
+            try
+            {
+              onMessage(queue_addr->recv());
+            }catch(const std::exception& e)
+            {
+              mayRun = false;
+              itc::getLog()->error(__FILE__, __LINE__, "Listener at address %x, has cought an exception on receiving a message: %s", this, e.what());
+            }
+          }else
           {
             mayRun = false;
-            itc::getLog()->error(__FILE__, __LINE__, "Listener at address %x, has cought an exception on queue recieve and following message processing: %s", this, e.what());
+            itc::getLog()->error(__FILE__, __LINE__, "%s at address %x", "PQMessageListener::execute() - QueueWeakPtr does not exists anymore, calling oQueueDestroy", this);
           }
-        }else
+        }catch(const std::exception& e)
         {
-          mayRun = false;
-          itc::getLog()->error(__FILE__, __LINE__, "%s at address %x", "PQMessageListener::execute() - QueueWeakPtr does not exists anymore, calling oQueueDestroy", this);
+          itc::getLog()->error(__FILE__, __LINE__, "PQMessageListener::execute() - Queue Transaction is aborted with exception: %s", e.what());
         }
       }
       itc::getLog()->error(__FILE__, __LINE__, "%s at address %x", "PQMessageListener::execute() has been finished", this);
     }
 
    protected:
-    virtual void onMessage(const QueueTxnSPtr&) = 0;
+    virtual void onMessage(const QueueTxnDELSPtr&) = 0;
     virtual void onQueueDestroy() = 0;
 
     virtual ~PQMessageListener()

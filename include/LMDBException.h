@@ -22,40 +22,40 @@ namespace itc
     {
       switch(ret){
         case MDB_VERSION_MISMATCH:
-          throw TITCException<exceptions::MDBGeneral>(exceptions::MDBVersionMissmatch);
+          throw TITCException<exceptions::MDBVersionMissmatch>(exceptions::MDBGeneral);
           ;
         case MDB_INVALID:
-          throw TITCException<exceptions::MDBGeneral>(exceptions::MDBInvalid);
+          throw TITCException<exceptions::MDBInvalid>(exceptions::MDBGeneral);
           ;
         case ENOENT:
-          throw TITCException<exceptions::MDBGeneral>(exceptions::MDBNotFound);
+          throw TITCException<exceptions::MDBNotFound>(exceptions::MDBGeneral);
           ;
         case EACCES:
-          throw TITCException<exceptions::MDBGeneral>(exceptions::MDBEAccess);
+          throw TITCException<exceptions::MDBEAccess>(exceptions::MDBGeneral);
           ;
         case EAGAIN:
-          throw TITCException<exceptions::MDBGeneral>(exceptions::MDBEAgain);
+          throw TITCException<exceptions::MDBEAgain>(exceptions::MDBGeneral);
           ;
         case MDB_PANIC:
           throw TITCException<exceptions::MDBPanic>(errno);
           ;
         case MDB_MAP_RESIZED:
-          throw TITCException<exceptions::MDBGeneral>(exceptions::MDBMapResized);
+          throw TITCException<exceptions::MDBMapResized>(exceptions::MDBGeneral);
           ;
         case MDB_READERS_FULL:
-          throw TITCException<exceptions::MDBGeneral>(exceptions::MDBReadersFull);
+          throw TITCException<exceptions::MDBReadersFull>(exceptions::MDBGeneral);
           ;
         case ENOMEM:
           throw TITCException<exceptions::MDBGeneral>(ENOMEM);
           ;
         case MDB_NOTFOUND:
-          throw TITCException<exceptions::MDBGeneral>(exceptions::MDBNotFound);
+          throw TITCException<exceptions::MDBNotFound>(exceptions::MDBGeneral);
           ;
         case MDB_DBS_FULL:
-          throw TITCException<exceptions::MDBGeneral>(exceptions::MDBTooMany);
+          throw TITCException<exceptions::MDBTooMany>(exceptions::MDBGeneral);
           ;
         case EINVAL:
-          throw TITCException<exceptions::MDBGeneral>(exceptions::MDBEInval);
+          throw TITCException<exceptions::MDBEInval>(exceptions::MDBGeneral);
         default:
         {
           throw TITCException<exceptions::ExternalLibraryException>(errno);
