@@ -132,7 +132,6 @@ namespace itc
 
       void shutdown()
       {
-        
         itc::getLog()->info("[trace] -> DBWriter::shutdown() for database %s is in progress",mDB.get()->getName().c_str());
         mayRun=false;
         sys::SemSleep s;
@@ -140,13 +139,6 @@ namespace itc
         {
           s.usleep(100000);
         }
-        mQEvent.post();
-        mQEvent.post();
-        mQEvent.post();
-        std::lock_guard<std::recursive_mutex> dosync(mWorkQueueMutex);
-        mQEvent.post();
-        mQEvent.post();
-        mQEvent.post();
       }
 
       ~DBWriter()

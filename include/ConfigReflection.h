@@ -41,15 +41,15 @@ namespace itc
     {
       virtual const std::string getTypeName() const = 0;
       virtual const VarType& getType() const = 0;
-      Variable& operator[](const std::string&);    
+      Variable& operator[](const std::string&);
       const Variable& operator[](const std::string&) const;
-      virtual ~Variable() = default;    
+      virtual ~Variable() = default;
     };
-    
+
     typedef std::shared_ptr<Variable> VariableSPtr;
     typedef std::map<std::string, VariableSPtr> VariablesMap;
-    typedef std::pair<std::string, VariableSPtr> VariablePairType;    
-    
+    typedef std::pair<std::string, VariableSPtr> VariablePairType;
+
     /**
      * @brief The template for types defenitions.
      * 
@@ -88,30 +88,36 @@ namespace itc
       {
         return value;
       }
-      
+
       const value_type& getValue() const
       {
         return value;
       }
-      
-      Variable& operator[](const std::string& var)
+
+      TypedVariable<T>& operator=(const TypedVariable<T>& ref)
+      {
+        value = ref.value;
+        return static_cast<TypedVariable<T>&> (*this);
+      }
+
+      Variable& operator[](const std::string & var)
       {
         if(type_code == ARRAY)
         {
-          return *(((static_cast<VariablesMap>(value))[var]).get());
+          return *(((static_cast<VariablesMap> (value))[var]).get());
         }
         throw TITCException<exceptions::InvalidTypecast>(exceptions::Reflection);
       }
 
-      const Variable& operator[](const std::string& var) const
+      const Variable& operator[](const std::string & var) const
       {
         if(type_code == ARRAY)
         {
-          return *(((static_cast<VariablesMap>(value))[var]).get());
+          return *(((static_cast<VariablesMap> (value))[var]).get());
         }
         throw TITCException<exceptions::InvalidTypecast>(exceptions::Reflection);
       }
-      
+
       const std::string getTypeName() const
       {
         switch(type_code){
@@ -124,7 +130,7 @@ namespace itc
         }
       }
 
-      const VarType& getType() const
+      const VarType & getType() const
       {
         return type_code;
       }
@@ -133,7 +139,6 @@ namespace itc
       VarType type_code;
       value_type value;
     };
-
 
     /**
      * @brief a String class
@@ -147,6 +152,11 @@ namespace itc
       }
 
       explicit String(const String& ref)
+        : TypedVariable<value_type>(STRING, ref.getValue())
+      {
+      }
+
+      explicit String(String& ref)
         : TypedVariable<value_type>(STRING, ref.getValue())
       {
       }
@@ -176,6 +186,22 @@ namespace itc
         return getValue() < ref.getValue();
       }
 
+      operator std::string() const
+      {
+        return expose();
+      }
+      
+      String& operator=(const char* ref)
+      {
+        expose()=std::string(ref);
+        return (*this);
+      }
+
+      String& operator=(const std::string& ref)
+      {
+        expose()=ref;
+        return (*this);
+      }
     };
 
     /**
@@ -309,20 +335,13 @@ namespace itc
         : TypedVariable<value_type>(ARRAY, ref.getValue())
       {
       }
-/*
-      VariableSPtr& operator[](const std::string& name)
+      
+      Array& operator=(const Array& ref)
       {
-        iterator it = expose().find(name);
-
-        if(it != expose().end())
-        {
-          return it->second;
-        }else
-        {
-          throw TITCException<exceptions::IndexOutOfRange>(exceptions::Reflection);
-        }
+        (static_cast<Array::value_type>(expose()))=ref.getValue();
+        return (*this);
       }
-*/
+      
       Variable& operator[](const std::string& name)
       {
         return *(expose()[name].get());
@@ -330,7 +349,7 @@ namespace itc
 
       const Variable& operator[](const std::string& name) const
       {
-        return *((static_cast<VariablesMap>(expose()))[name].get());
+        return *((static_cast<VariablesMap> (expose()))[name].get());
       }
 
       /**
@@ -340,7 +359,7 @@ namespace itc
       template <typename T> T& access(const std::string& name)
       {
         bool is_a_proper_class = std::is_base_of<Variable, T>::value;
-        
+
         if(!is_a_proper_class)
         {
           throw TITCException<exceptions::InvalidTypecast>(exceptions::Reflection);
@@ -370,22 +389,21 @@ namespace itc
         }
       }
     };
-    
+
     template <typename T> T& cast(Variable& var)
     {
       bool is_a_proper_class = std::is_base_of<Variable, T>::value;
       T tmp;
-      
+
       if(!is_a_proper_class)
       {
         throw TITCException<exceptions::InvalidTypecast>(exceptions::Reflection);
       }
-      
-      if(var.getType()==tmp.getType())
+
+      if(var.getType() == tmp.getType())
       {
-        return *((static_cast<T*>(&var)));
-      }
-      else
+        return *((static_cast<T*> (&var)));
+      }else
       {
         throw TITCException<exceptions::InvalidTypecast>(exceptions::Reflection);
       }
@@ -395,45 +413,43 @@ namespace itc
     {
       bool is_a_proper_class = std::is_base_of<Variable, T>::value;
       T tmp;
-      
+
       if(!is_a_proper_class)
       {
         throw TITCException<exceptions::InvalidTypecast>(exceptions::Reflection);
       }
-      
-      if(var.getType()==tmp.getType())
+
+      if(var.getType() == tmp.getType())
       {
-        return *((static_cast<const T*>(&var)));
-      }
-      else
+        return *((static_cast<const T*> (&var)));
+      }else
       {
         throw TITCException<exceptions::InvalidTypecast>(exceptions::Reflection);
       }
     }
-    
-    template <typename T> T& cast(const VariableSPtr& var)
+
+    template <typename T> T& cast(VariableSPtr& var)
     {
       bool is_a_proper_class = std::is_base_of<Variable, T>::value;
       T tmp;
-      
+
       if(!is_a_proper_class)
       {
         throw TITCException<exceptions::InvalidTypecast>(exceptions::Reflection);
       }
-      
-      if(Variable* ptr=var.get())
+
+      if(Variable * ptr = var.get())
       {
-        if(ptr->getType()==tmp.getType())
+        if(ptr->getType() == tmp.getType())
         {
           return *((static_cast<T*> (ptr)));
-        }
-        else
+        }else
         {
           throw TITCException<exceptions::InvalidTypecast>(exceptions::Reflection);
         }
       }
       throw TITCException<exceptions::NullPointerException>(exceptions::Reflection);
-    }    
+    }
   }
 }
 /**

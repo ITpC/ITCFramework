@@ -33,6 +33,7 @@
 #define	_ICONTROLLER_H
 #include <abstract/IView.h>
 #include <memory>
+#include <iostream>
 #include <TSLog.h>
 
 namespace itc
@@ -61,8 +62,8 @@ namespace itc
           }
       }
 
-    protected:
-      virtual ~IController()=default;
+      protected:
+      ~IController()=default;
     };
   }
 }

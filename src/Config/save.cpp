@@ -10,6 +10,7 @@
  * 
  **/
 #include <Config.h>
+#include <ConfigReflection.h>
 #include <algorithm>
 #include <functional>
 #include <map>
@@ -46,16 +47,19 @@ void itc::Config::save(std::stringstream& fs, reflection::Array& ref, std::strin
         }
 
         fs << indent << var.first << ":";
-
-        if(var.second.get()->getType() == NUMBER)
+        switch(var.second.get()->getType())
         {
-          fs << (static_cast<Number*> (var.second.get()))->getValue() << std::endl;
-        }else if(var.second.get()->getType() == STRING)
-        {
-          fs << "\"" << (static_cast<String*> (var.second.get()))->getValue() << "\"" << std::endl;
-        }else if(var.second.get()->getType() == BOOL)
-        {
-          fs << (static_cast<Bool*> (var.second.get()))->getValue() << std::endl;
+          case NUMBER:
+            fs << (static_cast<Number*> (var.second.get()))->getValue() << std::endl;
+            break;
+          case STRING:
+            fs << "\"" << (static_cast<String*> (var.second.get()))->getValue() << "\"" << std::endl;
+            break;
+          case BOOL:
+            fs << (static_cast<Bool*> (var.second.get()))->getValue() << std::endl;
+            break;
+          default:
+            throw TITCException<exceptions::ConfigSyntax>(exceptions::Reflection);
         }
       }
     }

@@ -34,9 +34,8 @@ namespace itc
     virtual size_t depth() = 0;
     virtual void destroy() = 0;
 
-   protected:
-
-    virtual ~QueueInterface() = default;
+    protected:
+    ~QueueInterface() = default;
   };
 }
 #endif /*__QUEUE_INTERFACE_H__*/

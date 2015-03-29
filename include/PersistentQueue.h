@@ -53,8 +53,7 @@ namespace itc
    **/
   template <
   typename DataType
-  > class PersistentQueue : public QueueInterface<DataType>,
-  public std::enable_shared_from_this<PersistentQueue<DataType> >
+  > class PersistentQueue : public QueueInterface<DataType>
   {
    public:
     typedef std::shared_ptr<lmdb::ROTxn::Cursor> CursorSPtr;

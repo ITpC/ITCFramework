@@ -63,7 +63,6 @@ namespace itc
     void shutdown()
     {
       mayRun = false;
-      std::lock_guard<std::mutex> dosync(mMutex);
       itc::getLog()->debug(__FILE__, __LINE__, "%s at address %x", "PQMessageListener::shutdown()", this);
     }
 
@@ -107,9 +106,8 @@ namespace itc
     virtual void onMessage(const QueueTxnDELSPtr&) = 0;
     virtual void onQueueDestroy() = 0;
 
-    virtual ~PQMessageListener()
+    ~PQMessageListener()
     {
-      shutdown();
       itc::getLog()->debug(__FILE__, __LINE__, "%s at address %x", "~PQMessageListener()", this);
     }
   };

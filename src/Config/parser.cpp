@@ -209,7 +209,7 @@ namespace itc
   {
     if(tokens.empty())
     {
-      itc::getLog()->error(__FILE__,__LINE__,"Config::parshe(): No input");
+      itc::getLog()->error(__FILE__, __LINE__, "Config::parshe(): No input");
       throw TITCException<exceptions::ConfigSyntax>(exceptions::IndexOutOfRange);
     }
     expected_lexeme.push(INPUT_END);
