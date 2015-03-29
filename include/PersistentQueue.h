@@ -141,7 +141,7 @@ namespace itc
     {
       maySend = false;
       itc::getLog()->debug(__FILE__,__LINE__,"[trace] -> On Queue destroy, waiting to cleanup remaining messages");
-      sys::SemSleep s;
+      sys::Nap s;
       while((mMsgTrigger.getValue()>0)&&(depth()>0))
       {
         s.usleep(100000);

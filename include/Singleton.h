@@ -14,7 +14,7 @@
 
 #include <memory>
 #include <Val2Type.h>
-#include <sys/SemSleep.h>
+#include <sys/Nanosleep.h>
 #include <mutex>
 
 namespace itc {
@@ -82,7 +82,7 @@ namespace itc {
       static void destroyInstance()
       {
         std::lock_guard<std::mutex> sync(mMutex);
-        itc::sys::SemSleep aTimer;
+        itc::sys::Nap aTimer;
         while ((!mInstance.unique()) && mInstance.use_count()) {
           aTimer.usleep(10);
         }

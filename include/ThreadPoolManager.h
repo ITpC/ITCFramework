@@ -19,7 +19,7 @@
 #include <abstract/Runnable.h>
 #include <exception>
 #include <sched.h>
-#include <sys/SemSleep.h>
+#include <sys/Nanosleep.h>
 #include <mutex>
 
 namespace itc
@@ -90,7 +90,7 @@ namespace itc
     
     void execute()
     {
-      ::itc::sys::SemSleep mSleep;
+      ::itc::sys::Nap mSleep;
       while(doRun)
       {
         mThreadPool.get()->shakePools();

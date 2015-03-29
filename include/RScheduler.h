@@ -28,7 +28,7 @@
 #  include <sched.h>
 #  include <ThreadPool.h>
 #  include <DateFormatter.h>
-#  include <sys/SemSleep.h>
+#  include <sys/Nanosleep.h>
 #  include <limits>
 #  include <mutex>
 #  include <atomic>
@@ -130,7 +130,7 @@ namespace itc
 
     void execute()
     {
-      ::itc::sys::SemSleep waithere;
+      ::itc::sys::Nap waithere;
       while(mayRun())
       {
         try

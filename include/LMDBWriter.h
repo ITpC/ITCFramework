@@ -134,7 +134,7 @@ namespace itc
       {
         itc::getLog()->info("[trace] -> DBWriter::shutdown() for database %s is in progress",mDB.get()->getName().c_str());
         mayRun=false;
-        sys::SemSleep s;
+        sys::Nap s;
         while((mQEvent.getValue()>0)&&(service_queue_depth()>0))
         {
           s.usleep(100000);
