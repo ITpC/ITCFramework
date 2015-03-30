@@ -6,11 +6,12 @@
             <name>ITCFramework</name>
             <make-project-type>0</make-project-type>
             <c-extensions/>
-            <cpp-extensions>cpp</cpp-extensions>
+            <cpp-extensions/>
             <header-extensions>h</header-extensions>
             <sourceEncoding>UTF-8</sourceEncoding>
             <make-dep-projects>
                 <make-dep-project>../ITCLib</make-dep-project>
+                <make-dep-project>../NoJSON</make-dep-project>
                 <make-dep-project>../mdb/libraries/liblmdb</make-dep-project>
             </make-dep-projects>
             <sourceRootList>

@@ -34,12 +34,7 @@ include Makefile
 OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
-OBJECTFILES= \
-	${OBJECTDIR}/src/Config/Config.o \
-	${OBJECTDIR}/src/Config/ConfigReflection.o \
-	${OBJECTDIR}/src/Config/parser.o \
-	${OBJECTDIR}/src/Config/printArray.o \
-	${OBJECTDIR}/src/Config/save.o
+OBJECTFILES=
 
 
 # C Compiler Flags
@@ -67,31 +62,6 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libitcframework.a: ${OBJECTFILES}
 	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libitcframework.a
 	${AR} -rv ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libitcframework.a ${OBJECTFILES} 
 	$(RANLIB) ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libitcframework.a
-
-${OBJECTDIR}/src/Config/Config.o: src/Config/Config.cpp 
-	${MKDIR} -p ${OBJECTDIR}/src/Config
-	${RM} "$@.d"
-	$(COMPILE.cc) -O2 -Wall -s -Iinclude -I../ITCLib/include -I../utils/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/Config/Config.o src/Config/Config.cpp
-
-${OBJECTDIR}/src/Config/ConfigReflection.o: src/Config/ConfigReflection.cpp 
-	${MKDIR} -p ${OBJECTDIR}/src/Config
-	${RM} "$@.d"
-	$(COMPILE.cc) -O2 -Wall -s -Iinclude -I../ITCLib/include -I../utils/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/Config/ConfigReflection.o src/Config/ConfigReflection.cpp
-
-${OBJECTDIR}/src/Config/parser.o: src/Config/parser.cpp 
-	${MKDIR} -p ${OBJECTDIR}/src/Config
-	${RM} "$@.d"
-	$(COMPILE.cc) -O2 -Wall -s -Iinclude -I../ITCLib/include -I../utils/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/Config/parser.o src/Config/parser.cpp
-
-${OBJECTDIR}/src/Config/printArray.o: src/Config/printArray.cpp 
-	${MKDIR} -p ${OBJECTDIR}/src/Config
-	${RM} "$@.d"
-	$(COMPILE.cc) -O2 -Wall -s -Iinclude -I../ITCLib/include -I../utils/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/Config/printArray.o src/Config/printArray.cpp
-
-${OBJECTDIR}/src/Config/save.o: src/Config/save.cpp 
-	${MKDIR} -p ${OBJECTDIR}/src/Config
-	${RM} "$@.d"
-	$(COMPILE.cc) -O2 -Wall -s -Iinclude -I../ITCLib/include -I../utils/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/Config/save.o src/Config/save.cpp
 
 # Subprojects
 .build-subprojects:

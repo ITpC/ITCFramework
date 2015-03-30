@@ -25,8 +25,6 @@
         <itemPath>include/ClientSocketsFactory.h</itemPath>
         <itemPath>include/CompCommon.h</itemPath>
         <itemPath>include/CompressBuffer.h</itemPath>
-        <itemPath>include/Config.h</itemPath>
-        <itemPath>include/ConfigReflection.h</itemPath>
         <itemPath>include/Exceptions.h</itemPath>
         <itemPath>include/LMDB.h</itemPath>
         <itemPath>include/LMDBEnv.h</itemPath>
@@ -67,13 +65,6 @@
                    displayName="Source Files"
                    projectFiles="true">
       <logicalFolder name="f1" displayName="src" projectFiles="true">
-        <logicalFolder name="f1" displayName="Config" projectFiles="true">
-          <itemPath>src/Config/Config.cpp</itemPath>
-          <itemPath>src/Config/ConfigReflection.cpp</itemPath>
-          <itemPath>src/Config/parser.cpp</itemPath>
-          <itemPath>src/Config/printArray.cpp</itemPath>
-          <itemPath>src/Config/save.cpp</itemPath>
-        </logicalFolder>
       </logicalFolder>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
@@ -107,6 +98,7 @@
             <pElem>../utils/include</pElem>
             <pElem>../luacpp/include</pElem>
             <pElem>../mdb/libraries/liblmdb</pElem>
+            <pElem>../NoJSON/include</pElem>
           </incDir>
           <commandLine>-pipe -pthread -D_REENTRANT -D_THREAD_SAFE -O2 -mtune=generic -fomit-frame-pointer -mfpmath=sse -ftree-vectorize -funroll-loops -mno-tls-direct-seg-refs -DBZ_NO_STDIO -DLOG_DEBUG -DMAX_BUFF_SIZE=256 -DTSAFE_LOG=1</commandLine>
           <warningLevel>2</warningLevel>
@@ -134,6 +126,16 @@
                         CC="${MAKE} -f Makefile clean"
                         OP="">
           </makeArtifact>
+          <makeArtifact PL="../NoJSON"
+                        CT="3"
+                        CN="Debug"
+                        AC="true"
+                        BL="false"
+                        WD="../NoJSON"
+                        BC="${MAKE}  -f Makefile CONF=Debug"
+                        CC="${MAKE}  -f Makefile CONF=Debug clean"
+                        OP="${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libnojson.a">
+          </makeArtifact>
         </requiredProjects>
       </compileType>
       <item path="include/ClientSocketsFactory.h" ex="false" tool="3" flavor2="0">
@@ -141,10 +143,6 @@
       <item path="include/CompCommon.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/CompressBuffer.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/Config.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/ConfigReflection.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Exceptions.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -235,16 +233,6 @@
       </item>
       <item path="include/sys/ePoll.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="src/Config/Config.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="src/Config/ConfigReflection.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="src/Config/parser.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="src/Config/printArray.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="src/Config/save.cpp" ex="false" tool="1" flavor2="0">
-      </item>
     </conf>
     <conf name="Release" type="3">
       <toolsSet>
@@ -278,10 +266,6 @@
       <item path="include/CompCommon.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/CompressBuffer.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/Config.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/ConfigReflection.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Exceptions.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -371,16 +355,6 @@
       <item path="include/bz2Decompressor.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/sys/ePoll.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="src/Config/Config.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="src/Config/ConfigReflection.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="src/Config/parser.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="src/Config/printArray.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="src/Config/save.cpp" ex="false" tool="1" flavor2="0">
       </item>
     </conf>
   </confs>
