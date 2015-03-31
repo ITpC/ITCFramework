@@ -18,9 +18,12 @@
 #  include <abstract/Runnable.h>
 #  include <memory>
 #  include <queue>
+#  include <list>
 #  include <mutex>
 #  include <algorithm>
 #  include <functional>
+#  include <sys/Semaphore.h>
+#  include <sys/Nanosleep.h>
 #  include <LMDBEnv.h>
 #  include <LMDB.h>
 #  include <LMDBWOTxn.h>
@@ -63,8 +66,8 @@ namespace itc
      public:
 
       explicit DBWriter(const LMDBSPtr& ref)
-      : mWriteProtect(), mServiceQMutex(), mWorkQueueMutex(), 
-        mDB(ref), mayRun(true),mQEvent()
+        : mWriteProtect(), mServiceQMutex(), mWorkQueueMutex(),
+        mDB(ref), mayRun(true), mQEvent()
       {
         itc::getLog()->info("DBWriter::DBWriter(): Starting a database writer for database %s", mDB.get()->getName().c_str());
       }
@@ -132,10 +135,10 @@ namespace itc
 
       void shutdown()
       {
-        itc::getLog()->info("[trace] -> DBWriter::shutdown() for database %s is in progress",mDB.get()->getName().c_str());
-        mayRun=false;
+        itc::getLog()->info("[trace] -> DBWriter::shutdown() for database %s is in progress", mDB.get()->getName().c_str());
+        mayRun = false;
         sys::Nap s;
-        while((mQEvent.getValue()>0)&&(service_queue_depth()>0))
+        while((mQEvent.getValue() > 0)&&(service_queue_depth() > 0))
         {
           s.usleep(100000);
         }
@@ -147,7 +150,7 @@ namespace itc
         std::lock_guard<std::recursive_mutex> syncwq(mWorkQueueMutex);
         std::lock_guard<std::mutex> dosync(mServiceQMutex);
         std::lock_guard<std::mutex> maplock(mWriteProtect);
-        itc::getLog()->info("[trace] out <- DBWriter for database %s is down",mDB.get()->getName().c_str());
+        itc::getLog()->info("[trace] out <- DBWriter for database %s is down", mDB.get()->getName().c_str());
       }
 
       const LMDBSPtr& getDatabase() const
@@ -163,13 +166,13 @@ namespace itc
         std::lock_guard<std::recursive_mutex> dosync(mWorkQueueMutex); // be overprotective about memory barriers
         while(!mWorkQueue.empty())
         {
-          uint64_t key=std::numeric_limits<uint64_t>::max();
+          uint64_t key = std::numeric_limits<uint64_t>::max();
           WObjectSPtr ptr(mWorkQueue.front());
           mWorkQueue.pop();
           if(ptr.get() == nullptr)
           {
             itc::getLog()->error(__FILE__, __LINE__, "Invalid shared pointer to writable object has been found in DBWriter's processing queue");
-            
+
             throw TITCException<exceptions::ITCGeneral>(exceptions::NullPointerException);
           }
           memcpy(&key, ptr->key.mv_data, sizeof(uint64_t));
@@ -180,13 +183,13 @@ namespace itc
               case ADD:
                 if(aTxn.put(ptr->key, ptr->data))
                 {
-                  notify(key,true);
+                  notify(key, true);
                 }
                 break;
               case DEL:
                 if(aTxn.del(ptr->key))
                 {
-                  notify(key,true);
+                  notify(key, true);
                 }
                 break;
               default:
@@ -195,16 +198,16 @@ namespace itc
             }
           }catch(const TITCException<exceptions::MDBKeyNotFound>& e)
           {
-            notify(key,true);
+            notify(key, true);
             throw;
           }catch(const std::exception& e)
           {
-            notify(key,false);
+            notify(key, false);
             throw; //rethrow the exception
           }
         }
       }
-      
+
       void notify(const uint64_t key, const bool& res)
       {
         std::lock_guard<std::mutex> maplock(mWriteProtect);
@@ -212,7 +215,7 @@ namespace itc
         SubscribersMap::iterator it = mSMap.find(key);
         if(it != mSMap.end())
         {
-          static_cast<::itc::abstract::IController<Model>*>(this)->notify(Model(res, it->first), it->second);
+          static_cast< ::itc::abstract::IController<Model>*> (this)->notify(Model(res, it->first), it->second);
           mSMap.erase(it);
         }else
         {
@@ -220,7 +223,7 @@ namespace itc
           throw TITCException<exceptions::IndexOutOfRange>(exceptions::ITCGeneral);
         }
       }
-      
+
       void logSubscribers(const uint64_t& key)
       {
         itc::getLog()->error(__FILE__, __LINE__, "There is no owner for transaction with the key: %ju", key);
