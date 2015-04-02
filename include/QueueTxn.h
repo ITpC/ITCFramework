@@ -15,8 +15,9 @@
 #  include <memory>
 #  include <Val2Type.h>
 #  include <LMDBWriter.h>
-#  include <LMDBWObject.h>
 #  include <abstract/IQTxn.h>
+#  include <DBKeyType.h>
+#  include <QueueObject.h>
 #  include <atomic>
 #  include <mutex>
 #  include <limits>
@@ -24,7 +25,7 @@
 namespace itc
 {
 
-  template <typename T, typename lmdb::WObjectOP operation> class QueueTxn : public abstract::IQTxn
+  template <typename lmdb::WObjectOP operation> class QueueTxn:public abstract::IQTxn
   {
    public:
     typedef std::shared_ptr<lmdb::SyncDBWriterAdapter> SyncDBWAdapterSPtr;
@@ -34,38 +35,34 @@ namespace itc
     DBWriterSPtrType mDBWriter;
     SyncDBWAdapterSPtr mWAdapter;
     std::atomic<bool> mAbort;
-    std::atomic<uint64_t> mKey;
-    std::shared_ptr<T> mData;
+    QueueMessageSPtr mData;
     std::atomic<bool> mCommited;
     utils::Int2Type<operation> mOperation;
 
    public:
 
-    explicit QueueTxn(
-      const DBWriterSPtrType& ref, const std::shared_ptr<T>& dref,
-      const uint64_t& key
-      )
-      : mMutex(), mDBWriter(ref), mWAdapter(std::make_shared<lmdb::SyncDBWriterAdapter>(ref)), mAbort(false),
-      mKey(key), mData(dref), mCommited(false)
+    explicit QueueTxn(const DBWriterSPtrType& ref, const QueueMessageSPtr& dref)
+    :mMutex(), mDBWriter(ref), mWAdapter(std::make_shared<lmdb::SyncDBWriterAdapter>(ref)), mAbort(false),
+     mData(dref), mCommited(false)
     {
       std::lock_guard<std::mutex> dosync(mMutex);
-      itc::getLog()->trace(__FILE__,__LINE__,"QTxn with adapter address: %jx, for DB: %s is emmited", mWAdapter.get(), mDBWriter.get()->getDatabase()->getName().c_str());
+      itc::getLog()->trace(__FILE__, __LINE__, "QTxn with adapter address: %jx, for DB: %s is emmited", mWAdapter.get(), mDBWriter.get()->getDatabase()->getName().c_str());
     }
 
     explicit QueueTxn(const QueueTxn&) = delete;
     explicit QueueTxn(QueueTxn&) = delete;
 
-    const std::shared_ptr<T>& getData()
+    const QueueMessageSPtr& getData()
     {
       std::lock_guard<std::mutex> dosync(mMutex);
 
       return mData;
     }
 
-    uint64_t getKey()
+    const DBKey& getKey()
     {
-
-      return uint64_t(mKey);
+      std::lock_guard<std::mutex> dosync(mMutex);
+      return mData.get()->getKey();
     }
 
     void abort()
@@ -84,7 +81,10 @@ namespace itc
     ~QueueTxn() noexcept
     {
 
-      if(!mCommited) itc::getLog()->error(__FILE__, __LINE__, "Queue Txn with key %ju and address %jx is not commited:", uint64_t(mKey), this);
+      if(!mCommited) itc::getLog()->error(__FILE__, __LINE__, 
+        "Queue Txn with key %jx:%jx and address %jx is not commited:",
+        mData.get()->getKey().left, mData.get()->getKey().right, this
+      );
     }
    private:
 
@@ -93,14 +93,10 @@ namespace itc
       if((!mCommited)&&(!mAbort))
       {
         std::lock_guard<std::mutex> dosync(mMutex);
-        lmdb::WObjectSPtr tmp(std::make_shared<itc::lmdb::WObject>());
-        uint64_t key = mKey;
-        tmp->key.mv_data = &key;
-        tmp->key.mv_size = sizeof(uint64_t);
-        tmp->theOP = lmdb::DEL;
+        mData.get()->theOP = lmdb::DEL;
         try
         {
-          mWAdapter->write(tmp);
+          mWAdapter->write(mData);
           mCommited = true;
           mAbort = false;
           return true;
@@ -121,16 +117,10 @@ namespace itc
       if((!mCommited)&&(!mAbort))
       {
         std::lock_guard<std::mutex> dosync(mMutex);
-        lmdb::WObjectSPtr tmp(std::make_shared<itc::lmdb::WObject>());
-        uint64_t key = mKey;
-        tmp->key.mv_data = &key;
-        tmp->key.mv_size = sizeof(uint64_t);
-        tmp->data.mv_data = mData.get();
-        tmp->data.mv_size = sizeof(T);
-        tmp->theOP = lmdb::ADD;
+        mData.get()->theOP = lmdb::ADD;
         try
         {
-          mWAdapter->write(tmp);
+          mWAdapter->write(mData);
           mCommited = true;
           return true;
         }catch(const std::exception& e)

@@ -55,7 +55,7 @@ namespace itc
        * @brief simulates synchronous write
        * @param ref
        */
-      void write(const WObjectSPtr& ref)
+      void write(const QueueMessageSPtr& ref)
       {
         if(mayWrite)
         {
@@ -85,7 +85,7 @@ namespace itc
               pop();
               if(result == false)
               {
-                itc::getLog()->error(__FILE__, __LINE__, "Write operation failed for key %ju", front().second);
+                itc::getLog()->error(__FILE__, __LINE__, "Write operation failed for key %jx:%jx", front().second.left,front().second.right);
                 throw TITCException<exceptions::CanNotWrite>(exceptions::ITCGeneral);
               }
             }

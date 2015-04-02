@@ -15,41 +15,47 @@
 #ifndef LMDBWRITER_H
 #  define	LMDBWRITER_H
 
-#  include <abstract/Runnable.h>
+#  include <stdint.h> 
+
 #  include <memory>
 #  include <queue>
 #  include <list>
 #  include <mutex>
+#  include <map>
+#  include <atomic>
+#  include <limits>
 #  include <algorithm>
 #  include <functional>
+
+#  include <abstract/Runnable.h>
+#  include <abstract/IController.h>
+
+
 #  include <sys/Semaphore.h>
 #  include <sys/Nanosleep.h>
+
 #  include <LMDBEnv.h>
 #  include <LMDB.h>
 #  include <LMDBWOTxn.h>
-#  include <LMDBWObject.h>
-#  include <abstract/IController.h>
-#  include <map>
-#  include <stdint.h> 
-#  include <atomic>
-#  include <limits>
+#  include <DBKeyType.h>
+#  include <QueueObject.h>
+
 
 
 namespace itc
 {
   namespace lmdb
   {
-    typedef std::pair<bool, uint64_t> Model;
-    typedef std::shared_ptr<itc::lmdb::Database> LMDBSPtr;
-    typedef std::shared_ptr<itc::lmdb::WObject> WObjectSPtr;
+    typedef std::pair<bool, DBKey> Model;
+    typedef std::shared_ptr<Database> LMDBSPtr;
 
-    class DBWriter : public ::itc::abstract::IRunnable, ::itc::abstract::IController<Model>
+    class DBWriter : public abstract::IRunnable, abstract::IController<Model>
     {
      public:
-      typedef std::queue<WObjectSPtr> WObjectsQueue;
-      typedef itc::lmdb::WOTxn WOTransaction;
-      typedef std::map<uint64_t, ViewTypeSPtr> SubscribersMap;
-      typedef std::pair<uint64_t, ViewTypeSPtr> SubscriberDescriptor;
+      typedef lmdb::WOTxn WOTransaction;
+      typedef std::map<DBKey, ViewTypeSPtr> SubscribersMap;
+      typedef std::pair<DBKey, ViewTypeSPtr> SubscriberDescriptor;
+      typedef std::queue<QueueMessageSPtr> WObjectsQueue;
 
      private:
       std::mutex mWriteProtect;
@@ -61,7 +67,7 @@ namespace itc
       std::atomic<bool> mayRun;
       SubscribersMap mSMap;
       sys::Semaphore mQEvent;
-      std::list<uint64_t> mTrackKeys;
+      std::list<DBKey> mTrackKeys;
 
      public:
 
@@ -69,12 +75,12 @@ namespace itc
         : mWriteProtect(), mServiceQMutex(), mWorkQueueMutex(),
         mDB(ref), mayRun(true), mQEvent()
       {
-        itc::getLog()->info("DBWriter::DBWriter(): Starting a database writer for database %s", mDB.get()->getName().c_str());
+        getLog()->info("DBWriter::DBWriter(): Starting a database writer for database %s", mDB.get()->getName().c_str());
       }
       explicit DBWriter(const DBWriter&) = delete;
       explicit DBWriter(DBWriter&) = delete;
 
-      void write(const WObjectSPtr& ref, const ViewTypeSPtr& vref)
+      void write(const QueueMessageSPtr& ref, const ViewTypeSPtr& vref)
       {
         std::lock_guard<std::mutex> dosync(mServiceQMutex);
         if(!mayRun)
@@ -83,11 +89,9 @@ namespace itc
         }else
         {
           std::lock_guard<std::mutex> maplock(mWriteProtect);
-          uint64_t key;
-          memcpy(&key, ref.get()->key.mv_data, sizeof(uint64_t));
-          mSMap.insert(SubscriberDescriptor(key, vref));
+          mSMap.insert(SubscriberDescriptor(ref.get()->getKey(), vref));
           mServiceQueue.push(ref);
-          mTrackKeys.push_back(key);
+          mTrackKeys.push_back(ref.get()->getKey());
           mQEvent.post();
         }
       }
@@ -166,8 +170,7 @@ namespace itc
         std::lock_guard<std::recursive_mutex> dosync(mWorkQueueMutex); // be overprotective about memory barriers
         while(!mWorkQueue.empty())
         {
-          uint64_t key = std::numeric_limits<uint64_t>::max();
-          WObjectSPtr ptr(mWorkQueue.front());
+          QueueMessageSPtr ptr(mWorkQueue.front());
           mWorkQueue.pop();
           if(ptr.get() == nullptr)
           {
@@ -175,21 +178,20 @@ namespace itc
 
             throw TITCException<exceptions::ITCGeneral>(exceptions::NullPointerException);
           }
-          memcpy(&key, ptr->key.mv_data, sizeof(uint64_t));
           try
           {
             WOTransaction aTxn(mDB);
             switch(ptr->theOP){
               case ADD:
-                if(aTxn.put(ptr->key, ptr->data))
+                if(aTxn.put(ptr))
                 {
-                  notify(key, true);
+                  notify(ptr.get()->getKey(), true);
                 }
                 break;
               case DEL:
-                if(aTxn.del(ptr->key))
+                if(aTxn.del(ptr.get()->getKey()))
                 {
-                  notify(key, true);
+                  notify(ptr.get()->getKey(), true);
                 }
                 break;
               default:
@@ -198,24 +200,24 @@ namespace itc
             }
           }catch(const TITCException<exceptions::MDBKeyNotFound>& e)
           {
-            notify(key, true);
+            notify(ptr.get()->getKey(), true);
             throw;
           }catch(const std::exception& e)
           {
-            notify(key, false);
+            notify(ptr.get()->getKey(), false);
             throw; //rethrow the exception
           }
         }
       }
 
-      void notify(const uint64_t key, const bool& res)
+      void notify(const DBKey& key, const bool& res)
       {
         std::lock_guard<std::mutex> maplock(mWriteProtect);
 
         SubscribersMap::iterator it = mSMap.find(key);
         if(it != mSMap.end())
         {
-          static_cast< ::itc::abstract::IController<Model>*> (this)->notify(Model(res, it->first), it->second);
+          static_cast< IController<Model>*> (this)->notify(Model(res, it->first), it->second);
           mSMap.erase(it);
         }else
         {
@@ -224,26 +226,26 @@ namespace itc
         }
       }
 
-      void logSubscribers(const uint64_t& key)
+      void logSubscribers(const DBKey& key)
       {
-        itc::getLog()->error(__FILE__, __LINE__, "There is no owner for transaction with the key: %ju", key);
-        itc::getLog()->error(__FILE__, __LINE__, "See the following list of subscribers.");
+        getLog()->error(__FILE__, __LINE__, "There is no owner for transaction with the key: %jx:jx", key.left,key.right);
+        getLog()->error(__FILE__, __LINE__, "See the following list of subscribers.");
         std::for_each(mSMap.begin(), mSMap.end(),
           [](const SubscriberDescriptor & desc){
-            itc::getLog()->error(__FILE__, __LINE__, "Key %ju , subscriber %jx", desc.first, desc.second.get());
+            getLog()->error(__FILE__, __LINE__, "Key %jx:%jx , subscriber %jx", desc.first.left, desc.first.right, desc.second.get());
           }
         );
         size_t count = 0;
         std::for_each(mTrackKeys.begin(), mTrackKeys.end(),
-          [&count, &key](const uint64_t refkey){
+          [&count, &key](const DBKey& refkey){
             if(refkey == key)
             {
-              itc::getLog()->error(__FILE__, __LINE__, "The key %ju, is recorded in the tracklist, at position %ju", refkey, count);
+              getLog()->error(__FILE__, __LINE__, "The key %jx:%jx, is recorded in the tracklist, at position %ju", refkey.left,refkey.right, count);
             }
             ++count;
           }
         );
-        itc::getLog()->flush();
+        getLog()->flush();
       }
     };
     typedef std::shared_ptr<DBWriter> DBWriterSPtrType;

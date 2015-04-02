@@ -22,7 +22,6 @@
 #  include <TSLog.h>
 #  include <abstract/QueueInterface.h>
 #  include <QueueTxn.h>
-#  include <LMDBWObject.h>
 #  include <mutex>
 #  include <memory>
 
@@ -38,7 +37,7 @@ namespace itc
     typedef QueueImpl<DataType> TQueueImpl;
     typedef typename std::shared_ptr<TQueueImpl> QueueSharedPtr;
     typedef typename std::weak_ptr<TQueueImpl> QueueWeakPtr;
-    typedef QueueTxn<DataType, lmdb::DEL> QueueTxnDelType;
+    typedef QueueTxn<lmdb::DEL> QueueTxnDelType;
     typedef std::shared_ptr<QueueTxnDelType> QueueTxnDELSPtr;
 
 

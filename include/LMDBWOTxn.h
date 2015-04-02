@@ -14,13 +14,16 @@
 #ifndef LMDBWOTXN_H
 #  define	LMDBWOTXN_H
 #  include <memory>
-#  include <LMDBEnv.h>
 #  include <LMDB.h>
+#  include <LMDBEnv.h>
 #  include <LMDBException.h>
 #  include <TSLog.h>
 #  include <stdint.h>
 #  include <atomic>
 #  include <mutex>
+#  include <DBKeyType.h>
+#  include <QueueObject.h>
+
 
 namespace itc
 {
@@ -39,6 +42,7 @@ namespace itc
     class WOTxn
     {
      private:
+      typedef ::itc::lmdb::Database Database;
       std::mutex mMutex;
       std::shared_ptr<Database> mDB;
       MDB_txn* handle;
@@ -58,7 +62,7 @@ namespace itc
         try
         {
           ::itc::getLog()->trace(__FILE__, __LINE__, "[trace] in -> Transaction ctor, before begin %jx", pthread_self());
-          handle = (mDB.get()->mEnvironment.get())->beginWOTxn();
+          handle = (mDB.get()->getDBEnv().get())->beginWOTxn();
           ::itc::getLog()->trace(__FILE__, __LINE__, "[trace] out <- Transaction ctor, got the handle, %jx", pthread_self());
         }catch(std::exception& e)
         {
@@ -80,7 +84,7 @@ namespace itc
         try
         {
           ::itc::getLog()->trace(__FILE__, __LINE__, "[trace] in -> Transaction ctor, before begin %jx", pthread_self());
-          handle = (mDB.get()->mEnvironment.get())->beginWOTxn(parent.handle);
+          handle = (mDB.get()->getDBEnv().get())->beginWOTxn(parent.handle);
           ::itc::getLog()->trace(__FILE__, __LINE__, "[trace] out <- Transaction ctor, got the handle, %jx", pthread_self());
         }catch(std::exception& e)
         {
@@ -98,15 +102,14 @@ namespace itc
        * @param data - a value
        * @return true on success, exception otherwise.
        **/
-      template <typename T> const bool put(uint64_t& key, T& data)
+      const bool put(const QueueMessageSPtr& ref)
       {
         std::lock_guard<std::mutex> dosync(mMutex);
         ::itc::getLog()->trace(__FILE__, __LINE__, "[trace] in -> Write to database WOTxn::put(), %jx", pthread_self());
         MDB_val dbkey, dbdata;
-        dbkey.mv_size = sizeof(key);
-        dbkey.mv_data = &key;
-        dbdata.mv_size = sizeof(data);
-        dbdata.mv_data = &data;
+        ref.get()->prep_mdb_key(&dbkey);
+        ref.get()->prep_mdb_data(&dbdata);
+        
         int ret = mdb_put(handle, mDB.get()->dbi, &dbkey, &dbdata, 0);
         switch(ret){
           case MDB_MAP_FULL:
@@ -184,17 +187,17 @@ namespace itc
         std::lock_guard<std::mutex> dosync(mMutex);
         ::itc::getLog()->trace(__FILE__, __LINE__, "[trace] in -> WOTxn::abort(), %jx", pthread_self());
         is_not_aborted = false;
-        (mDB.get()->mEnvironment.get())->WOTxnAbort(handle);
+        (mDB.get()->getDBEnv().get())->WOTxnAbort(handle);
         ::itc::getLog()->trace(__FILE__, __LINE__, "[trace] out <- WOTxn::abort(), TRANSACTION ABORTED %jx", pthread_self());
       }
 
-      const bool del(uint64_t key)
+      const bool del(const DBKey& key)
       {
         std::lock_guard<std::mutex> dosync(mMutex);
         ::itc::getLog()->trace(__FILE__, __LINE__, "[trace] in -> Write to database WOTxn::del(), %jx", pthread_self());
         MDB_val dbkey;
-        dbkey.mv_data = &key;
-        dbkey.mv_size = sizeof(key);
+        dbkey.mv_data = (void*)(&key);
+        dbkey.mv_size = sizeof(DBKey);
 
         int ret = mdb_del(handle, mDB.get()->dbi, &dbkey, NULL);
         switch(ret){
@@ -267,7 +270,7 @@ namespace itc
         std::lock_guard<std::mutex> dosync(mMutex);
         ::itc::getLog()->trace(__FILE__, __LINE__, "[trace] in -> comit to database, %jx", pthread_self());
         ::itc::getLog()->trace(__FILE__, __LINE__, "[trace] in -> before comit to database, %jx", pthread_self());
-        (mDB.get()->mEnvironment.get())->WOTxnCommit(handle); // commit aborted txns anyway, otherways the LMDB will hang on mutex
+        (mDB.get()->getDBEnv().get())->WOTxnCommit(handle); // commit aborted txns anyway, otherways the LMDB will hang on mutex
         ::itc::getLog()->trace(__FILE__, __LINE__, "[trace] in -> commited intto database, %jx", pthread_self());
       }
     };

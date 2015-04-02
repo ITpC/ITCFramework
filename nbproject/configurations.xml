@@ -7,6 +7,7 @@
       <logicalFolder name="include" displayName="include" projectFiles="true">
         <logicalFolder name="abstract" displayName="abstract" projectFiles="true">
           <itemPath>include/abstract/IController.h</itemPath>
+          <itemPath>include/abstract/IMessage.h</itemPath>
           <itemPath>include/abstract/IMessageListener.h</itemPath>
           <itemPath>include/abstract/IQTxn.h</itemPath>
           <itemPath>include/abstract/IThreadPool.h</itemPath>
@@ -16,8 +17,6 @@
           <itemPath>include/abstract/Observer.h</itemPath>
           <itemPath>include/abstract/QueueInterface.h</itemPath>
           <itemPath>include/abstract/Service.h</itemPath>
-          <itemPath>include/abstract/TxnOwner.h</itemPath>
-          <itemPath>include/WorkerThread.h</itemPath>
         </logicalFolder>
         <logicalFolder name="f1" displayName="sys" projectFiles="true">
           <itemPath>include/sys/ePoll.h</itemPath>
@@ -25,6 +24,7 @@
         <itemPath>include/ClientSocketsFactory.h</itemPath>
         <itemPath>include/CompCommon.h</itemPath>
         <itemPath>include/CompressBuffer.h</itemPath>
+        <itemPath>include/DBKeyType.h</itemPath>
         <itemPath>include/Exceptions.h</itemPath>
         <itemPath>include/LMDB.h</itemPath>
         <itemPath>include/LMDBEnv.h</itemPath>
@@ -34,9 +34,11 @@
         <itemPath>include/LMDBWOTxn.h</itemPath>
         <itemPath>include/LMDBWObject.h</itemPath>
         <itemPath>include/LMDBWriter.h</itemPath>
+        <itemPath>include/MessageKeyType.h</itemPath>
         <itemPath>include/PQMessageListener.h</itemPath>
         <itemPath>include/PersistentQueue.h</itemPath>
         <itemPath>include/Properties.h</itemPath>
+        <itemPath>include/QueueObject.h</itemPath>
         <itemPath>include/QueueTxn.h</itemPath>
         <itemPath>include/QueuesHolder.h</itemPath>
         <itemPath>include/RScheduler.h</itemPath>
@@ -144,6 +146,8 @@
       </item>
       <item path="include/CompressBuffer.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/DBKeyType.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/Exceptions.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/LMDB.h" ex="false" tool="3" flavor2="0">
@@ -162,11 +166,15 @@
       </item>
       <item path="include/LMDBWriter.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/MessageKeyType.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/PQMessageListener.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/PersistentQueue.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Properties.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/QueueObject.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/QueueTxn.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -194,8 +202,6 @@
       </item>
       <item path="include/ThreadSafeLocalQueue.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/WorkerThread.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="include/WorkflowControl.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/WorkflowEntity.h" ex="false" tool="3" flavor2="0">
@@ -203,6 +209,8 @@
       <item path="include/WorkflowStorableState.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/abstract/IController.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/abstract/IMessage.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/abstract/IMessageListener.h"
             ex="false"
@@ -224,8 +232,6 @@
       <item path="include/abstract/QueueInterface.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/abstract/Service.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/abstract/TxnOwner.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/bz2Compressor.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -267,6 +273,8 @@
       </item>
       <item path="include/CompressBuffer.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/DBKeyType.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/Exceptions.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/LMDB.h" ex="false" tool="3" flavor2="0">
@@ -285,11 +293,15 @@
       </item>
       <item path="include/LMDBWriter.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/MessageKeyType.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/PQMessageListener.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/PersistentQueue.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Properties.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/QueueObject.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/QueueTxn.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -317,8 +329,6 @@
       </item>
       <item path="include/ThreadSafeLocalQueue.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/WorkerThread.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="include/WorkflowControl.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/WorkflowEntity.h" ex="false" tool="3" flavor2="0">
@@ -326,6 +336,8 @@
       <item path="include/WorkflowStorableState.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/abstract/IController.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/abstract/IMessage.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/abstract/IMessageListener.h"
             ex="false"
@@ -347,8 +359,6 @@
       <item path="include/abstract/QueueInterface.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/abstract/Service.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/abstract/TxnOwner.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/bz2Compressor.h" ex="false" tool="3" flavor2="0">
       </item>
