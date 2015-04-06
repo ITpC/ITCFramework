@@ -231,7 +231,17 @@ namespace itc
         itc::getLog()->trace(__FILE__, __LINE__, "[trace] -> in Database::beginWOTxn(), [thread]: %jx",pthread_self());
         MDB_txn *tmp;
         int ret = mdb_txn_begin(mEnv, parent, 0, &tmp);
-        if(ret) LMDBExceptionParser onTxnBegin(ret);
+        try{
+          if(ret) LMDBExceptionParser onTxnBegin(ret);
+        }catch(const TITCException<exceptions::MDBMapResized>& e)
+        {
+          ::itc::getLog()->fatal(__FILE__, __LINE__, "An exception is cought on beginWOTxn(): %s", e.what());
+          ret=mdb_env_set_mapsize(mEnv,0);
+          if(ret) LMDBExceptionParser onTxnBegin(ret);
+        }catch(...)
+        {
+          throw;
+        }
         if(tmp == nullptr)
         {
           ::itc::getLog()->fatal(__FILE__, __LINE__, "[666]: in Database::beginWOTxn() something is generally wrong. The transaction handle is null.");
@@ -279,7 +289,7 @@ namespace itc
             int ret = mdb_txn_commit(ptr);
             if(ret)
             {
-              LMDBParseError(ret);
+                LMDBParseError(ret);
             }
             else
             {

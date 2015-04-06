@@ -10,6 +10,9 @@
         <group>
             <file>file:/home/pk/workspace/ITCFramework/include/LMDBEnv.h</file>
             <file>file:/home/pk/workspace/ITCFramework/include/SyncWriter.h</file>
+            <file>file:/home/pk/workspace/ITCFramework/include/LMDBException.h</file>
+            <file>file:/home/pk/workspace/ITCFramework/include/PQueueDataType.h</file>
+            <file>file:/home/pk/workspace/ITCFramework/include/LMDBWOTxn.h</file>
         </group>
     </open-files>
 </project-private>

@@ -38,65 +38,63 @@ namespace itc
     typedef std::shared_ptr<itc::lmdb::Database> LMDBSPtr;
     typedef itc::lmdb::WOTxn WOTransaction;
 
-    class SyncWriterLock
+    class PQDTAccess
     {
      private:
       std::recursive_mutex mMutex;
 
      public:
-      virtual ~SyncWriterLock() = default;
-      SyncWriterLock() = default;
+      virtual ~PQDTAccess() = default;
+      PQDTAccess() = default;
 
-      void use(PQueueDataType& ref, const DBKey& key, std::function<void(const MDB_val&, const MDB_val&) > writef)
+      void use(PQueueDataType& ref, const DBKey& key, std::function<void(const MDB_val&, const MDB_val&)> writef)
       {
         RSyncLock sync(mMutex);
         ref.lock();
         DBKeyAccess key_access(key);
         MDB_val dbkey;
         key_access.use(
-          [&dbkey,&ref,&writef](const MDB_val & _key){
+          [&dbkey, &ref, &writef](const MDB_val & _key){
             dbkey.mv_data = _key.mv_data;
             dbkey.mv_size = _key.mv_size;
-            
-            MDB_val data;
-            data.mv_data = ref.get().get()->data();
-            data.mv_size = ref.get().get()->size();
-            writef(dbkey, data);
+
+              MDB_val data;
+              data.mv_data = ref.get().get()->data();
+              data.mv_size = ref.get().get()->size();
+              writef(dbkey, data);
           }
         );
         ref.unlock();
       }
 
-      void use(const DBKey& key, std::function<void(const MDB_val&) > delf)
+      void use(const DBKey& key, std::function<void(const MDB_val&)> delf)
       {
         RSyncLock sync(mMutex);
         DBKeyAccess key_access(key);
         MDB_val dbkey;
         key_access.use(
-          [&dbkey,&delf](const MDB_val & ref)
-          {
+          [&dbkey, &delf](const MDB_val & ref){
             dbkey.mv_data = ref.mv_data;
             dbkey.mv_size = ref.mv_size;
-            delf(dbkey);
+              delf(dbkey);
           }
         );
       }
 
-      void use(const DBKey& key, std::function<void(const uint64_t&,const uint64_t&) > usef)
+      void use(const DBKey& key, std::function<void(const uint64_t&, const uint64_t&)> usef)
       {
         RSyncLock sync(mMutex);
         DBKeyAccess key_access(key);
         uint64_t u64a[2];
         key_access.use(
-          [&u64a,&key](const uint64_t& l,const uint64_t& r)
-          {
-            u64a[0]=l;
-            u64a[1]=r;
+          [&u64a, &key](const uint64_t& l, const uint64_t & r){
+            u64a[0] = l;
+            u64a[1] = r;
           }
         );
-        usef(u64a[0],u64a[1]);
+        usef(u64a[0], u64a[1]);
       }
-            
+
       void use(PQueueDataType& ref, std::function<void(const uint8_t*, const uint64_t&)> accessf)
       {
         RSyncLock sync(mMutex);
@@ -114,7 +112,7 @@ namespace itc
         src.unlock();
         dst.unlock();
       }
-      
+
       void use(const DBKey& key, PQueueDataType& data, std::function<void(const uint64_t&, const uint64_t& r, const uint64_t&, const uint8_t*)> accessf)
       {
         RSyncLock sync(mMutex);
@@ -123,13 +121,12 @@ namespace itc
           DBKeyAccess key_access(key);
           DBKeyAccess::dbk _key;
           key_access.use(
-            [&_key,this](const uint64_t& l, const uint64_t& r)
-            {
-              _key.left=l;
-              _key.right=r;
+            [&_key, this](const uint64_t& l, const uint64_t & r){
+              _key.left = l;
+              _key.right = r;
             }
           );
-          accessf(_key.left,_key.right,data.mData.get()->size(),data.mData.get()->data());
+          accessf(_key.left, _key.right, data.mData.get()->size(), data.mData.get()->data());
           data.unlock();
         }
       }
@@ -140,7 +137,7 @@ namespace itc
      private:
       std::mutex mMutex;
       LMDBSPtr mDB;
-      SyncWriterLock mWLock;
+      PQDTAccess mWLock;
 
      public:
 
@@ -158,21 +155,28 @@ namespace itc
       {
         SyncLock sync(mMutex);
         itc::getLog()->trace(__FILE__, __LINE__, "Writing to LMDB synchronously ...");
-        bool result;
+        std::atomic<bool> result(false);
         mWLock.use(ref, key,
           [&result, this](const MDB_val& key, const MDB_val & data){
+            WOTransaction wTxn(mDB);
             try
             {
-              WOTransaction wTxn(mDB);
+
               if(wTxn.put(key, data))
               {
-                result = true;
+                wTxn.commit();
+                  result = true;
               }
               result = false;
             }catch(const TITCException<exceptions::MDBGeneral>& e)
             {
               itc::getLog()->fatal(__FILE__, __LINE__, "Exception on write to the database %s: %s. Bailing out!", mDB.get()->getName().c_str(), e.what());
-              throw;
+                wTxn.abort();
+                throw;
+            }catch(...)
+            {
+              wTxn.abort();
+                throw;
             }
           }
         );
@@ -183,15 +187,16 @@ namespace itc
       {
         SyncLock sync(mMutex);
         itc::getLog()->trace(__FILE__, __LINE__, "Deleting the key ...");
-        bool result;
+        std::atomic<bool> result(false);
         mWLock.use(key,
           [&result, this](const MDB_val & _key){
+            WOTransaction wTxn(mDB);
             try
             {
-              WOTransaction wTxn(mDB);
               if(wTxn.del(_key))
               {
-                result = true;
+                wTxn.commit();
+                  result = true;
               }
               else
               {
@@ -200,13 +205,13 @@ namespace itc
             }catch(const std::exception& e)
             {
               itc::getLog()->fatal(__FILE__, __LINE__, "Exception on write to the database %s: %s. Bailing out!", mDB.get()->getName().c_str(), e.what());
-              throw;
+                wTxn.abort();
+                throw;
             }
           }
         );
         return result;
       }
-
     };
     typedef std::shared_ptr<SyncWriter> LMDBSWriterSPtr;
   }

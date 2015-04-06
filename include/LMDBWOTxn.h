@@ -98,6 +98,7 @@ namespace itc
        * @param data - a value
        * @return true on success, exception otherwise.
        **/
+
       bool put(const MDB_val& key, const MDB_val& data)
       {
         std::lock_guard<std::mutex> dosync(mMutex);
@@ -190,17 +191,19 @@ namespace itc
       explicit WOTxn(const WOTxn& ref) = delete;
       explicit WOTxn(WOTxn& ref) = delete;
 
+      void commit()
+      {
+        std::lock_guard<std::mutex> dosync(mMutex);
+        (mDB.get()->mEnvironment.get())->WOTxnCommit(handle);
+      }
+
       /**
-       * @brief dtor, - the transactin handle
+       * @brief dtor
        * 
        **/
       ~WOTxn() noexcept
       {
         std::lock_guard<std::mutex> dosync(mMutex);
-        ::itc::getLog()->trace(__FILE__, __LINE__, "[trace] in -> comit to database, %jx", pthread_self());
-        ::itc::getLog()->trace(__FILE__, __LINE__, "[trace] in -> before comit to database, %jx", pthread_self());
-        (mDB.get()->mEnvironment.get())->WOTxnCommit(handle);// commit aborted txns anyway, otherways the LMDB will hang on mutex
-        ::itc::getLog()->trace(__FILE__, __LINE__, "[trace] in -> commited intto database, %jx", pthread_self());
       }
     };
   }

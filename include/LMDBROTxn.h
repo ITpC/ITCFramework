@@ -121,7 +121,7 @@ namespace itc
         const bool find(const DBKey& pkey, PQueueDataType& data)
         {
           int ret = 0;
-          SyncWriterLock swl;
+          PQDTAccess swl;
           
           swl.use(pkey,
             [&ret, &data, this](const uint64_t& l, const uint64_t& r)
@@ -163,7 +163,7 @@ namespace itc
 
         bool get(DBKey& _key, PQueueDataType& _data, const MDB_cursor_op& op)
         {
-          SyncWriterLock swl;
+          PQDTAccess swl;
           MDB_val key, dbdata;
           int ret = mdb_cursor_get(cursor, &key, &dbdata, op);
           if(ret == 0)

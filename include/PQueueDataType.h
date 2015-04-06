@@ -24,7 +24,7 @@ namespace itc
 {
   namespace lmdb
   {
-    class SyncWriterLock;
+    class PQDTAccess;
   }
 
   class PQueueDataType
@@ -32,7 +32,7 @@ namespace itc
    private:
     typedef std::vector<uint8_t> DataChunk;
     typedef std::shared_ptr<DataChunk> DataChunkSPtr;
-    friend lmdb::SyncWriterLock;
+    friend lmdb::PQDTAccess;
 
     std::recursive_mutex mMutex;
     DataChunkSPtr mData;
