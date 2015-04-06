@@ -26,6 +26,7 @@ namespace itc
       explicit IQTxn()=default;
       virtual void abort()=0;
       virtual const bool commit()=0;
+      virtual uint64_t getKey()= 0;
      protected:
       ~IQTxn()=default;
     };
