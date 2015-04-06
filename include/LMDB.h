@@ -20,6 +20,7 @@
 #  include <queue>
 #  include <stdint.h>
 #  include <mutex>
+#  include <atomic>
 
 namespace itc
 {
@@ -32,6 +33,7 @@ namespace itc
     {
      private:
       std::mutex mMutex;
+      std::recursive_mutex mMasterLock;
       std::shared_ptr<Environment> mEnvironment;
       std::string mDBEnvPath;
       std::string mDBName;
@@ -56,9 +58,9 @@ namespace itc
       explicit Database(
         const std::string& path,
         const std::string& dbname = "",
-        const int mode = MDB_CREATE | MDB_INTEGERKEY
+        const int mode = MDB_CREATE 
         )
-        : mMutex(), mDBEnvPath(path),
+        :mMutex(), mMasterLock(), mDBEnvPath(path),
         mDBMode(mode), isopen(false)
       {
         std::lock_guard<std::mutex> dosync(mMutex);
@@ -66,7 +68,8 @@ namespace itc
         if(dbname.empty())
         {
           mEnvironment = std::make_shared<Environment>(mDBEnvPath, 0);
-        }else
+        }
+        else
         {
           mDBName = path + "/" + dbname;
           mEnvironment = std::make_shared<Environment>(mDBEnvPath, 1);
@@ -94,7 +97,8 @@ namespace itc
         if(mDBName.empty())
         {
           ret = mdb_dbi_open(txn, NULL, mDBMode, &dbi);
-        }else
+        }
+        else
         {
           ret = mdb_dbi_open(txn, mDBName.c_str(), mDBMode, &dbi);
         }
@@ -113,6 +117,17 @@ namespace itc
         return mDBName;
       }
 
+
+      void lock()
+      {
+        mMasterLock.lock();
+      }
+
+      void unlock()
+      {
+        mMasterLock.unlock();
+      }
+      
       void shutdown()
       {
         std::lock_guard<std::mutex> dosync(mMutex);

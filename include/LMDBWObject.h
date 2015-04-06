@@ -14,6 +14,7 @@
 #ifndef LMDBWOBJECT_H
 #  define	LMDBWOBJECT_H
 #  include <lmdb.h>
+#  error "Scheduled for removal"
 
 namespace itc
 {

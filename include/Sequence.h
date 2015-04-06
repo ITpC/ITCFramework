@@ -30,100 +30,108 @@
  **/
 
 #ifndef SEQUENCE_H_
-#define SEQUENCE_H_
+#  define SEQUENCE_H_
 
-#include <compat_types.h>
-#include <sys/AtomicDigital.h>
-#include <Val2Type.h>
-#include <unistd.h>
-
-class SequenceOutOfBoundsException : public std::exception {
-public:
-
-    SequenceOutOfBoundsException() : std::exception() {
-    }
-
-    const char* what() const throw () {
-        return "There is an operation that tried to increase sequence value to be out of bounds. "\
-                    "The operation is rolled back.";
-    }
-};
+#  include <compat_types.h>
+#  include <Val2Type.h>
+#  include <unistd.h>
+#  include <atomic>
+#  include <limits>
 
 namespace itc
 {
-    namespace sys
+  namespace sys
+  {
+    using namespace itc::utils;
+
+    /**
+     * This class provides 64-bit wide unsigned sequence. The purpose of this class
+     * is to prowide MT-Safe and consistent sequence of numbers. There are two
+     * policies: Rotate and Reverse, those are compile time attributes defining the
+     * sequence behavior. If Rotate policy is true, then the sequence will start over
+     * after reaching the uint64_t maximum value (-1). The Reverse policy dictates that
+     * the sequence starts from max uint64_t and decrementing until reaching 0 or rotates
+     * after 0 if the Rotate policy is in use.
+     * 
+     * @exception std::out_of_range will be thrown if Rotate is false and
+     * sequence reached its highest value.
+     * 
+     **/
+    template <bool Rotate = true, bool Reverse = false >
+    class Sequence
     {
-        using namespace itc::utils;
-/**
- * This class provides 64-bit wide unsigned sequence. The purpose of this class
- * is to prowide MT-Safe and consistent sequence of numbers. There are two
- * policies: Rotate and Reverse, those are compile time attributes defining the
- * sequence behavior. If Rotate policy is true, then the sequence will start over
- * after reaching the uint64_t maximum value (-1). The Reverse policy dictates that
- * the sequence starts from max uint64_t and decrementing until reaching 0 or rotates
- * after 0 if the Rotate policy is in use.
- * 
- * @exception SequenceOutOfBoundsException will be thrown if Rotate is false and
- * sequence reached its highest value.
- * 
- **/
-template <bool Rotate = true, bool Reverse = false >
-        class Sequence {
-private:
-    AtomicDigital<uint64_t> mSequence;
+     private:
+      std::atomic<uint64_t> mSequence;
 
-    inline u_int64_t getNext(Bool2Type < false > reverse) {
+      uint64_t getNext(Bool2Type < false > reverse)
+      {
 
-        if (mSequence == ((uint64_t) - 1)) {
-            if (Rotate) {
-                mSequence = 0;
-                return mSequence;
-            } else {
-                throw SequenceOutOfBoundsException();
-            }
-        } else {
-            return ++mSequence;
+        if(mSequence == std::numeric_limits<uint64_t>::max())
+        {
+          if(Rotate)
+          {
+            mSequence = 0;
+            return mSequence;
+          }
+          else
+          {
+            throw std::out_of_range("Sequence is out of range");
+          }
         }
-    }
-
-    inline u_int64_t getNext(Bool2Type < true > reverse) {
-
-        if (mSequence == 0) {
-            if (Rotate) {
-                mSequence = (uint64_t) - 1;
-                return mSequence;
-            } else {
-                throw SequenceOutOfBoundsException();
-            }
-        } else {
-            return --mSequence;
+        else
+        {
+          return ++mSequence;
         }
-    }
+      }
 
-public:
+      uint64_t getNext(Bool2Type < true > reverse)
+      {
 
-    Sequence(u_int64_t lowest=0):mSequence(lowest) {
-    }
+        if(mSequence == 0)
+        {
+          if(Rotate)
+          {
+            mSequence = std::numeric_limits<uint64_t>::max();
+            return mSequence;
+          }
+          else
+          {
+            throw std::out_of_range("Sequence is out of range");
+          }
+        }
+        else
+        {
+          return --mSequence;
+        }
+      }
 
-    Sequence(const Sequence& ref) : mSequence(ref.mSequence) {
-    }
+     public:
 
-    inline const Sequence & operator=(const Sequence& ref) {
+      explicit Sequence():mSequence(Reverse ? std::numeric_limits<uint64_t>::max() : 0)
+      {
+      }
+
+      explicit Sequence(const Sequence& ref):mSequence(ref.mSequence)
+      {
+      }
+
+      const Sequence& operator=(const Sequence& ref)
+      {
         mSequence = ref.mSequence;
-        return (*this);
-    }
+        return(*this);
+      }
 
-    inline uint64_t getCurrent() {
+      const uint64_t getCurrent() const
+      {
         return mSequence;
-    }
+      }
 
-    inline uint64_t getNext() {
+      const uint64_t getNext() const
+      {
         return getNext(Reverse);
-    }
-};
-
-        
-    }
+      }
+    };
+  }
 }
 
 #endif /*SEQUENCE_H_*/

@@ -46,6 +46,7 @@ namespace itc
       MDBEnvStats mStats;
       MDBEnvInfo mInfo;
       std::queue<MDB_txn*> mROTxnsPool;
+      std::atomic<uint64_t> mMDB_MAP_SIZE;
 
      public:
 
@@ -53,9 +54,9 @@ namespace itc
        * @brief constructor for LMDB Environment 
        * 
        **/
-      explicit Environment(const std::string& path, const int& dbs)
+      explicit Environment(const std::string& path, const int& dbs, const uint64_t& mdbmapsz=41943040)
         : mMutex(), mPath(path), mEnv((MDB_env*) 0), mDbs(dbs),
-        mActive(false), mStats(std::make_shared<MDB_stat>())
+        mActive(false), mStats(std::make_shared<MDB_stat>()),mMDB_MAP_SIZE(mdbmapsz)
       {
         std::lock_guard<std::mutex> dosync(mMutex);
         // Create an LMDB environment handle.
@@ -71,6 +72,14 @@ namespace itc
         {
           itc::getLog()->error(__FILE__, __LINE__, "LMDB: Can not set max_dbs for %s", mPath.c_str());
           LMDBExceptionParser onMaxDBsSet(ret);
+        }
+        // mdb_env_set_mapsize
+        ret = mdb_env_set_mapsize(mEnv,size_t(mMDB_MAP_SIZE));
+        if(ret)
+        {
+          itc::getLog()->error(__FILE__, __LINE__, "LMDB: Can not enlarge the database %s", mPath.c_str());
+          mdb_env_close(mEnv);
+          LMDBExceptionParser onEnvOpen(ret);          
         }
         // Open an environment handle
         ret = mdb_env_open(mEnv, mPath.c_str(), MDB_NOTLS, 0664);
@@ -231,35 +240,52 @@ namespace itc
         itc::getLog()->trace(__FILE__, __LINE__, "[trace] <- out Database::beginWOTxn(), [thread]: %jx",pthread_self());
         return tmp;
       }
-
+      void LMDBParseError(const int ret)
+      {
+        switch(ret){
+          case EINVAL:
+            throw TITCException<exceptions::MDBGeneral>(exceptions::MDBEInval);
+          case ENOSPC:
+            throw TITCException<exceptions::ITCGeneral>(ENOSPC);
+          case EIO:
+            throw TITCException<exceptions::ITCGeneral>(EIO);
+          case ENOMEM:
+            throw TITCException<exceptions::ITCGeneral>(ENOMEM);
+          case 0:
+            return;
+          case MDB_MAP_FULL:
+            ::itc::getLog()->fatal(__FILE__,__LINE__,"The database max size is reached");
+            throw TITCException<exceptions::ITCGeneral>(exceptions::MDBMapFull);
+          case MDB_BAD_TXN:
+            ::itc::getLog()->fatal(__FILE__,__LINE__,"Transaction cannot recover - it must be aborted");
+            throw TITCException<exceptions::MDBGeneral>(exceptions::MDBWTxnAborted);
+          case MDB_BAD_VALSIZE:
+            ::itc::getLog()->fatal(__FILE__,__LINE__,"Unsupported size of key/DB name/data, or wrong DUPFIXED size");
+            throw TITCException<exceptions::MDBGeneral>(exceptions::MDBEInval);
+          default:
+            ::itc::getLog()->fatal(__FILE__,__LINE__,"mdb_txn_commit() returned undocumented error code %d, please file bug report",ret);
+            break;
+        }
+      }
       void WOTxnCommit(MDB_txn *ptr)
       {
         std::lock_guard<std::mutex> dosync(mMutex);
-        ::itc::getLog()->trace(__FILE__, __LINE__, "[trace] in -> WOTxnCommit(), %jx",pthread_self());
+        ::itc::getLog()->trace(__FILE__, __LINE__, "[%jx] in -> WOTxnCommit()",pthread_self());
         if(ptr)
         {
           MDB_env *env = mdb_txn_env(ptr);
           if(mEnv == env)
           {
             int ret = mdb_txn_commit(ptr);
-            switch(ret){
-              case EINVAL:
-                throw TITCException<exceptions::MDBGeneral>(exceptions::MDBEInval);
-              case ENOSPC:
-                throw TITCException<exceptions::ITCGeneral>(ENOSPC);
-              case EIO:
-                throw TITCException<exceptions::ITCGeneral>(EIO);
-              case ENOMEM:
-                throw TITCException<exceptions::ITCGeneral>(ENOMEM);
-              case 0:
-                ::itc::getLog()->trace(__FILE__, __LINE__, "[trace] out <- WOTxnCommit(), %jx",pthread_self());
-                return;
-              default:
-                break;
+            if(ret)
+            {
+              LMDBParseError(ret);
             }
-            ::itc::getLog()->fatal(__FILE__, __LINE__, "[666]: in Database::WOTxnCommit() something is generally wrong. This message should never appear in the log.");
-            ::itc::getLog()->fatal(__FILE__, __LINE__, "[666]: continue: Seems that the LMDB API has been changed or extended with new error codes. Please file a bug-report");
-            throw TITCException<exceptions::MDBGeneral>(exceptions::InvalidException);
+            else
+            {
+              ::itc::getLog()->trace(__FILE__, __LINE__, "[%jx] out <- WOTxnCommit()",pthread_self());
+              return;
+            }
           }else
           {
             ::itc::getLog()->fatal(__FILE__, __LINE__, "[666]: in Database::WOTxnCommit() something is generally wrong. Transaction requested from wrong environment.");
@@ -270,7 +296,7 @@ namespace itc
           ::itc::getLog()->fatal(__FILE__, __LINE__, "[666]: in Database::WOTxnCommit() something is generally wrong. The transaction handle is null.");
           throw TITCException<exceptions::ITCGeneral>(exceptions::MDBEInval);
         }
-        ::itc::getLog()->trace(__FILE__, __LINE__, "[trace] <- out WOTxnCommit(), %jx",pthread_self());
+        ::itc::getLog()->trace(__FILE__, __LINE__, "[%jx] <- out WOTxnCommit(),",pthread_self());
       }
 
       void WOTxnAbort(MDB_txn *ptr)

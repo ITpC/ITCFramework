@@ -25,6 +25,7 @@
         <itemPath>include/ClientSocketsFactory.h</itemPath>
         <itemPath>include/CompCommon.h</itemPath>
         <itemPath>include/CompressBuffer.h</itemPath>
+        <itemPath>include/DBKey.h</itemPath>
         <itemPath>include/Exceptions.h</itemPath>
         <itemPath>include/LMDB.h</itemPath>
         <itemPath>include/LMDBEnv.h</itemPath>
@@ -33,18 +34,15 @@
         <itemPath>include/LMDBTxn.h</itemPath>
         <itemPath>include/LMDBWOTxn.h</itemPath>
         <itemPath>include/LMDBWObject.h</itemPath>
-        <itemPath>include/LMDBWriter.h</itemPath>
-        <itemPath>include/PQMessageListener.h</itemPath>
-        <itemPath>include/PersistentQueue.h</itemPath>
+        <itemPath>include/PQueueDataType.h</itemPath>
         <itemPath>include/Properties.h</itemPath>
         <itemPath>include/QueueTxn.h</itemPath>
-        <itemPath>include/QueuesHolder.h</itemPath>
         <itemPath>include/RScheduler.h</itemPath>
         <itemPath>include/Sequence.h</itemPath>
         <itemPath>include/ServiceFacade.h</itemPath>
         <itemPath>include/ServiceManager.h</itemPath>
         <itemPath>include/Singleton.h</itemPath>
-        <itemPath>include/SyncWriterAdapter.h</itemPath>
+        <itemPath>include/SyncWriter.h</itemPath>
         <itemPath>include/TCPListener.h</itemPath>
         <itemPath>include/TCPSocketDef.h</itemPath>
         <itemPath>include/ThreadPool.h</itemPath>
@@ -144,6 +142,8 @@
       </item>
       <item path="include/CompressBuffer.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/DBKey.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/Exceptions.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/LMDB.h" ex="false" tool="3" flavor2="0">
@@ -160,17 +160,11 @@
       </item>
       <item path="include/LMDBWObject.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/LMDBWriter.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/PQMessageListener.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/PersistentQueue.h" ex="false" tool="3" flavor2="0">
+      <item path="include/PQueueDataType.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Properties.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/QueueTxn.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/QueuesHolder.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/RScheduler.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -182,7 +176,7 @@
       </item>
       <item path="include/Singleton.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/SyncWriterAdapter.h" ex="false" tool="3" flavor2="0">
+      <item path="include/SyncWriter.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/TCPListener.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -267,6 +261,8 @@
       </item>
       <item path="include/CompressBuffer.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/DBKey.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/Exceptions.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/LMDB.h" ex="false" tool="3" flavor2="0">
@@ -283,17 +279,11 @@
       </item>
       <item path="include/LMDBWObject.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/LMDBWriter.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/PQMessageListener.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/PersistentQueue.h" ex="false" tool="3" flavor2="0">
+      <item path="include/PQueueDataType.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Properties.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/QueueTxn.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/QueuesHolder.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/RScheduler.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -305,7 +295,7 @@
       </item>
       <item path="include/Singleton.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/SyncWriterAdapter.h" ex="false" tool="3" flavor2="0">
+      <item path="include/SyncWriter.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/TCPListener.h" ex="false" tool="3" flavor2="0">
       </item>

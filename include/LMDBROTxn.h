@@ -38,6 +38,11 @@
 #  include <LMDBException.h>
 #  include <TSLog.h>
 #  include <stdint.h>
+#  include <DBKey.h>
+#  include <mutex>
+#  include <sys/synclock.h>
+#  include <PQueueDataType.h>
+#  include <SyncWriter.h>
 
 namespace itc
 {
@@ -69,7 +74,7 @@ namespace itc
        public:
 
         explicit Cursor(const MDB_dbi& pdbi, MDB_txn *phandle)
-          : dbi(pdbi), handle(phandle)
+          :dbi(pdbi), handle(phandle)
         {
           int ret = mdb_cursor_open(handle, dbi, &cursor);
           if(ret)
@@ -77,7 +82,8 @@ namespace itc
             if(ret == EINVAL)
             {
               throw TITCException<exceptions::MDBGeneral>(exceptions::MDBInvalParam);
-            }else
+            }
+            else
             {
               itc::getLog()->fatal(__FILE__, __LINE__, "[666]:ROCursor::ROCursor() something is generally wrong. This message should never appear in the log. Seems that the LMDB API has been changed or extended with new error codes. Please file a bug-report");
               throw TITCException<exceptions::MDBGeneral>(exceptions::InvalidException);
@@ -87,44 +93,59 @@ namespace itc
 
         explicit Cursor(const Cursor& ref) = delete;
 
-        template <typename T> const uint64_t getFirst(T& data)
+        const bool getFirst(DBKey& key, PQueueDataType& data)
         {
-          return get<T>(data, MDB_FIRST);
+          return get(key, data, MDB_FIRST);
         }
 
-        template <typename T> const uint64_t getLast(T& data)
+        const bool getLast(DBKey& key, PQueueDataType& data)
         {
-          return get<T>(data, MDB_LAST);
+          return get(key, data, MDB_LAST);
         }
 
-        template <typename T> const uint64_t getCurrent(T& data)
+        const bool getCurrent(DBKey& key, PQueueDataType& data)
         {
-          return get<T>(data, MDB_GET_CURRENT);
+          return get(key, data, MDB_GET_CURRENT);
         }
 
-        template <typename T> const uint64_t getNext(T& data)
+        const bool getNext(DBKey& key, PQueueDataType& data)
         {
-          return get<T>(data, MDB_NEXT);
+          return get(key, data, MDB_NEXT);
         }
 
-        template <typename T> const uint64_t getPrev(T& data)
+        const bool getPrev(DBKey& key, PQueueDataType& data)
         {
-          return get<T>(data, MDB_PREV);
+          return get(key, data, MDB_PREV);
         }
 
-        template <typename T> const uint64_t find(const uint64_t& pkey, T& data)
+        const bool find(const DBKey& pkey, PQueueDataType& data)
         {
-          MDB_val key , dbdata;
-          key.mv_data=(void*)(&pkey);
-          key.mv_size=sizeof(uint64_t);
-          int ret = mdb_cursor_get(cursor, &key, &dbdata, MDB_SET_KEY);
-          switch(ret){
-            case 0:
+          int ret = 0;
+          SyncWriterLock swl;
+          
+          swl.use(pkey,
+            [&ret, &data, this](const uint64_t& l, const uint64_t& r)
             {
-              memcpy(&data, dbdata.mv_data, sizeof(data));
-              mdb_cursor_close(cursor);
-              return pkey;
+              uint64_t u64a[2];
+              MDB_val dbdata;
+              MDB_val key;
+              u64a[0]=l;
+              u64a[1]=r;
+              key.mv_data=u64a;
+              key.mv_size=sizeof(u64a);
+              ret = mdb_cursor_get(cursor, &key, &dbdata, MDB_SET_KEY);
+              PQueueDataType tmp(dbdata.mv_size, (uint8_t*)dbdata.mv_data);
+              data=tmp;
             }
+          );
+          
+          
+          if(ret == 0)
+          {  
+            return true;
+          }
+          switch(ret)
+          {
             case MDB_NOTFOUND:
               throw TITCException<exceptions::MDBKeyNotFound>(exceptions::MDBGeneral);
             case EINVAL:
@@ -140,22 +161,28 @@ namespace itc
         }
        private:
 
-        template <typename T> const uint64_t get(T& data, const MDB_cursor_op& op)
+        bool get(DBKey& _key, PQueueDataType& _data, const MDB_cursor_op& op)
         {
+          SyncWriterLock swl;
           MDB_val key, dbdata;
           int ret = mdb_cursor_get(cursor, &key, &dbdata, op);
-          switch(ret){
-            case 0:
+          if(ret == 0)
+          {
+            DBKey newkey(((uint64_t*)(key.mv_data))[0],((uint64_t*)(key.mv_data))[1]);
+            _key=newkey;
+            PQueueDataType tmp(dbdata.mv_size, (const uint8_t*)dbdata.mv_data);
+            swl.assign(tmp, _data);
+            return true;            
+          }
+          else
+          {
+            switch(ret)
             {
-              memcpy(&data, dbdata.mv_data, sizeof(data));
-              uint64_t reskey = 0;
-              memcpy(&reskey, key.mv_data, key.mv_size);
-              return reskey;
+              case MDB_NOTFOUND:
+                throw TITCException<exceptions::MDBKeyNotFound>(exceptions::MDBGeneral);
+              case EINVAL:
+                throw TITCException<exceptions::MDBGeneral>(exceptions::MDBInvalParam);
             }
-            case MDB_NOTFOUND:
-              throw TITCException<exceptions::MDBKeyNotFound>(exceptions::MDBGeneral);
-            case EINVAL:
-              throw TITCException<exceptions::MDBGeneral>(exceptions::MDBInvalParam);
           }
           itc::getLog()->fatal(__FILE__, __LINE__, "[666]:ROTxn::Cursor::get() something is generally wrong. This message should never appear in the log. Seems that the LMDB API has been changed or extended with new error codes. Please file a bug-report");
           throw TITCException<exceptions::MDBGeneral>(exceptions::InvalidException);
@@ -168,7 +195,7 @@ namespace itc
        * @param ref - reference to std::shared_ptr of the itc::lmdb::Database object
        **/
       explicit ROTxn(const std::shared_ptr<Database>& ref)
-        : mDB(ref)
+        :mDB(ref)
       {
         try
         {
@@ -187,7 +214,7 @@ namespace itc
        * @param parent - parent transaction
        **/
       explicit ROTxn(const std::shared_ptr<Database>& ref, const ROTxn& parent)
-        : mDB(ref)
+        :mDB(ref)
       {
         try
         {
@@ -216,33 +243,18 @@ namespace itc
        * @exception TITCException<exceptions::MDBGeneral>(exceptions::MDBInvalParam)
        * @exception TITCException<exceptions::MDBGeneral>(exceptions::InvalidException)
        **/
-      template <typename T> bool get(const uint64_t& key, T& result)
+      const bool get(const DBKey& key, PQueueDataType& result)
       {
-        MDB_val data;
-        MDB_val dbkey;
-
-        dbkey.mv_size = sizeof(key);
-        dbkey.mv_data = (void*) (&key);
-
-        int ret = mdb_get(handle, mDB->dbi, &dbkey, &data);
-
-        switch(ret){
-          case MDB_NOTFOUND:
-          {
-            return false;
-          }
-          case EINVAL:
-          {
-            itc::getLog()->error(__FILE__, __LINE__, "ROTxn::get() either the key is invalid or something is wrong with source code, that is handling this method");
-            throw TITCException<exceptions::MDBGeneral>(exceptions::MDBInvalParam);
-          }
-          case 0:
-            memcpy(((void*) &result), data.mv_data, data.mv_size);
-            return true;
-          default:
-            itc::getLog()->fatal(__FILE__, __LINE__, "[666]:ROTxn::get() something is generally wrong. This message should never appear in the log. Seems that the LMDB API has been changed or extended with new error codes. Please file a bug-report");
-            throw TITCException<exceptions::MDBGeneral>(exceptions::InvalidException);
+        Cursor cursor(mDB.get()->dbi, handle);
+        bool ret=false;
+        try
+        {
+          ret=cursor.find(key,result);
+        }catch(const TITCException<exceptions::MDBKeyNotFound>& e)
+        {
+          return false;
         }
+        return ret;
       }
 
       std::shared_ptr<Cursor> getCursor()
