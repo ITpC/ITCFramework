@@ -36,7 +36,6 @@
         <itemPath>include/LMDBWObject.h</itemPath>
         <itemPath>include/PQueueDataType.h</itemPath>
         <itemPath>include/Properties.h</itemPath>
-        <itemPath>include/QueueTxn.h</itemPath>
         <itemPath>include/RScheduler.h</itemPath>
         <itemPath>include/Sequence.h</itemPath>
         <itemPath>include/ServiceFacade.h</itemPath>
@@ -164,8 +163,6 @@
       </item>
       <item path="include/Properties.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/QueueTxn.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="include/RScheduler.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Sequence.h" ex="false" tool="3" flavor2="0">
@@ -282,8 +279,6 @@
       <item path="include/PQueueDataType.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Properties.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/QueueTxn.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/RScheduler.h" ex="false" tool="3" flavor2="0">
       </item>

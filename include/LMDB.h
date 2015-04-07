@@ -58,6 +58,7 @@ namespace itc
       explicit Database(
         const std::string& path,
         const std::string& dbname = "",
+        const uint32_t dbsize=41943040,
         const int mode = MDB_CREATE 
         )
         :mMutex(), mMasterLock(), mDBEnvPath(path),
@@ -67,12 +68,12 @@ namespace itc
 
         if(dbname.empty())
         {
-          mEnvironment = std::make_shared<Environment>(mDBEnvPath, 0);
+          mEnvironment = std::make_shared<Environment>(mDBEnvPath, 0,dbsize);
         }
         else
         {
           mDBName = path + "/" + dbname;
-          mEnvironment = std::make_shared<Environment>(mDBEnvPath, 1);
+          mEnvironment = std::make_shared<Environment>(mDBEnvPath, 1,dbsize);
         }
       }
 
