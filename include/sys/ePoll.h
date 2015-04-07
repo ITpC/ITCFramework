@@ -16,8 +16,8 @@
 #include <abstract/IView.h>
 #include <abstract/IController.h>
 #include <abstract/Runnable.h>
-#include <sys/Mutex.h>
-#include <sys/SyncLock.h>
+#include <mutex>
+#include <sys/synclock.h>
 #include <TSLog.h>
 #include <ITCException.h>
 #include <Val2Type.h>
@@ -139,8 +139,8 @@ namespace itc
       }
 
     private:
-      Mutex               mMutex;
-      Mutex               mPollMutex;
+      std::mutex          mMutex;
+      std::mutex          mPollMutex;
       size_t              mMaxEvents;
       ePollEventUPtr      events;
       bool                mDestroy;
