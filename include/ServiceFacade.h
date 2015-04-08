@@ -98,6 +98,7 @@ namespace itc
         {
           this->mUp = false;
           ::itc::getLog()->error(__FILE__, __LINE__, "Cought an exception on service %s start: %s", mName.c_str(), e.what());
+          throw;
         }
       }
     }

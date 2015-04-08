@@ -16,7 +16,6 @@
 #  include <string>
 #  include <lmdb.h>
 #  include <LMDBEnv.h>
-#  include <LMDBException.h>
 #  include <queue>
 #  include <stdint.h>
 #  include <mutex>
@@ -94,7 +93,7 @@ namespace itc
         }
 
         int ret = mdb_txn_begin(mEnvironment.get()->getEnv(), NULL, 0, &txn);
-        if(ret) LMDBExceptionParser onTxnOpen(ret);
+        if(ret) throw TITCException<exceptions::MDBGeneral>(ret);
         if(mDBName.empty())
         {
           ret = mdb_dbi_open(txn, NULL, mDBMode, &dbi);
@@ -103,7 +102,7 @@ namespace itc
         {
           ret = mdb_dbi_open(txn, mDBName.c_str(), mDBMode, &dbi);
         }
-        if(ret) LMDBExceptionParser onDbiOpen(ret);
+        if(ret) throw TITCException<exceptions::MDBGeneral>(ret);
         mdb_txn_commit(txn);
         isopen = true;
       }
