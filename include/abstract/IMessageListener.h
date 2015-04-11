@@ -35,8 +35,7 @@
 #    include <memory>
 
 #    include <sys/Thread.h>
-#    include <sys/Mutex.h>
-#    include <sys/SyncLock.h>
+#    include <sys/synclock.h>
 #    include <abstract/Runnable.h>
 #    include <Exceptions.h>
 #    include <TSLog.h>

@@ -1,10 +1,15 @@
-/* 
- * File:   ePoll.h
- * Author: pk
- *
- * Created on 25 Февраль 2015 г., 11:44
- */
-
+/**
+ * Copyright Pavel Kraynyukhov 2007 - 2015.
+ * Distributed under the Boost Software License, Version 1.0.
+ * (See accompanying file LICENSE_1_0.txt or copy at
+ *          http://www.boost.org/LICENSE_1_0.txt)
+ * 
+ * $Id: ClientSocketsFactory.h 11 25 Февраль 2015 г., 11:44 $
+ * 
+ * EMail: pavel.kraynyukhov@gmail.com
+ * 
+ **/
+ 
 #ifndef EPOLL_H
 #define	EPOLL_H
 
@@ -92,8 +97,8 @@ namespace itc
                     itc::getLog()->trace(__FILE__,__LINE__,"ePoll::poll() - observer %jx is notified about event %u",it->second.get(),(events.get())[i].events);
                   }
                   itc::getLog()->trace(__FILE__,__LINE__,"ePoll::poll() - erasing observer %jx",it->second.get());
-                  mObservers.erase(it);
                   del((events.get())[i].data.fd);
+                  mObservers.erase(it);
                 }
               }
               else

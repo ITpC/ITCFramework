@@ -84,7 +84,7 @@ namespace itc {
         public:
 	    typedef std::shared_ptr<itc::abstract::IWorkflowState> IWFStateSPtr;
 
-            explicit WorkflowStorableState(IWFStateSPtr ptr) : mWorkflowStateSPtr(ptr) {
+            explicit WorkflowStorableState(const IWFStateSPtr& ptr) : mWorkflowStateSPtr(ptr) {
             }
 
             explicit WorkflowStorableState(const WorkflowStorableState& ref)

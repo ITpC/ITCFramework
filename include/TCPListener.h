@@ -30,12 +30,14 @@
  **/
 #ifndef __TCPLISTENER_H__
 #define	__TCPLISTENER_H__
-#include <net/NSocket.h>
-#include <sys/Mutex.h>
-#include <sys/SyncLock.h>
 #include <memory>
+#include <mutex>
+#include <atomic>
 #include <string>
-#include <stdint.h>
+#include <cstdint>
+
+#include <net/NSocket.h>
+#include <sys/synclock.h>
 #include <TCPSocketDef.h>
 #include <abstract/IController.h>
 
@@ -45,16 +47,19 @@ namespace itc
   class TCPListener: public itc::abstract::IRunnable, itc::abstract::IController<SharedCSPtr>
   {
   private:
-    itc::sys::Mutex mMutex;
-    ServerSocket    mServerSocket;
-    ViewTypeSPtr    mSocketsHandler;
-    bool            mNotEnd;
+    std::mutex        mMutex;
+    std::string       mAddress;
+    int               mPort;
+    ServerSocket      mServerSocket;
+    ViewTypeSPtr      mSocketsHandler;
+    std::atomic<bool> mNotEnd;
 
 	public:
    typedef ModelType value_type;
    
     explicit TCPListener(const std::string& address,const int port,const ViewTypeSPtr& sh)
-    : mServerSocket(address,port),mSocketsHandler(sh),mNotEnd(true)
+    : mMutex(), mAddress(address), mPort(port), mServerSocket(mAddress,mPort),
+      mSocketsHandler(sh),mNotEnd(true)
     {   
     }
     
@@ -62,7 +67,7 @@ namespace itc
     {
       while (mNotEnd)
       {
-        itc::sys::SyncLock sync(mMutex);
+        SyncLock sync(mMutex);
 
         value_type newClient(
           itc::Singleton<TCPSocketsFactory>::getInstance<
@@ -82,13 +87,13 @@ namespace itc
     }
     void onCancel()
     {
-      itc::sys::SyncLock sync(mMutex);
+      SyncLock sync(mMutex);
       mNotEnd=false;
       mServerSocket.close();
     }
     void shutdown()
     {
-      itc::sys::SyncLock sync(mMutex);
+      SyncLock sync(mMutex);
       mNotEnd=false;
       mServerSocket.close();
     }

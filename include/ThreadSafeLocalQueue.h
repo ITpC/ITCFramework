@@ -37,16 +37,18 @@
 #  include <string.h>
 #  include <sched.h>
 #  include <queue>
+#  include <mutex>
+#  include <atomic>
+
 
 #  include <abstract/QueueInterface.h>
-#  include <sys/Semaphore.h>
-#  include <sys/Mutex.h>
-#  include <sys/SyncLock.h>
+#  include <sys/PosixSemaphore.h>
+#  include <sys/synclock.h>
 #  include <TSLog.h>
 #  include <Val2Type.h>
 #  include <abstract/Cleanable.h>
 #  include <ITCException.h>
-#  include <sys/AtomicDigital.h>
+
 
 
 namespace itc
@@ -57,7 +59,7 @@ namespace itc
   > class ThreadSafeLocalQueue : public QueueInterface<DataType>
   {
    private:
-    sys::Mutex mMutex;
+    std::mutex mMutex;
     sys::Semaphore mMsgTrigger;
     std::queue<DataType> mQueue;
 
@@ -72,7 +74,7 @@ namespace itc
 
     bool send(const DataType& pData)
     {
-      sys::SyncLock sync(mMutex);
+      SyncLock sync(mMutex);
       mQueue.push(pData);
       mMsgTrigger.post();
       return true;
@@ -81,7 +83,7 @@ namespace itc
     bool recv(DataType& pData)
     {
       mMsgTrigger.wait();
-      sys::SyncLock synchronize(mMutex);
+      SyncLock sync(mMutex);
       if(!mQueue.empty())
       {
         pData = mQueue.front();
@@ -93,7 +95,7 @@ namespace itc
 
     size_t depth()
     {
-      sys::SyncLock synchronize(mMutex);
+      SyncLock sync(mMutex);
       return mQueue.size();
     }
 

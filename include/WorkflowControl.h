@@ -37,8 +37,7 @@
 #include <abstract/IWorkflowState.h>
 #include <WorkflowEntity.h>
 #include <WorkflowStorableState.h>
-#include <sys/Mutex.h>
-#include <sys/SyncLock.h>
+#include <sys/synclock.h>
 #include <TSLog.h>
 #include <ITCException.h>
 #include <ThreadSafeLocalQueue.h>
@@ -67,7 +66,7 @@ namespace itc {
             QueueSharedPtrType mDeadLetterQueue;
             bool mDLQueueValid;
             bool mWFQueueValid;
-            ::itc::sys::Mutex mMutex;
+            std::mutex mMutex;
         public:
 
             explicit WorkflowControl(
@@ -84,7 +83,7 @@ namespace itc {
 
             void onMessage(WFEntity& msg) {
                 try {
-                    itc::sys::SyncLock synchronize(mMutex); // protecting WorkflowState pointers (they are shared).
+                    SyncLock synchronize(mMutex); // protecting WorkflowState pointers (they are shared).
 
                     if (mDLQueueValid && mWFQueueValid) {
                         if (msg.getNextStateId() == workflow::end) {
@@ -198,13 +197,13 @@ namespace itc {
             }
 
             inline WFStorableStatesMap getWFStatesCopy() {
-                ::itc::sys::SyncLock synchronize(mMutex); // propagate exception further if it case, no try-catch block here.
+                SyncLock synchronize(mMutex); // propagate exception further if it case, no try-catch block here.
                 WFStorableStatesMap tmp(mWFStatesMap);
                 return tmp;
             }
 
             inline void onQueueDestroy() {
-                itc::sys::SyncLock synchronize(mMutex);
+                SyncLock synchronize(mMutex);
 
                 mDLQueueValid = false;
                 mWFQueueValid = false;
@@ -212,7 +211,7 @@ namespace itc {
             }
 
             inline void onCancel() {
-                itc::sys::SyncLock synchronize(mMutex);
+                SyncLock synchronize(mMutex);
 
                 mDLQueueValid = false;
                 mWFQueueValid = false;
@@ -220,7 +219,7 @@ namespace itc {
             }
 
             virtual ~WorkflowControl() {
-                itc::sys::SyncLock synchronize(mMutex);
+                SyncLock synchronize(mMutex);
                 mDLQueueValid = false;
                 mWFQueueValid = false;
                 ::itc::getLog()->debug(__FILE__, __LINE__, "destructor called for listener at address: %x", this);

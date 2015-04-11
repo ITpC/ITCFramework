@@ -22,7 +22,7 @@ namespace itc
 {
 
   /**
-   * @brif The itc::ServiceFacade have to be inherited by classes those are 
+   * @brief The itc::ServiceFacade have to be inherited by classes those are 
    * intend to act as a services managed by an itc::ServiceManager.
    * The implementation of service should initialize a ServiceFacade ctor
    * with std::string value which is a unique name of your service.
