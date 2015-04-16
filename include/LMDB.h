@@ -71,7 +71,7 @@ namespace itc
         }
         else
         {
-          mDBName = path + "/" + dbname;
+          mDBName = mDBEnvPath + "/" + dbname;
           mEnvironment = std::make_shared<Environment>(mDBEnvPath, 1,dbsize);
         }
       }
@@ -83,7 +83,6 @@ namespace itc
        **/
       void open()
       {
-        itc::getLog()->debug(__FILE__, __LINE__, "[trace] -> Database::open()");
         std::lock_guard<std::mutex> dosync(mMutex);
 
         if(isopen)
@@ -91,7 +90,9 @@ namespace itc
           itc::getLog()->debug(__FILE__, __LINE__, "[trace] -> Database::open(), database is already open");
           return;
         }
-
+        
+        itc::getLog()->debug(__FILE__, __LINE__, "[trace] -> Database::open() in env: %s",mDBEnvPath.c_str());
+        
         int ret = mdb_txn_begin(mEnvironment.get()->getEnv(), NULL, 0, &txn);
         if(ret) throw TITCException<exceptions::MDBGeneral>(ret);
         if(mDBName.empty())
@@ -100,6 +101,7 @@ namespace itc
         }
         else
         {
+          itc::getLog()->debug(__FILE__, __LINE__, "[trace] -> open database %s in env: %s",mDBName.c_str(),mDBEnvPath.c_str());
           ret = mdb_dbi_open(txn, mDBName.c_str(), mDBMode, &dbi);
         }
         if(ret) throw TITCException<exceptions::MDBGeneral>(ret);
