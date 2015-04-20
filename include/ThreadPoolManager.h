@@ -82,7 +82,7 @@ namespace itc
       doStart=true;
     }
     
-    void enqueueRunnable(abstract::IThreadPool::value_type& ref)
+    void enqueueRunnable(const abstract::IThreadPool::value_type& ref)
     {
       mThreadPool.get()->enqueue(ref);
     }

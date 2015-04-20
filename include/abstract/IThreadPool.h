@@ -52,7 +52,7 @@ namespace itc
             virtual void setAutotune(const bool&) = 0;
             virtual void expand(const size_t&) = 0;
             virtual void reduce(const size_t&) = 0;
-            virtual void enqueue(value_type&) = 0;
+            virtual void enqueue(const value_type&) = 0;
             
         protected:
             virtual ~IThreadPool()=default;

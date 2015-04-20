@@ -166,7 +166,7 @@ namespace itc
       }
     }
 
-    void enqueue(value_type& ref)
+    void enqueue(const value_type& ref)
     {
       std::lock_guard<std::mutex> dosync(mMutex);
 
