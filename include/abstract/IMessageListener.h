@@ -76,7 +76,7 @@ public:
         itc::getLog()->debug(__FILE__, __LINE__, "%s at address %x", "IMessageListener::shutdown()", this);
     }
 
-    inline QueueWeakPtr getQueueWeakPtr()
+    QueueWeakPtr getQueueWeakPtr()
     {
         return mQueue;
     }

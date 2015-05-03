@@ -40,11 +40,12 @@
 #include <sys/synclock.h>
 #include <TCPSocketDef.h>
 #include <abstract/IController.h>
+#include <abstract/Runnable.h>
 
 namespace itc
 {
 
-  class TCPListener: public itc::abstract::IRunnable, itc::abstract::IController<SharedCSPtr>
+  class TCPListener: public ::itc::abstract::IRunnable, public ::itc::abstract::IController<CSocketSPtr>
   {
   private:
     std::mutex        mMutex;
@@ -81,6 +82,9 @@ namespace itc
         }
         else
         {
+          std::string peeraddr;
+          newClient.get()->getpeeraddr(peeraddr);
+          itc::getLog()->info("Inbound connection from %s", peeraddr.c_str());
           notify(newClient,mSocketsHandler);
         }
       }

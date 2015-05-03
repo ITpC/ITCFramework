@@ -8,7 +8,6 @@
         <logicalFolder name="abstract" displayName="abstract" projectFiles="true">
           <itemPath>include/abstract/IController.h</itemPath>
           <itemPath>include/abstract/IMessageListener.h</itemPath>
-          <itemPath>include/abstract/IQTxn.h</itemPath>
           <itemPath>include/abstract/IThreadPool.h</itemPath>
           <itemPath>include/abstract/IView.h</itemPath>
           <itemPath>include/abstract/IWorkflowState.h</itemPath>
@@ -16,11 +15,8 @@
           <itemPath>include/abstract/Observer.h</itemPath>
           <itemPath>include/abstract/QueueInterface.h</itemPath>
           <itemPath>include/abstract/Service.h</itemPath>
-          <itemPath>include/abstract/TxnOwner.h</itemPath>
-          <itemPath>include/WorkerThread.h</itemPath>
         </logicalFolder>
         <logicalFolder name="f1" displayName="sys" projectFiles="true">
-          <itemPath>include/sys/ePoll.h</itemPath>
         </logicalFolder>
         <itemPath>include/ClientSocketsFactory.h</itemPath>
         <itemPath>include/CompCommon.h</itemPath>
@@ -28,6 +24,7 @@
         <itemPath>include/Exceptions.h</itemPath>
         <itemPath>include/LMDB.h</itemPath>
         <itemPath>include/LMDBEnv.h</itemPath>
+        <itemPath>include/PollController.h</itemPath>
         <itemPath>include/Properties.h</itemPath>
         <itemPath>include/RScheduler.h</itemPath>
         <itemPath>include/Sequence.h</itemPath>
@@ -44,6 +41,9 @@
         <itemPath>include/WorkflowStorableState.h</itemPath>
         <itemPath>include/bz2Compressor.h</itemPath>
         <itemPath>include/bz2Decompressor.h</itemPath>
+        <itemPath>include/ePollInController.h</itemPath>
+        <itemPath>include/tsbqueue.h</itemPath>
+        <itemPath>include/tsqueue.h</itemPath>
       </logicalFolder>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
@@ -139,6 +139,8 @@
       </item>
       <item path="include/LMDBEnv.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/PollController.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/Properties.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/RScheduler.h" ex="false" tool="3" flavor2="0">
@@ -161,8 +163,6 @@
       </item>
       <item path="include/ThreadSafeLocalQueue.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/WorkerThread.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="include/WorkflowControl.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/WorkflowEntity.h" ex="false" tool="3" flavor2="0">
@@ -175,8 +175,6 @@
             ex="false"
             tool="3"
             flavor2="0">
-      </item>
-      <item path="include/abstract/IQTxn.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/abstract/IThreadPool.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -192,13 +190,15 @@
       </item>
       <item path="include/abstract/Service.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/abstract/TxnOwner.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="include/bz2Compressor.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/bz2Decompressor.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/sys/ePoll.h" ex="false" tool="3" flavor2="0">
+      <item path="include/ePollInController.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/tsbqueue.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/tsqueue.h" ex="false" tool="3" flavor2="0">
       </item>
     </conf>
     <conf name="Release" type="3">
@@ -240,6 +240,8 @@
       </item>
       <item path="include/LMDBEnv.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/PollController.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/Properties.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/RScheduler.h" ex="false" tool="3" flavor2="0">
@@ -262,8 +264,6 @@
       </item>
       <item path="include/ThreadSafeLocalQueue.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/WorkerThread.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="include/WorkflowControl.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/WorkflowEntity.h" ex="false" tool="3" flavor2="0">
@@ -276,8 +276,6 @@
             ex="false"
             tool="3"
             flavor2="0">
-      </item>
-      <item path="include/abstract/IQTxn.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/abstract/IThreadPool.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -293,13 +291,15 @@
       </item>
       <item path="include/abstract/Service.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/abstract/TxnOwner.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="include/bz2Compressor.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/bz2Decompressor.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/sys/ePoll.h" ex="false" tool="3" flavor2="0">
+      <item path="include/ePollInController.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/tsbqueue.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/tsqueue.h" ex="false" tool="3" flavor2="0">
       </item>
     </conf>
   </confs>

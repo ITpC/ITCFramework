@@ -52,8 +52,8 @@ namespace itc
 
     explicit ThreadPool(
       const size_t maxthreads = 10, bool autotune = true, float overcommit = 1.2
-      ) : mMutex(), mMaxThreads(maxthreads), mAutotune(autotune),
-      mOvercommitRatio(overcommit), mMayRun(true)
+      ) : mMutex(), mMaxThreads(maxthreads), mMinThreads(maxthreads), 
+      mAutotune(autotune), mOvercommitRatio(overcommit), mMayRun(true)
     {
       std::lock_guard<std::mutex> dosync(mMutex);
       ::itc::getLog()->debug(
@@ -119,7 +119,7 @@ namespace itc
     inline void reduce(const size_t& dec)
     {
       std::lock_guard<std::mutex> dosync(mMutex);
-      if(mMaxThreads > dec)
+      if(mMaxThreads > mMinThreads)
       {
         mMaxThreads -= dec;
         ::itc::getLog()->debug(__FILE__, __LINE__, "ThreadPool::reduce() - pool is reduced to %ju", size_t(mMaxThreads));
@@ -199,6 +199,7 @@ namespace itc
    private:
     std::mutex mMutex;
     std::atomic<size_t> mMaxThreads;
+    std::atomic<size_t> mMinThreads;
     std::atomic<bool> mAutotune;
     std::atomic<float> mOvercommitRatio;
     std::queue<TaskType> mTaskQueue;

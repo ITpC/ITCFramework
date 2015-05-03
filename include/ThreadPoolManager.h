@@ -116,7 +116,10 @@ namespace itc
 
           if((mTPStats.tpc>mMinReadyThr)&&(mTPStats.tpc>=mTPStats.tac)&&((mTPStats.tqdp*2)<mTPStats.maxthreads))
           {
-            mThreadPool.get()->reduce(1);
+            if(mThreadPool.get()->getMaxThreads() > mMaxThreads)
+            {
+              mThreadPool.get()->reduce(1);
+            }
           }
         }catch (std::exception& e)
         {
@@ -129,9 +132,9 @@ namespace itc
     void logStats()
     {
       ::itc::getLog()->info(
-        "tc:%ju  pc:%ju  ac:%ju qd:%ju mt:%ju",
+        "tc:%ju  pc:%ju  ac:%ju qd:%ju mt:%ju, mtl:%ju",
         mTPStats.tc, mTPStats.tpc, mTPStats.tac, 
-        mTPStats.tqdp,mTPStats.maxthreads
+        mTPStats.tqdp,mTPStats.maxthreads,mMaxThreads
       );
     }
     

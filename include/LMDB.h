@@ -105,7 +105,11 @@ namespace itc
           ret = mdb_dbi_open(txn, mDBName.c_str(), mDBMode, &dbi);
         }
         if(ret) throw TITCException<exceptions::MDBGeneral>(ret);
-        mdb_txn_commit(txn);
+        ret=mdb_txn_commit(txn);
+        if(ret)
+        {
+          throw TITCException<exceptions::MDBGeneral>(ret);
+        }
         isopen = true;
       }
 

@@ -270,15 +270,16 @@ namespace itc
             }
           }else
           {
+            ::itc::getLog()->trace(__FILE__, __LINE__, "[%jx] <- out WOTxnCommit(),",pthread_self());
             ::itc::getLog()->fatal(__FILE__, __LINE__, "[666]: in Database::WOTxnCommit() something is generally wrong. Transaction requested from wrong environment.");
             throw TITCException<exceptions::ITCGeneral>(exceptions::MDBEnvWrong);
           }
         }else
         {
+          ::itc::getLog()->trace(__FILE__, __LINE__, "[%jx] <- out WOTxnCommit(),",pthread_self());
           ::itc::getLog()->fatal(__FILE__, __LINE__, "[666]: in Database::WOTxnCommit() something is generally wrong. The transaction handle is null.");
           throw TITCException<exceptions::ITCGeneral>(exceptions::MDBEInval);
         }
-        ::itc::getLog()->trace(__FILE__, __LINE__, "[%jx] <- out WOTxnCommit(),",pthread_self());
       }
 
       void WOTxnAbort(MDB_txn *ptr)
