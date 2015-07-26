@@ -49,6 +49,17 @@ namespace itc {
         }
       }
 
+      static std::shared_ptr<T> getExisting()
+      {
+        std::lock_guard<std::mutex> sync(mMutex);
+
+        if (mInstance.get()) {
+          return mInstance;
+        } else {
+          throw std::runtime_error("This singletone is not initialized yet");
+        }
+      }
+      
       template <typename... Args> static std::shared_ptr<T> getInstance(Args...args)
       {
         std::lock_guard<std::mutex> sync(mMutex);

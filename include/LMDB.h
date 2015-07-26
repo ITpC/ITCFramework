@@ -46,8 +46,8 @@ namespace itc
      public:
 
       /**
-       * @brief Symas LMDB wrapper around DB functionality as a backend for 
-       * persistent queues[WIP, nothing good yet here]
+       * @brief wrapper for Symas LMDB as a backend for 
+       * persistent queues[WIP]
        *
        * @param path - LMDB database environment path
        * @param dbname - name of the database (optional)
