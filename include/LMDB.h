@@ -30,6 +30,8 @@ namespace itc
 
     class Database
     {
+     public:
+       typedef std::shared_ptr<Environment> LMDBEnvSPtr;
      private:
       std::mutex mMutex;
       std::recursive_mutex mMasterLock;
@@ -39,7 +41,7 @@ namespace itc
       int mDBMode;
       MDB_dbi dbi;
       MDB_txn *txn;
-      bool isopen;
+      bool mIsOpen;
       friend ROTxn;
       friend WOTxn;
 
@@ -61,7 +63,7 @@ namespace itc
         const int mode = MDB_CREATE 
         )
         :mMutex(), mMasterLock(), mDBEnvPath(path),
-        mDBMode(mode), isopen(false)
+        mDBMode(mode), mIsOpen(false)
       {
         std::lock_guard<std::mutex> dosync(mMutex);
 
@@ -85,7 +87,7 @@ namespace itc
       {
         std::lock_guard<std::mutex> dosync(mMutex);
 
-        if(isopen)
+        if(mIsOpen)
         {
           itc::getLog()->debug(__FILE__, __LINE__, "[trace] -> Database::open(), database is already open");
           return;
@@ -110,7 +112,7 @@ namespace itc
         {
           throw TITCException<exceptions::MDBGeneral>(ret);
         }
-        isopen = true;
+        mIsOpen = true;
       }
 
       const std::shared_ptr<Environment>& getDBEnv()
@@ -137,9 +139,14 @@ namespace itc
       void shutdown()
       {
         std::lock_guard<std::mutex> dosync(mMutex);
-        isopen = false;
+        mIsOpen = false;
       }
 
+      const bool isopen() const
+      {
+        return mIsOpen;
+      }
+      
       ~Database()
       {
         this->shutdown();
