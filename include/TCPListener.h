@@ -78,7 +78,7 @@ namespace itc
 
         if(int ret=mServerSocket.accept(newClient) == -1)
         {
-          throw TITCException<exceptions::InvalidSocketException>(ret);
+          throw TITCException<exceptions::InvalidSocketException>(errno);
         }
         else
         {

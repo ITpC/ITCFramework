@@ -70,7 +70,7 @@ namespace itc
   public:
     explicit ThreadPoolManager(
       const size_t& maxthreads=200,
-      const float& overcommit=10,
+      const size_t& overcommit=10,
       const size_t& purge_tm_usec=10000, 
       const size_t& min_thr_ready=10
     ):mMutex(), doStart(false),doRun(true), canStop(true),
