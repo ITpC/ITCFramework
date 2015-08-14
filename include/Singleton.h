@@ -83,7 +83,7 @@ namespace itc {
       {
         std::lock_guard<std::mutex> sync(mMutex);
         if (mInstance.unique()) {
-          std::shared_ptr<T> tmp((T*) 0);
+          std::shared_ptr<T> tmp(nullptr);
           mInstance.swap(tmp);
           return true;
         }
@@ -97,7 +97,7 @@ namespace itc {
         while ((!mInstance.unique()) && mInstance.use_count()) {
           aTimer.usleep(10);
         }
-        std::shared_ptr<T> tmp((T*) 0);
+        std::shared_ptr<T> tmp(nullptr);
         mInstance.swap(tmp);
       }
     };
