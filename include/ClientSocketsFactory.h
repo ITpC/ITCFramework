@@ -35,8 +35,8 @@ template <uint64_t SOpts = CLIENT_SOCKET> class ClientSocketsFactory
   {
     SyncLock sync(mMutex);
     static_assert(SOpts < SERVER_SOCKET, "Must be a tcp client socket type");
-    static_assert(SOpts >= CLIENT_SOCKET, "Must be a tcp client socket type");
-    static_assert(CLN_TCP_KA_TND >= SERVER_SOCKET, "WTF ? can't you count ?!");
+    static_assert(SOpts > CLIENT_SOCKET, "Must be a tcp client socket type");
+    static_assert(CLN_TCP_KA_TND < SERVER_SOCKET, "WTF ? can't you count ?!");
 
     for(
       size_t i = 0;i < mMaxQueueLength;
