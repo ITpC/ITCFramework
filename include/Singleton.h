@@ -36,7 +36,7 @@ namespace itc {
       explicit Singleton(Singleton&)=delete;
 
     public:
-      static std::shared_ptr<T> getInstance()
+      static const std::shared_ptr<T>& getInstance()
       {
         std::lock_guard<std::mutex> sync(mMutex);
 
@@ -49,7 +49,7 @@ namespace itc {
         }
       }
 
-      static std::shared_ptr<T> getExisting()
+      static const std::shared_ptr<T>& getExisting()
       {
         std::lock_guard<std::mutex> sync(mMutex);
 
@@ -60,7 +60,7 @@ namespace itc {
         }
       }
       
-      template <typename... Args> static std::shared_ptr<T> getInstance(Args...args)
+      template <typename... Args> static const std::shared_ptr<T>& getInstance(Args...args)
       {
         std::lock_guard<std::mutex> sync(mMutex);
 
@@ -83,8 +83,7 @@ namespace itc {
       {
         std::lock_guard<std::mutex> sync(mMutex);
         if (mInstance.unique()) {
-          std::shared_ptr<T> tmp(nullptr);
-          mInstance.swap(tmp);
+          mInstance.reset();
           return true;
         }
         return false;
@@ -97,14 +96,13 @@ namespace itc {
         while ((!mInstance.unique()) && mInstance.use_count()) {
           aTimer.usleep(10);
         }
-        std::shared_ptr<T> tmp(nullptr);
-        mInstance.swap(tmp);
+        mInstance.reset();
       }
     };
 
     // Initialisation
     template <typename T> std::mutex Singleton<T>::mMutex;
-    template <typename T> std::shared_ptr<T> Singleton<T>::mInstance(static_cast<T*>(nullptr));
+    template <typename T> std::shared_ptr<T> Singleton<T>::mInstance(nullptr);
 }
 
 #endif

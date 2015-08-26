@@ -30,95 +30,94 @@
  **/
 
 #ifndef __IMESSAGELISTENER_H__
-#    define __IMESSAGELISTENER_H__
+#define __IMESSAGELISTENER_H__
 
-#    include <memory>
+#include <memory>
+#include <sys/Thread.h>
+#include <sys/synclock.h>
+#include <abstract/Runnable.h>
+#include <Exceptions.h>
+#include <TSLog.h>
+#include <abstract/QueueInterface.h>
+#include <atomic>
 
-#    include <sys/Thread.h>
-#    include <sys/synclock.h>
-#    include <abstract/Runnable.h>
-#    include <Exceptions.h>
-#    include <TSLog.h>
-#    include <abstract/QueueInterface.h>
-#    include <atomic>
 
 namespace itc
 {
 
-template <
-    typename DataType,
-    template <class> class QueueImpl
-> class IMessageListener : public itc::abstract::IRunnable
-{
-public:
+  template <
+  typename DataType,
+  template <class> class QueueImpl
+  > class IMessageListener : public itc::abstract::IRunnable
+  {
+  public:
     typedef QueueImpl<DataType> TQueueImpl;
     typedef typename std::shared_ptr<TQueueImpl> QueueSharedPtr;
     typedef typename std::weak_ptr<TQueueImpl> QueueWeakPtr;
 
-private:
+  private:
     std::atomic<bool> doWork;
     QueueWeakPtr mQueue;
 
-public:
+  public:
 
     explicit IMessageListener(QueueSharedPtr& pQueue)
     : doWork(false), mQueue(pQueue)
     {
-        if (!(mQueue.lock().get()))
-            throw NullPointerException(EFAULT);
-        doWork = true;
-        itc::getLog()->debug(__FILE__, __LINE__, "%s at address %x", "IMessageListener::IMessageListener(QueueSharedPtr& pQueue)", this);
+      if (!(mQueue.lock().get()))
+        throw NullPointerException(EFAULT);
+      doWork = true;
+      itc::getLog()->debug(__FILE__, __LINE__, "%s at address %x", "IMessageListener::IMessageListener(QueueSharedPtr& pQueue)", this);
     }
 
     void shutdown()
     {
-        doWork = false;
-        itc::getLog()->debug(__FILE__, __LINE__, "%s at address %x", "IMessageListener::shutdown()", this);
+      doWork = false;
+      itc::getLog()->debug(__FILE__, __LINE__, "%s at address %x", "IMessageListener::shutdown()", this);
     }
 
     QueueWeakPtr getQueueWeakPtr()
     {
-        return mQueue;
+      return mQueue;
     }
 
     void execute()
     {
-        itc::getLog()->debug(__FILE__, __LINE__, "%s at address %x", "IMessageListener::execute() has began", this);
-        while (doWork)
+      itc::getLog()->debug(__FILE__, __LINE__, "%s at address %x", "IMessageListener::execute() has began", this);
+      while (doWork)
+      {
+        DataType tmp;
+        std::shared_ptr<TQueueImpl> queue_addr(mQueue.lock());
+        if(queue_addr.get() != nullptr)
         {
-            DataType tmp;
-            if (TQueueImpl * queue_addr = mQueue.lock().get())
-            {
-                if ((queue_addr->recv(tmp)))
-                {
-                    onMessage(tmp);
-                }
-                else
-                {
-                    doWork = false;
-                    itc::getLog()->debug(__FILE__, __LINE__, "%s at address %x", "IMessageListener::execute() - Queue::recv() has fault, calling oQueueDestroy", this);
-                    onQueueDestroy();
-                }
-            }
-            else
-            {
-                doWork = false;
-                itc::getLog()->debug(__FILE__, __LINE__, "%s at address %x", "IMessageListener::execute() - QueueWeakPtr does not exists anymore, calling oQueueDestroy", this);
-                onQueueDestroy();
-            }
+          if(queue_addr->recv(tmp))
+          {
+            onMessage(tmp);
+          }else
+          {
+            doWork = false;
+            itc::getLog()->debug(__FILE__, __LINE__, "%s at address %x", "IMessageListener::execute() - Queue::recv() has fault, calling oQueueDestroy", this);
+            onQueueDestroy();
+          }
+        }else
+        {
+          doWork = false;
+          itc::getLog()->debug(__FILE__, __LINE__, "%s at address %x", "IMessageListener::execute() - QueueWeakPtr does not exists anymore, calling oQueueDestroy", this);
+          onQueueDestroy();
         }
-        itc::getLog()->debug(__FILE__, __LINE__, "%s at address %x", "IMessageListener::execute() has been finished", this);
+      }
+      itc::getLog()->debug(__FILE__, __LINE__, "%s at address %x", "IMessageListener::execute() has been finished", this);
     }
 
-protected:
+  protected:
     virtual void onMessage(DataType& msg) = 0;
     virtual void onQueueDestroy() = 0;
 
     virtual ~IMessageListener()
     {
-        itc::getLog()->debug(__FILE__, __LINE__, "%s at address %x", "~IMessageListener()", this);
+      itc::getLog()->debug(__FILE__, __LINE__, "%s at address %x", "~IMessageListener()", this);
     }
-};
+  };
 }
 
 #endif /*__IMESSAGELISTENER_H__*/

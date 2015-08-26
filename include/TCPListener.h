@@ -1,33 +1,15 @@
 /**
- * Copyright (c) 2007-2015, Pavel Kraynyukhov.
- *  
- * Permission to use, copy, modify, and distribute this software and its
- * documentation for any purpose, without fee, and without a written agreement
- * is hereby granted under the terms of the General Public License version 2
- * (GPLv2), provided that the above copyright notice and this paragraph and the
- * following two paragraphs and the "LICENSE" file appear in all modified or
- * unmodified copies of the software "AS IS" and without any changes.
- *
- * IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE TO ANY PARTY FOR
- * DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING
- * LOST PROFITS, ARISING OUT OF THE USE OF THIS SOFTWARE AND ITS
- * DOCUMENTATION, EVEN IF THE COPYRIGHT HOLDER HAS BEEN ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- *
- * THE COPYRIGHT HOLDER SPECIFICALLY DISCLAIMS ANY WARRANTIES,
- * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
- * AND FITNESS FOR A PARTICULAR PURPOSE.  THE SOFTWARE PROVIDED HEREUNDER IS
- * ON AN "AS IS" BASIS, AND THE COPYRIGHT HOLDER HAS NO OBLIGATIONS TO
- * PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+ * Copyright Pavel Kraynyukhov 2007 - 2015.
+ * Distributed under the Boost Software License, Version 1.0.
+ * (See accompanying file LICENSE_1_0.txt or copy at
+ *          http://www.boost.org/LICENSE_1_0.txt)
  * 
+  * $Id: TCPListener.h 1 2015-02-28 13:30:33Z pk $
  * 
- * $Id: TCPListener.h 1 2015-02-28 13:30:33Z pk $
- * 
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * EMail: pavel.kraynyukhov@gmail.com
  * 
  **/
+
 #ifndef __TCPLISTENER_H__
 #define	__TCPLISTENER_H__
 #include <memory>
@@ -41,6 +23,7 @@
 #include <TCPSocketDef.h>
 #include <abstract/IController.h>
 #include <abstract/Runnable.h>
+#include <Singleton.h>
 
 namespace itc
 {
@@ -61,8 +44,13 @@ namespace itc
     explicit TCPListener(const std::string& address,const int port,const ViewTypeSPtr& sh)
     : mMutex(), mAddress(address), mPort(port), mServerSocket(mAddress,mPort),
       mSocketsHandler(sh),mNotEnd(true)
-    {   
+    {
+      if(mSocketsHandler.get()==nullptr)
+        throw std::runtime_error("The connection handler view does not exists (nullptr)");
     }
+    
+    TCPListener(const TCPListener&)=delete;
+    TCPListener(TCPListener&)=delete;
     
     void execute()
     {
@@ -84,8 +72,15 @@ namespace itc
         {
           std::string peeraddr;
           newClient.get()->getpeeraddr(peeraddr);
-          itc::getLog()->info("Inbound connection from %s", peeraddr.c_str());
-          notify(newClient,mSocketsHandler);
+          if(peeraddr.empty())
+          {
+            itc::getLog()->error(__FILE__,__LINE__,"Socket is already closed. It seems like a connections DDOS");
+          }
+          else
+          {
+            itc::getLog()->info("Inbound connection from %s", peeraddr.c_str());
+            notify(newClient,mSocketsHandler);
+          }
         }
       }
     }

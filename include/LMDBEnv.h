@@ -91,6 +91,9 @@ namespace itc
         mActive = true;
       };
 
+      Environment(const Environment&)=delete;
+      Environment(Environment&)=delete;
+      
       MDB_env* getEnv()
       {
         std::lock_guard<std::mutex> dosync(mMutex);

@@ -32,13 +32,16 @@
 
 #ifndef  __IVIEW_H__
 #  define	__IVIEW_H__
-#  include <memory>
+
 
 namespace itc
 {
   namespace abstract
   {
-
+    /**
+     * @brief View inreface which will work together with an implementation of 
+     * abstract::IController
+     **/
     template <typename TModel> class IView
     {
      public:

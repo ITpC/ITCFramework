@@ -35,13 +35,17 @@ namespace itc
      private:
       std::mutex mMutex;
       std::recursive_mutex mMasterLock;
-      std::shared_ptr<Environment> mEnvironment;
       std::string mDBEnvPath;
-      std::string mDBName;
       int mDBMode;
+      std::atomic<bool> mIsOpen;
+      
+      std::shared_ptr<Environment> mEnvironment;
+      
+      std::string mDBName;
+      
       MDB_dbi dbi;
       MDB_txn *txn;
-      bool mIsOpen;
+      
       friend ROTxn;
       friend WOTxn;
 
@@ -61,9 +65,8 @@ namespace itc
         const std::string& dbname = "",
         const uint32_t dbsize=41943040,
         const int mode = MDB_CREATE 
-        )
-        :mMutex(), mMasterLock(), mDBEnvPath(path),
-        mDBMode(mode), mIsOpen(false)
+      ):  mMutex(), mMasterLock(), mDBEnvPath(path),
+          mDBMode(mode), mIsOpen(false)
       {
         std::lock_guard<std::mutex> dosync(mMutex);
 
@@ -79,6 +82,7 @@ namespace itc
       }
 
       Database(const Database&) = delete;
+      Database(Database&) = delete;
 
       /**
        * @brief create the environment and open the database
@@ -138,11 +142,10 @@ namespace itc
       
       void shutdown()
       {
-        std::lock_guard<std::mutex> dosync(mMutex);
         mIsOpen = false;
       }
 
-      const bool isopen() const
+      const bool isopen()
       {
         return mIsOpen;
       }

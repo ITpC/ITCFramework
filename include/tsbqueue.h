@@ -30,16 +30,19 @@ private:
  
 public:
  explicit tsbqueue():tsqueue<DataType>(),mMutexL2(),mEvent(){};
-
+ tsbqueue(const tsbqueue&)=delete;
+ tsbqueue(tsbqueue&)=delete;
  /**
   * @brief send message of DataType to the queue.
   * @param ref message to be sent.
+  * @return self
   */
- void send(const DataType& ref)
+ const tsbqueue<DataType>&  send(const DataType& ref)
  {
    SyncLock sync(mMutexL2);
    this->push(ref);
    mEvent.post();
+   return *this;
  }
  
  /**

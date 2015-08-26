@@ -35,16 +35,18 @@ public:
     return mQueue.empty();
   }
   
-  void push(const T& ref)
+  const tsqueue& push(const T& ref)
   {
     SyncLock sync(mMutex);
     mQueue.push(ref);
+    return *this;
   }
   
-  void push(const T&& ref)
+  const tsqueue& push(const T&& ref)
   {
     SyncLock sync(mMutex);
     mQueue.push(ref);
+    return *this;
   }
   
   const T& front()
@@ -53,10 +55,11 @@ public:
     return mQueue.front();
   }
   
-  void pop()
+  const tsqueue& pop()
   {
     SyncLock sync(mMutex);
     mQueue.pop();
+    return *this;
   }
   
   const size_t size()
