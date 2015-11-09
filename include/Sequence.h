@@ -30,108 +30,129 @@
  **/
 
 #ifndef SEQUENCE_H_
-#  define SEQUENCE_H_
+#define SEQUENCE_H_
 
-#  include <compat_types.h>
-#  include <Val2Type.h>
-#  include <unistd.h>
-#  include <atomic>
-#  include <limits>
+#include <compat_types.h>
+#include <Val2Type.h>
+#include <unistd.h>
+#include <atomic>
+#include <limits>
+#include <mutex>
+#include <sys/synclock.h>
+
+#include "Singleton.h"
 
 namespace itc
 {
-  namespace sys
+  using namespace itc::utils;
+
+  /**
+   * @brief This template class provides sequence of a specified integral type.
+   * Rotate and Reverse template parameters specify the behavior of a sequence:
+   *  Rotate - starts the sequence from beginning after it reaches end of sequence
+   *  Reverse - specifies that the sequence starts from max and ends at 0
+   *
+   * NOTE: specifien a signed integer value will cut the sequence in a half as
+   * the range of the sequence is [0..<type>max] if Reverse equals false and
+   * [<type>max..0] if Reverse equals true.
+   * 
+   * @exception std::out_of_range will be thrown if Rotate is false and
+   * sequence reached its highest value.
+   * 
+   **/
+  template <typename IntType, bool Rotate = true, bool Reverse = false >
+  class Sequence
   {
-    using namespace itc::utils;
+  private:
+    std::mutex mMutex;
+    std::atomic<IntType> mSequence;
+    Bool2Type<Reverse> mOrder;
+    Bool2Type<Rotate> mCyclic;
 
-    /**
-     * This class provides 64-bit wide unsigned sequence. The purpose of this class
-     * is to prowide MT-Safe and consistent sequence of numbers. There are two
-     * policies: Rotate and Reverse, those are compile time attributes defining the
-     * sequence behavior. If Rotate policy is true, then the sequence will start over
-     * after reaching the uint64_t maximum value (-1). The Reverse policy dictates that
-     * the sequence starts from max uint64_t and decrementing until reaching 0 or rotates
-     * after 0 if the Rotate policy is in use.
-     * 
-     * @exception std::out_of_range will be thrown if Rotate is false and
-     * sequence reached its highest value.
-     * 
-     **/
-    template <bool Rotate = true, bool Reverse = false >
-    class Sequence
+    const IntType getNext(Bool2Type < false > reverse, Bool2Type <false> cyclic)
     {
-     private:
-      std::atomic<uint64_t> mSequence;
+      static IntType _max = std::numeric_limits<IntType>::max();
 
-      uint64_t getNext(Bool2Type < false > reverse)
+      if (mSequence == _max)
       {
-
-        if(mSequence == std::numeric_limits<uint64_t>::max())
-        {
-          if(Rotate)
-          {
-            mSequence = 0;
-            return mSequence;
-          }
-          else
-          {
-            throw std::out_of_range("Sequence is out of range");
-          }
-        }
-        else
-        {
-          return ++mSequence;
-        }
-      }
-
-      uint64_t getNext(Bool2Type < true > reverse)
+        throw std::out_of_range("Sequence is out of range");
+      }else
       {
-
-        if(mSequence == 0)
-        {
-          if(Rotate)
-          {
-            mSequence = std::numeric_limits<uint64_t>::max();
-            return mSequence;
-          }
-          else
-          {
-            throw std::out_of_range("Sequence is out of range");
-          }
-        }
-        else
-        {
-          return --mSequence;
-        }
+        return ++mSequence;
       }
+    }
 
-     public:
+    const IntType getNext(Bool2Type < false > reverse, Bool2Type <true> cyclic)
+    {
+      static IntType _max = std::numeric_limits<IntType>::max();
 
-      explicit Sequence():mSequence(Reverse ? std::numeric_limits<uint64_t>::max() : 0)
+      if (mSequence == _max)
       {
-      }
-
-      explicit Sequence(const Sequence& ref):mSequence(ref.mSequence)
+        return (mSequence = 0);
+      }else
       {
+        return ++mSequence;
       }
+    }
 
-      const Sequence& operator=(const Sequence& ref)
+    const IntType getNext(Bool2Type < true > reverse, Bool2Type <true> cyclic)
+    {
+      static IntType _max = std::numeric_limits<IntType>::max();
+      if (mSequence == 0)
       {
-        mSequence = ref.mSequence;
-        return(*this);
+        return (mSequence = _max);
+      }else
+      {
+        return --mSequence;
       }
+    }
 
-      const uint64_t getCurrent() const
+    const IntType getNext(Bool2Type < true > reverse, Bool2Type <false> cyclic)
+    {
+      static IntType _max = std::numeric_limits<IntType>::max();
+      if (mSequence == 0)
       {
-        return mSequence;
+        throw std::out_of_range("Sequence is out of range");
+      }else
+      {
+        return --mSequence;
       }
+    }
 
-      const uint64_t getNext() const
-      {
-        return getNext(Reverse);
-      }
-    };
-  }
+
+  public:
+
+    explicit Sequence() : mMutex(), mSequence(Reverse ? std::numeric_limits<IntType>::max() : 0) { }
+
+    explicit Sequence(const Sequence& ref) : mMutex(), mSequence(ref.mSequence) { }
+
+    explicit Sequence(Sequence& ref) : mMutex(), mSequence(ref.mSequence) { }
+
+    Sequence& operator=(const Sequence& ref)
+    {
+      SyncLock sync(mMutex);
+      mSequence = ref.mSequence;
+      return (*this);
+    }
+
+    const IntType getCurrent()
+    {
+      SyncLock sync(mMutex);
+      return mSequence;
+    }
+
+    operator uint64_t()
+    {
+      return getCurrent();
+    }
+    
+    const IntType getNext()
+    {
+      SyncLock sync(mMutex);
+      return getNext(mOrder, mCyclic);
+    }
+  };
+  typedef itc::Singleton<Sequence> SSequence;
 }
 
 #endif /*SEQUENCE_H_*/
