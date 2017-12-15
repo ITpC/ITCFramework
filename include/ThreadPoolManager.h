@@ -21,6 +21,7 @@
 #include <sched.h>
 #include <sys/Nanosleep.h>
 #include <mutex>
+#include <cmath>
 
 namespace itc
 {

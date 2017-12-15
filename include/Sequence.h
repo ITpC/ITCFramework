@@ -146,6 +146,11 @@ namespace itc
       return getCurrent();
     }
     
+    const IntType next()
+    {
+      return getNext();
+    }
+
     const IntType getNext()
     {
       SyncLock sync(mMutex);

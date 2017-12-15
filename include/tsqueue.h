@@ -18,7 +18,7 @@
 #include <mutex>
 #include <sys/synclock.h>
 /**
- * @brief thread safe STL queue. I is the same STL <queue> just protected by 
+ * @brief thread safe STL queue. It is the same STL <queue> just protected by 
  * mutexes against data race
  **/
 template <typename T> class tsqueue

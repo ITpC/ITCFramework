@@ -21,7 +21,7 @@ FC=gfortran
 AS=as
 
 # Macros
-CND_PLATFORM=GNU-Linux-x86
+CND_PLATFORM=GNU-Linux
 CND_DLIB_EXT=so
 CND_CONF=Debug
 CND_DISTDIR=dist
@@ -63,7 +63,7 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libitcframework.a: ${OBJECTFILES}
 	${AR} -rv ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libitcframework.a ${OBJECTFILES} 
 	$(RANLIB) ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libitcframework.a
 
-${OBJECTDIR}/include/ThreadPool.h.gch: include/ThreadPool.h 
+${OBJECTDIR}/include/ThreadPool.h.gch: include/ThreadPool.h
 	${MKDIR} -p ${OBJECTDIR}/include
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -Wall -Iinclude -I../ITCLib/include -I../utils/include -I../luacpp/include -I../mdb/libraries/liblmdb -I../NoJSON/include -std=c++11 -MMD -MP -MF "$@.d" -o "$@" include/ThreadPool.h
@@ -76,7 +76,6 @@ ${OBJECTDIR}/include/ThreadPool.h.gch: include/ThreadPool.h
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
-	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libitcframework.a
 
 # Subprojects
 .clean-subprojects:
