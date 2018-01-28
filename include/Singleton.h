@@ -21,11 +21,11 @@ namespace itc {
 
     /**
      * \brief Thread safe singleton template (a singleton holder pattern)
-     * This singletone may not be inherited or instantiated. You have to call 
+     * This singleton may not be inherited or instantiated. You have to call 
      * getInstance() to get a single unique instance of a class T. This template
      * does not prevent you from instantiating the class T somewhere else.
      * 
-     * Note that use of this class can syncronize your threads
+     * Note that use of this class can synchronize your threads
      * because of mutex locking.
      * 
      **/
@@ -56,7 +56,7 @@ namespace itc {
         if (mInstance.get()) {
           return mInstance;
         } else {
-          throw std::runtime_error("This singletone is not initialized yet");
+          throw std::runtime_error("This singleton is not initialized yet");
         }
       }
       
@@ -100,7 +100,7 @@ namespace itc {
       }
     };
 
-    // Initialisation
+    // Initialization
     template <typename T> std::mutex Singleton<T>::mMutex;
     template <typename T> std::shared_ptr<T> Singleton<T>::mInstance(nullptr);
 }

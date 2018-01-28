@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configurationDescriptor version="95">
+<configurationDescriptor version="100">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
@@ -22,9 +22,6 @@
         <itemPath>include/CompCommon.h</itemPath>
         <itemPath>include/CompressBuffer.h</itemPath>
         <itemPath>include/Exceptions.h</itemPath>
-        <itemPath>include/LMDB.h</itemPath>
-        <itemPath>include/LMDBEnv.h</itemPath>
-        <itemPath>include/PollController.h</itemPath>
         <itemPath>include/Properties.h</itemPath>
         <itemPath>include/RScheduler.h</itemPath>
         <itemPath>include/Sequence.h</itemPath>
@@ -41,7 +38,6 @@
         <itemPath>include/WorkflowStorableState.h</itemPath>
         <itemPath>include/bz2Compressor.h</itemPath>
         <itemPath>include/bz2Decompressor.h</itemPath>
-        <itemPath>include/ePollInController.h</itemPath>
         <itemPath>include/tsbqueue.h</itemPath>
         <itemPath>include/tsqueue.h</itemPath>
       </logicalFolder>
@@ -69,6 +65,7 @@
   </logicalFolder>
   <sourceRootList>
     <Elem>include</Elem>
+    <Elem>../ITCLib/include</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
@@ -76,18 +73,15 @@
       <toolsSet>
         <compilerSet>GNU|GNU</compilerSet>
         <dependencyChecking>true</dependencyChecking>
-        <rebuildPropChanged>false</rebuildPropChanged>
+        <rebuildPropChanged>true</rebuildPropChanged>
       </toolsSet>
       <compileType>
         <ccTool>
-          <standard>8</standard>
+          <standard>11</standard>
           <incDir>
             <pElem>include</pElem>
             <pElem>../ITCLib/include</pElem>
             <pElem>../utils/include</pElem>
-            <pElem>../luacpp/include</pElem>
-            <pElem>../mdb/libraries/liblmdb</pElem>
-            <pElem>../NoJSON/include</pElem>
           </incDir>
           <commandLine>-pipe -pthread -D_REENTRANT -D_THREAD_SAFE -O2 -fPIC -mtune=generic -fomit-frame-pointer -mfpmath=sse -ftree-vectorize -funroll-loops -mno-tls-direct-seg-refs -DBZ_NO_STDIO -DLOG_DEBUG -DMAX_BUFF_SIZE=256 -DTSAFE_LOG=1</commandLine>
           <warningLevel>2</warningLevel>
@@ -105,26 +99,6 @@
                         CC="${MAKE}  -f Makefile CONF=Debug clean"
                         OP="${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libitclib.a">
           </makeArtifact>
-          <makeArtifact PL="../mdb/libraries/liblmdb"
-                        CT="0"
-                        CN="Default"
-                        AC="true"
-                        BL="true"
-                        WD="../mdb/libraries/liblmdb"
-                        BC="${MAKE} -f Makefile"
-                        CC="${MAKE} -f Makefile clean"
-                        OP="">
-          </makeArtifact>
-          <makeArtifact PL="../NoJSON"
-                        CT="3"
-                        CN="Debug"
-                        AC="true"
-                        BL="false"
-                        WD="../NoJSON"
-                        BC="${MAKE}  -f Makefile CONF=Debug"
-                        CC="${MAKE}  -f Makefile CONF=Debug clean"
-                        OP="${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libnojson.a">
-          </makeArtifact>
         </requiredProjects>
       </compileType>
       <item path="include/ClientSocketsFactory.h" ex="false" tool="3" flavor2="0">
@@ -134,12 +108,6 @@
       <item path="include/CompressBuffer.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Exceptions.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/LMDB.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/LMDBEnv.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/PollController.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Properties.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -194,8 +162,6 @@
       </item>
       <item path="include/bz2Decompressor.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/ePollInController.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="include/tsbqueue.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/tsqueue.h" ex="false" tool="3" flavor2="0">
@@ -235,12 +201,6 @@
       <item path="include/CompressBuffer.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Exceptions.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/LMDB.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/LMDBEnv.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/PollController.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Properties.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -294,8 +254,6 @@
       <item path="include/bz2Compressor.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/bz2Decompressor.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/ePollInController.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/tsbqueue.h" ex="false" tool="3" flavor2="0">
       </item>

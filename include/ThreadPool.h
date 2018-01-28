@@ -53,7 +53,7 @@ namespace itc
     explicit ThreadPool(
       const size_t maxthreads = 10, bool autotune = true, float overcommit = 1.2
       ) : mMutex(), mMaxThreads(maxthreads), mMinThreads(maxthreads), 
-      mAutotune(autotune), mOvercommitRatio(overcommit), mMayRun(true)
+      mAutotune(autotune), mOvercommitRatio(overcommit), doRun(true)
     {
       std::lock_guard<std::mutex> dosync(mMutex);
       ::itc::getLog()->debug(
@@ -102,7 +102,7 @@ namespace itc
 
     inline bool mayRun() const
     {
-      return mMayRun;
+      return doRun;
     }
 
     inline void expand(const size_t& inc)
@@ -188,12 +188,17 @@ namespace itc
       std::lock_guard<std::mutex> dosync(mMutex);
       return mTaskQueue.size();
     }
-
-    ~ThreadPool() noexcept // gcc 4.7.4 compat
+    
+    void stopPool()
     {
       stopRunning();
       cleanInQueue();
       onShutdown();
+    }
+    
+    ~ThreadPool() noexcept // gcc 4.7.4 compat
+    {
+      stopPool();
     }
 
    private:
@@ -205,9 +210,9 @@ namespace itc
     std::queue<TaskType> mTaskQueue;
     std::list<ThreadPTR> mActiveThreads;
     std::queue<ThreadPTR> mPassiveThreads;
-    std::atomic<bool> mMayRun;
+    std::atomic<bool> doRun;
 
-    inline void spawnThreads(size_t n)
+    void spawnThreads(size_t n)
     {
       for(size_t i = 0; i < n; i++)
       {
@@ -215,7 +220,7 @@ namespace itc
       }
     }
 
-    inline void shakePoolsPrivate()
+    void shakePoolsPrivate()
     {
       ThreadListIterator it = mActiveThreads.begin();
 
@@ -245,7 +250,7 @@ namespace itc
       }
     }
 
-    inline void cleanInQueue()
+    void cleanInQueue()
     {
       std::lock_guard<std::mutex> dosync(mMutex);
       while(!mTaskQueue.empty())
@@ -254,7 +259,7 @@ namespace itc
       }
     }
 
-    inline void enqueuePrivate()
+    void enqueuePrivate()
     {
       ThreadPTR aThread = mPassiveThreads.front();
       aThread->setRunnable(mTaskQueue.front());
@@ -263,20 +268,17 @@ namespace itc
       mPassiveThreads.pop();
     }
 
-    inline void stopRunning()
+    void stopRunning()
     {
-      std::lock_guard<std::mutex> dosync(mMutex);
-      mMayRun = false;
+      doRun = false;
     }
 
-    inline void onShutdown()
+    void onShutdown()
     {
       std::lock_guard<std::mutex> dosync(mMutex);
-      while(!mActiveThreads.empty())
-      {
-        shakePoolsPrivate();
-        sched_yield();
-      }
+      while(!mPassiveThreads.empty())
+        mPassiveThreads.pop();
+      mActiveThreads.clear();
     }
   };
 }

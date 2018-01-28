@@ -39,13 +39,13 @@ namespace itc
   namespace abstract
   {
     /**
-     * @brief View inreface which will work together with an implementation of 
+     * @brief View interface which will work together with an implementation of 
      * abstract::IController
      **/
     template <typename TModel> class IView
     {
      public:
-
+      typedef TModel value_type;
       void update(const TModel& pM)
       {
         onUpdate(pM);

@@ -63,15 +63,14 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libitcframework.a: ${OBJECTFILES}
 	${AR} -rv ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libitcframework.a ${OBJECTFILES} 
 	$(RANLIB) ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libitcframework.a
 
-${OBJECTDIR}/include/ThreadPool.h.gch: include/ThreadPool.h
+${OBJECTDIR}/include/ThreadPool.h.gch: include/ThreadPool.h nbproject/Makefile-${CND_CONF}.mk
 	${MKDIR} -p ${OBJECTDIR}/include
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -Wall -Iinclude -I../ITCLib/include -I../utils/include -I../luacpp/include -I../mdb/libraries/liblmdb -I../NoJSON/include -std=c++11 -MMD -MP -MF "$@.d" -o "$@" include/ThreadPool.h
+	$(COMPILE.cc) -g -Wall -Iinclude -I../ITCLib/include -I../utils/include -std=c++14 -MMD -MP -MF "$@.d" -o "$@" include/ThreadPool.h
 
 # Subprojects
 .build-subprojects:
 	cd ../ITCLib && ${MAKE}  -f Makefile CONF=Debug
-	cd ../mdb/libraries/liblmdb && ${MAKE} -f Makefile
 
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
@@ -80,7 +79,6 @@ ${OBJECTDIR}/include/ThreadPool.h.gch: include/ThreadPool.h
 # Subprojects
 .clean-subprojects:
 	cd ../ITCLib && ${MAKE}  -f Makefile CONF=Debug clean
-	cd ../mdb/libraries/liblmdb && ${MAKE} -f Makefile clean
 
 # Enable dependency checking
 .dep.inc: .depcheck-impl

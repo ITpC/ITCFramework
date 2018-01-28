@@ -11,11 +11,10 @@
             <sourceEncoding>UTF-8</sourceEncoding>
             <make-dep-projects>
                 <make-dep-project>../ITCLib</make-dep-project>
-                <make-dep-project>../NoJSON</make-dep-project>
-                <make-dep-project>../mdb/libraries/liblmdb</make-dep-project>
             </make-dep-projects>
             <sourceRootList>
                 <sourceRootElem>include</sourceRootElem>
+                <sourceRootElem>../ITCLib/include</sourceRootElem>
             </sourceRootList>
             <confList>
                 <confElem>

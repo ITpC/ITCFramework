@@ -55,6 +55,12 @@ public:
     return mQueue.front();
   }
   
+  const T& top()
+  {
+    SyncLock sync(mMutex);
+    return mQueue.front();
+  }
+  
   const tsqueue& pop()
   {
     SyncLock sync(mMutex);

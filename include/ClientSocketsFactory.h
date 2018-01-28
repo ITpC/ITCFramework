@@ -33,11 +33,13 @@ template <uint64_t SOpts = CLIENT_SOCKET> class ClientSocketsFactory
   explicit ClientSocketsFactory(size_t maxPrebuild, size_t minQL)
     :mMutex(), mMaxQueueLength(maxPrebuild), mMinQueueLength(minQL)
   {
-    SyncLock sync(mMutex);
     static_assert(SOpts < SERVER_SOCKET, "Must be a tcp client socket type");
     static_assert(SOpts > CLIENT_SOCKET, "Must be a tcp client socket type");
     static_assert(CLN_TCP_KA_TND < SERVER_SOCKET, "WTF ? can't you count ?!");
-
+    static_assert(CLN_TCP_KA_TD < SERVER_SOCKET, "WTF ? can't you count ?!");
+    
+    SyncLock sync(mMutex);
+    
     for(
       size_t i = 0;i < mMaxQueueLength;
       mPreBuildSockets.push(

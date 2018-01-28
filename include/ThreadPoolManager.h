@@ -22,6 +22,7 @@
 #include <sys/Nanosleep.h>
 #include <mutex>
 #include <cmath>
+#include <atomic>
 
 namespace itc
 {
@@ -37,9 +38,9 @@ namespace itc
   /**
    * @brief This class manages an instance of the itc::ThreadPool class. 
    * The default behavior is to expand threads within a itc::ThreadPool instance 
-   * logarithmycally based on current value of mMaxThreads attribute of the 
-   * itc::ThreadPool if the current value of the attibute mTaskQueue of the 
-   * itc::ThreadPool is 25% longer then amount of threads in itc::ThreadPool.
+   * logarithmically based on current value of mMaxThreads attribute of the 
+   * itc::ThreadPool, if current value of the attribute mTaskQueue of the 
+   * itc::ThreadPool is 25% larger then amount of threads in itc::ThreadPool.
    * The upper limit of number of threads in itc::ThreadPool 
    * is defined by itc::ThreadPoolManager.mMaxThreads + 
    * itc::ThreadPoolManager.mOvercommitThreads. Right now this class is too 
@@ -51,23 +52,18 @@ namespace itc
 	class ThreadPoolManager : public abstract::IRunnable
 	{
   private:
-    std::mutex    mMutex;
-    bool          doStart;
-    volatile bool doRun;
-    volatile bool canStop;
-    size_t        mPurgeTm;
-    size_t        mMaxThreads;
-    size_t        mMinReadyThr;
-    size_t        mOvercommitThreads;
-    tpstats       mTPStats;
+    std::mutex        mMutex;
+    bool              doStart;
+    std::atomic<bool> doRun;
+    std::atomic<bool> canStop;
+    size_t            mPurgeTm;
+    size_t            mMaxThreads;
+    size_t            mMinReadyThr;
+    size_t            mOvercommitThreads;
+    tpstats           mTPStats;
+	  std::shared_ptr<ThreadPool> mThreadPool;
+    itc::sys::Nap mSleep;
     
-	  ::std::shared_ptr<ThreadPool> mThreadPool;
-
-    void stopToggle()
-    {
-      std::lock_guard<std::mutex> dosync(mMutex);
-      canStop=!canStop;
-    }
   public:
     explicit ThreadPoolManager(
       const size_t& maxthreads=200,
@@ -91,9 +87,9 @@ namespace itc
     
     void execute()
     {
-      ::itc::sys::Nap mSleep;
       while(doRun)
       {
+        canStop=false;
         mThreadPool.get()->shakePools();
 
         mTPStats.tqdp=mThreadPool.get()->getTaskQueueDepth();
@@ -128,6 +124,7 @@ namespace itc
         }
         mSleep.usleep(mPurgeTm);
       }
+      canStop=true;
     }
     
     void logStats()
@@ -142,14 +139,20 @@ namespace itc
     void shutdown()
     {
       doRun=false;
+      itc::sys::Nap aSleep;
+      while(!canStop)
+      {
+        aSleep.usleep(10000);
+      };
+      mThreadPool->stopPool();
     }
     void onCancel()
     {
-      doRun=false;
+      this->shutdown();
     }
     ~ThreadPoolManager()
     {
-      
+      this->shutdown();
     }
 	};
 }

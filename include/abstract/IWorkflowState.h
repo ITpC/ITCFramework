@@ -43,7 +43,7 @@ namespace itc {
     namespace abstract {
 
         /**
-         * Interface that asociates workflow tasks with them states.
+         * Interface that associates workflow tasks with their states.
          * Inherit from this class to implement necessary tasks.
          *
          **/

@@ -40,7 +40,7 @@
 #    include <errno.h>
 #    include <bzlib.h>
 #    include <memory>
-#    include <sys/SyncLock.h>
+#    include <sys/synclock.h>
 #    include <sys/types.h>
 #    include <CompCommon.h>
 #    include <math.h>
@@ -55,7 +55,7 @@ public:
     explicit bz2Compressor(QueueSharedPtrType& pInQueue, QueueSharedPtrType& pOutQueue)
     : IMLType(pInQueue), mOutQueue(pOutQueue)
     {
-        sys::SyncLock synchronize(mMutex);
+        SyncLock synchronize(mMutex);
         ::itc::getLog()->debug(__FILE__, __LINE__, "bz2Compressor::bz2Compressor()");
         if (mOutQueue.get() == NULL)
         {
@@ -66,12 +66,12 @@ public:
 
     ~bz2Compressor()
     {
-        sys::SyncLock synchronize(mMutex);
+        SyncLock synchronize(mMutex);
     }
 
     void onCancel()
     {
-        sys::SyncLock synchronize(mMutex);
+        SyncLock synchronize(mMutex);
         ::itc::getLog()->debug(__FILE__, __LINE__, "bz2Compressor::onCancel()");
     }
 
@@ -80,7 +80,7 @@ protected:
     void onMessage(CompressBuffer<char>& msg)
     {
         register int ret;
-        sys::SyncLock synchronize(mMutex);
+        SyncLock synchronize(mMutex);
         ::itc::getLog()->debug(__FILE__, __LINE__, "bz2Compressor::OnMessage()");
         float bsf = 1.01;
         do
@@ -117,7 +117,7 @@ protected:
 
     void onQueueDestroy()
     {
-        sys::SyncLock synchronize(mMutex);
+        SyncLock synchronize(mMutex);
         ::itc::getLog()->debug(__FILE__, __LINE__, "bz2Compressor::onQueueDestroy()");
     }
 

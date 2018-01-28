@@ -28,23 +28,24 @@ namespace itc
     {
     public:
       typedef IView<TModel> ViewType;
-      typedef std::shared_ptr<ViewType> ViewTypeSPtr;
+      typedef std::weak_ptr<ViewType> ViewTypeSPtr;
       typedef TModel  ModelType;
 
-      void notify(const TModel& pModel, ViewTypeSPtr& pView)
+      const bool notify(const TModel& pModel, ViewTypeSPtr& pView)
       {
-          if(ViewType* aViewPtr=pView.get())
+          if(auto aViewPtr=pView.lock())
           {
               aViewPtr->update(pModel);
+              return true;
           }
           else
           {
               itc::getLog()->trace(__FILE__,__LINE__,"itc::abstract::IController::notify() a view is NULL");
+              return false;
           }
       }
-
       protected:
-      ~IController()=default;
+      virtual ~IController()=default;
     };
   }
 }
