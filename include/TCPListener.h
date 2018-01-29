@@ -71,70 +71,27 @@ namespace itc
           >(5,10)->getBlindSocket()
         );
         try {
-          itc::getLog()->debug(__FILE__,__LINE__,"TCP Listener %p accepting connections", this);
           if(mServerSocket.accept(newClient) == -1)
           {
-            throw TITCException<exceptions::InvalidSocketException>(errno);
+            throw std::system_error(errno,std::system_category(),"TCPListener::execute()::ServerSocket.accept(ClientSocket)");
           }
           else
           { 
-            std::string peeraddr;
-            try{
-              newClient.get()->getpeeraddr(peeraddr);
-            } catch (const ITCException& e)
+            std::string peeraddress;
+            newClient->getpeeraddr(peeraddress);
+            
+            if(peeraddress.empty())
             {
-              if(e.getErrno() == EINVAL)
-              {
-                itc::getLog()->error(
-                  __FILE__,__LINE__,
-                "TCP Listener %p: Server socket went invalid. Check ulimit for open files.",this
-                );
-                itc::getLog()->error(
-                  __FILE__,__LINE__,
-                "TCP Listener %p: shutting down.",this
-                );
-                doRun.store(false);
-                break;
-              }
-              if(mServerSocket.isValid()) // Server socket is still valid
-              {
-                if(peeraddr.empty())
-                {
-                  /**
-                   * just ignore that socket for now; connection denied
-                   
-                  itc::getLog()->error(
-                    __FILE__,__LINE__,
-                    "TCP Listener %p: Socket is already closed. It seems like a connections DDOS.\
-                     Sequential socket open and close. The cause may be as well the number of open files limit.\
-                     Check ulimit to resolve.",this);
-                   **/
-                  newClient.get()->close();
-                }
-              }
-              else {
-                itc::getLog()->error(
-                  __FILE__,__LINE__,
-                "TCP Listener %p: Server socket went invalid. Check ulimit for open files.",this
-                );
-                doRun.store(false);
-                break;
-              }
+              itc::getLog()->debug(__FILE__,__LINE__,"TCPListener %p invalid peer address, closing connection",this);
+              newClient->close();
             }
-            if(peeraddr.empty())
+            else 
             {
-              if(!doRun.load())
-              {
-                itc::getLog()->error(__FILE__,__LINE__,"TCP Listener %p: shutdown is in progress",this);
-                break;
-              }
-            }
-            else
-            {
-              itc::getLog()->debug(__FILE__,__LINE__,"TCP Listener %p: Inbound connection from %s",this, peeraddr.c_str());
+              itc::getLog()->debug(__FILE__,__LINE__,"TCPListener %p accepting connection from %s",this,peeraddress.c_str());
               if(!notify(newClient,mSocketsHandler))
               {
                 doRun.store(false);
+                itc::getLog()->debug(__FILE__,__LINE__,"TCPListener %p is going down (shutdown is requested from external component)",this);
                 break;
               }
             }

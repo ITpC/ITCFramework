@@ -27,7 +27,7 @@ template <uint64_t SOpts = CLIENT_SOCKET> class ClientSocketsFactory
  private:
   std::mutex mMutex;
  public:
-  typedef ::itc::net::Socket<SOpts> ClientSocketType;
+  typedef ::itc::net::Socket<SOpts,0> ClientSocketType;
   typedef ::std::shared_ptr<ClientSocketType> SharedClientSocketPtrType;
 
   explicit ClientSocketsFactory(size_t maxPrebuild, size_t minQL)
