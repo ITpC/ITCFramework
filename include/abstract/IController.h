@@ -33,16 +33,16 @@ namespace itc
 
       const bool notify(const TModel& pModel, ViewTypeSPtr& pView)
       {
-          if(auto aViewPtr=pView.lock())
-          {
-              aViewPtr->update(pModel);
-              return true;
-          }
-          else
-          {
-              itc::getLog()->trace(__FILE__,__LINE__,"itc::abstract::IController::notify() a view is NULL");
-              return false;
-          }
+        if(auto aViewPtr=pView.lock())
+        {
+          aViewPtr->update(pModel);
+          return true;
+        }
+        else
+        {
+          itc::getLog()->error(__FILE__,__LINE__,"itc::abstract::IController::notify() a view is NULL");
+          return false;
+        }
       }
       protected:
       virtual ~IController()=default;

@@ -20,8 +20,7 @@
 namespace itc
 {
   /**
-   * @brief thread safe blocking queue. The only two operations are available:
-   * send and recv. recv will block until message is received.
+   * @brief thread safe blocking queue. 
    */
   template <typename DataType> class tsbqueue
   {
@@ -59,7 +58,7 @@ namespace itc
       if(!mEvent.post())
         throw std::system_error(errno,std::system_category(),"Can't increment semaphore");
     }
-
+    
     const bool tryRecv(DataType& result,const ::timespec& timeout)
     {
       if(mEvent.timedWait(timeout))
@@ -71,7 +70,15 @@ namespace itc
       }
       return false;
     }
-    
+    /**
+     * @brief receive a message from queue as it is available. This method will
+     * block while queue is empty. As far as a semaphore indicates that there 
+     * is a new message it attempts to receive it. If there are concurrent 
+     * threads waiting on the same queue and it appears that the expected message
+     * is already read (which is very unlikely though possible scenario), it 
+     * throws an exception.
+     * 
+     **/
     void recv(DataType& result)
     {
       if(!mEvent.wait())
@@ -88,18 +95,6 @@ namespace itc
       }
     }
     
-    // it is very slow ...
-    // it is better to use const bool size(int&) in the end user code
-    const bool empty()
-    {
-      SyncLock sync(mMutex);
-      int value;
-      if(this->size(value))
-      {
-        return value == 0;
-      }
-      throw std::system_error(errno,std::system_category(),"Can't access semaphore value");
-    }
     const bool size(int& value)
     {
       if(!mEvent.getValue(value))

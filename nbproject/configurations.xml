@@ -32,7 +32,6 @@
         <itemPath>include/TCPSocketDef.h</itemPath>
         <itemPath>include/ThreadPool.h</itemPath>
         <itemPath>include/ThreadPoolManager.h</itemPath>
-        <itemPath>include/ThreadSafeLocalQueue.h</itemPath>
         <itemPath>include/WorkflowControl.h</itemPath>
         <itemPath>include/WorkflowEntity.h</itemPath>
         <itemPath>include/WorkflowStorableState.h</itemPath>
@@ -78,6 +77,7 @@
       <compileType>
         <ccTool>
           <standard>11</standard>
+          <commandlineTool>g++</commandlineTool>
           <incDir>
             <pElem>include</pElem>
             <pElem>../ITCLib/include</pElem>
@@ -128,8 +128,6 @@
       <item path="include/ThreadPool.h" ex="false" tool="1" flavor2="0">
       </item>
       <item path="include/ThreadPoolManager.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/ThreadSafeLocalQueue.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/WorkflowControl.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -221,8 +219,6 @@
       <item path="include/ThreadPool.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/ThreadPoolManager.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/ThreadSafeLocalQueue.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/WorkflowControl.h" ex="false" tool="3" flavor2="0">
       </item>

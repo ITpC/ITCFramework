@@ -30,7 +30,7 @@ namespace itc
 {
   /**
    * \@brief a listener class which supposed to run as a CancelableThread. 
-   * Do not run this listener as a ThreadPoll runner, it will block ThreadPoll
+   * Do not run this listener as a ThreadPool runner, it will block the ThreadPool
    * indefinitely. The only task this class does is to accept new inbound 
    * connections and notify the associated view (usually a worker class).
    **/
@@ -119,13 +119,25 @@ namespace itc
       {
         if(mAddress == "0.0.0.0")
         {
-          itc::ClientSocket aSocket("127.0.0.1",mPort);
-          aSocket.close();
+          try{
+            itc::ClientSocket aSocket("127.0.0.1",mPort);
+            aSocket.close();
+          }catch(const std::system_error& e)
+          {
+            itc::getLog()->info(__FILE__,__LINE__,"Listener went down, it is safe to shutdown");
+            break;
+          }
         }
         else
         {
-          itc::ClientSocket aSocket(mAddress,mPort);
-          aSocket.close();
+          try{
+            itc::ClientSocket aSocket(mAddress,mPort);
+            aSocket.close();
+          }catch(const std::system_error& e)
+          {
+            itc::getLog()->info(__FILE__,__LINE__,"Listener went down, it is safe to shutdown");
+            break;
+          }
         }
         sched_yield();
       }

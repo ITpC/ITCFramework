@@ -48,7 +48,7 @@ namespace itc
       typedef TModel value_type;
       void update(const TModel& pM)
       {
-        onUpdate(pM);
+        this->onUpdate(pM);
       }
 
      protected:
