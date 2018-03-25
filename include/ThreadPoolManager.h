@@ -77,6 +77,10 @@ namespace itc
     {
       std::lock_guard<std::mutex> dosync(mMutex);
       doStart=true;
+      if(mMaxThreads>10000)
+      {
+        throw std::logic_error("ThreadPoolManager maximum threads hard limit is 10000");
+      }
     }
     
     void enqueueRunnable(const abstract::IThreadPool::value_type& ref)
