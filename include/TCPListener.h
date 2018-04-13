@@ -54,7 +54,6 @@ namespace itc
     {
       if(!mSocketsHandler.lock())
         throw std::runtime_error("The connection handler view does not exists (nullptr)");
-      itc::getLog()->debug(__FILE__,__LINE__,"TCP Listener %p started on address %s and port %d", this, address.c_str(), port);
     }
     
     TCPListener(const TCPListener&)=delete;
@@ -70,6 +69,7 @@ namespace itc
             size_t,size_t
           >(5,10)->getBlindSocket()
         );
+        
         try {
           if(mServerSocket.accept(newClient) == -1)
           {
@@ -82,16 +82,13 @@ namespace itc
             
             if(peeraddress.empty())
             {
-              itc::getLog()->debug(__FILE__,__LINE__,"TCPListener %p invalid peer address, closing connection",this);
               newClient->close();
             }
             else 
             {
-              itc::getLog()->debug(__FILE__,__LINE__,"TCPListener %p accepting connection from %s",this,peeraddress.c_str());
               if(!notify(newClient,mSocketsHandler))
               {
                 doRun.store(false);
-                itc::getLog()->debug(__FILE__,__LINE__,"TCPListener %p is going down (shutdown is requested from external component)",this);
                 break;
               }
             }
@@ -114,7 +111,6 @@ namespace itc
     void shutdown()
     {
       doRun.store(false);
-      itc::getLog()->debug(__FILE__,__LINE__,"TCP Listener %p: shutdown() is called",this);
       while(!canDestroy.load())
       {
         if(mAddress == "0.0.0.0")
