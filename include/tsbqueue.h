@@ -56,7 +56,9 @@ namespace itc
       SyncLock sync(mMutex);
       mQueue.push(ref);
       if(!mEvent.post())
-        throw std::system_error(errno,std::system_category(),"Can't increment semaphore");
+      {
+        throw std::system_error(errno,std::system_category(),"Can't increment semaphore, system is going down or semaphore error");
+      }
     }
     
     const bool tryRecv(DataType& result,const ::timespec& timeout)
@@ -70,6 +72,7 @@ namespace itc
       }
       return false;
     }
+    
     /**
      * @brief receive a message from queue as it is available. This method will
      * block while queue is empty. As far as a semaphore indicates that there 
@@ -92,6 +95,23 @@ namespace itc
         
         result=mQueue.front();
         mQueue.pop();
+      }
+    }
+    
+    auto recv()
+    {
+      if(!mEvent.wait())
+        throw std::system_error(errno,std::system_category(),"Can't wait on semaphore");
+      else
+      {
+        SyncLock sync(mMutex);
+        
+        if(mQueue.empty()) 
+          throw std::logic_error("tbsqueue<T>::recv() - already consumed");
+        
+        auto result=mQueue.front();
+        mQueue.pop();
+        return result;
       }
     }
     
