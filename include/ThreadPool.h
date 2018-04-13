@@ -36,8 +36,8 @@ namespace itc
 
   /**
    * @brief This class is a container for taks queues and it does not manage
-   * the threads. It is capable to create and invoke threads on task enqueu,
-   * however after the task is done, the thread perists in mActiveThreads 
+   * the threads. It is capable to create and invoke threads on task enqueue,
+   * however after the task is done, the thread persists in mActiveThreads 
    * container and will not be moved to mPassiveThreads queue.
    * You does not need this class without a itc::ThreadPoolManager. So instantiate
    * one, which will create an instance of itc::ThreadPool within itself and
@@ -64,48 +64,48 @@ namespace itc
       spawnThreads(mMaxThreads);
     }
 
-    inline const bool getAutotune()
+    const bool getAutotune() const
     {
       return mAutotune;
     }
 
-    inline void setAutotune(const bool& autotune)
+    void setAutotune(const bool& autotune)
     {
       std::lock_guard<std::mutex> dosync(mMutex);
       mAutotune = autotune;
     }
 
-    inline const size_t getMaxThreads()
+    const size_t getMaxThreads() const
     {
       return mMaxThreads;
     }
 
-    inline const float getOvercommitRatio() const
+    const float getOvercommitRatio() const
     {
       return mOvercommitRatio;
     }
 
-    inline const size_t getThreadsCount()
+    const size_t getThreadsCount() const
     {
       return mActiveThreads.size() + mPassiveThreads.size();
     }
 
-    inline const size_t getActiveThreadsCount() const
+    const size_t getActiveThreadsCount() const
     {
       return mActiveThreads.size();
     }
 
-    inline const size_t getPassiveThreadsCount() const
+    const size_t getPassiveThreadsCount() const
     {
       return mPassiveThreads.size();
     }
 
-    inline bool mayRun() const
+    const bool mayRun() const
     {
       return doRun;
     }
 
-    inline void expand(const size_t& inc)
+    void expand(const size_t& inc)
     {
       std::lock_guard<std::mutex> dosync(mMutex);
       if(mayRun())
@@ -116,17 +116,16 @@ namespace itc
       }
     }
 
-    inline void reduce(const size_t& dec)
+    void reduce(const size_t& dec)
     {
       std::lock_guard<std::mutex> dosync(mMutex);
       if(mMaxThreads > mMinThreads)
       {
         mMaxThreads -= dec;
-        ::itc::getLog()->debug(__FILE__, __LINE__, "ThreadPool::reduce() - pool is reduced to %ju", size_t(mMaxThreads));
       }
     }
 
-    inline const size_t getFreeThreadsCount()
+    const size_t getFreeThreadsCount()
     {
       std::lock_guard<std::mutex> dosync(mMutex);
       size_t ftc = 0;
@@ -143,7 +142,7 @@ namespace itc
       return mPassiveThreads.size() + ftc;
     }
 
-    inline void shakePools()
+    void shakePools()
     {
       std::lock_guard<std::mutex> dosync(mMutex);
 
@@ -261,11 +260,17 @@ namespace itc
 
     void enqueuePrivate()
     {
-      ThreadPTR aThread = mPassiveThreads.front();
-      aThread->setRunnable(mTaskQueue.front());
-      mTaskQueue.pop();
-      mActiveThreads.push_back(aThread);
-      mPassiveThreads.pop();
+      if(!mPassiveThreads.empty())
+      {
+        auto aThread = mPassiveThreads.front();
+        mPassiveThreads.pop();
+        if(!mTaskQueue.empty())
+        {
+          aThread->setRunnable(mTaskQueue.front());
+          mTaskQueue.pop();
+        }
+        mActiveThreads.push_back(aThread);
+      }
     }
 
     void stopRunning()
