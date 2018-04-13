@@ -45,9 +45,9 @@ namespace itc
         public:
             typedef std::shared_ptr<abstract::IRunnable> value_type;
 
-            virtual const bool getAutotune() = 0;
-            virtual const size_t getThreadsCount() = 0;
-            virtual const size_t getMaxThreads() = 0;
+            virtual const bool getAutotune() const = 0;
+            virtual const size_t getThreadsCount() const = 0;
+            virtual const size_t getMaxThreads() const = 0;
             
             virtual void setAutotune(const bool&) = 0;
             virtual void expand(const size_t&) = 0;
