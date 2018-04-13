@@ -134,6 +134,7 @@ namespace itc
     void logStats()
     {
       ::itc::getLog()->info(
+      __FILE__,__LINE__,
         "tc:%ju  pc:%ju  ac:%ju qd:%ju mt:%ju, mtl:%ju",
         mTPStats.tc, mTPStats.tpc, mTPStats.tac, 
         mTPStats.tqdp,mTPStats.maxthreads,mMaxThreads
