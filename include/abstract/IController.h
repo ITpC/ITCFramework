@@ -44,6 +44,19 @@ namespace itc
           return false;
         }
       }
+      const bool notify(const std::vector<TModel>& pModel, ViewTypeSPtr& pView)
+      {
+        if(auto aViewPtr=pView.lock())
+        {
+          aViewPtr->onBatchUpdate(pModel);
+          return true;
+        }
+        else
+        {
+          itc::getLog()->error(__FILE__,__LINE__,"itc::abstract::IController::notify() a view is NULL");
+          return false;
+        }
+      }
       protected:
       virtual ~IController()=default;
     };
