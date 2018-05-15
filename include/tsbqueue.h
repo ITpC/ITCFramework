@@ -51,6 +51,23 @@ namespace itc
     * @param ref message to be sent.
     * @return self
     */
+    void send(const std::vector<DataType>& ref)
+    {
+      SyncLock sync(mMutex);
+      for(size_t i=0;i<ref.size();++i)
+      {
+        mQueue.push(ref[i]);
+        if(!mEvent.post())
+        {
+          throw std::system_error(errno,std::system_category(),"Can't increment semaphore, system is going down or semaphore error");
+        }
+      }
+    }
+   /**
+    * @brief send message of DataType to the queue.
+    * @param ref message to be sent.
+    * @return self
+    */
     void send(const DataType& ref)
     {
       SyncLock sync(mMutex);

@@ -50,15 +50,15 @@ namespace itc
       {
         this->onUpdate(pM);
       }
-      
-      virtual void onBatchUpdate(const std::vector<TModel>& model)
+      void update(const std::vector<TModel>& pM)
       {
-      };
-
-     protected:
-      virtual void onUpdate(const TModel&) = 0;
+        this->onUpdate(pM);
+      }
       
-
+      virtual void onUpdate(const TModel&) = 0;
+      virtual void onUpdate(const std::vector<TModel>&) = 0;
+      
+    protected:
       virtual ~IView() = default;
     };
   }

@@ -48,7 +48,7 @@ namespace itc
       {
         if(auto aViewPtr=pView.lock())
         {
-          aViewPtr->onBatchUpdate(pModel);
+          aViewPtr->update(pModel);
           return true;
         }
         else
