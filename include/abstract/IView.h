@@ -55,10 +55,10 @@ namespace itc
         this->onUpdate(pM);
       }
       
+    protected:
       virtual void onUpdate(const TModel&) = 0;
       virtual void onUpdate(const std::vector<TModel>&) = 0;
       
-    protected:
       virtual ~IView() = default;
     };
   }
