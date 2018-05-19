@@ -110,7 +110,7 @@ namespace itc
         if(mQueue.empty()) 
           throw std::logic_error("tbsqueue<T>::recv() - already consumed");
         
-        result=mQueue.front();
+        result=std::move(mQueue.front());
         mQueue.pop();
       }
     }
@@ -126,7 +126,7 @@ namespace itc
         if(mQueue.empty()) 
           throw std::logic_error("tbsqueue<T>::recv() - already consumed");
         
-        auto result=mQueue.front();
+        auto result=std::move(mQueue.front());
         mQueue.pop();
         return result;
       }
