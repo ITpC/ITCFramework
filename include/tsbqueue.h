@@ -15,6 +15,7 @@
 
 #include <queue>
 #include <sys/PosixSemaphore.h>
+#include <sys/atomic_mutex.h>
 #include <sys/synclock.h>
 
 namespace itc
@@ -25,7 +26,7 @@ namespace itc
   template <typename DataType> class tsbqueue
   {
   private:
-   std::mutex mMutex;
+   itc::sys::AtomicMutex mMutex;
    itc::sys::Semaphore mEvent;
    std::queue<DataType> mQueue;
 
@@ -37,7 +38,7 @@ namespace itc
    void destroy()
    {
      mEvent.destroy();
-     SyncLock sync(mMutex);
+     AtomicLock sync(mMutex);
      while(!mQueue.empty())
        mQueue.pop();
    }
@@ -53,7 +54,7 @@ namespace itc
     */
     void send(const std::vector<DataType>& ref)
     {
-      SyncLock sync(mMutex);
+      AtomicLock sync(mMutex);
       for(size_t i=0;i<ref.size();++i)
       {
         mQueue.push(ref[i]);
@@ -70,7 +71,7 @@ namespace itc
     */
     void send(const DataType& ref)
     {
-      SyncLock sync(mMutex);
+      AtomicLock sync(mMutex);
       mQueue.push(ref);
       if(!mEvent.post())
       {
@@ -82,7 +83,7 @@ namespace itc
     {
       if(mEvent.timedWait(timeout))
       {
-        SyncLock sync(mMutex);
+        AtomicLock sync(mMutex);
         result=mQueue.front();
         mQueue.pop();
         return true;
@@ -105,7 +106,7 @@ namespace itc
         throw std::system_error(errno,std::system_category(),"Can't wait on semaphore");
       else
       {
-        SyncLock sync(mMutex);
+        AtomicLock sync(mMutex);
         
         if(mQueue.empty()) 
           throw std::logic_error("tbsqueue<T>::recv() - already consumed");
@@ -121,7 +122,7 @@ namespace itc
         throw std::system_error(errno,std::system_category(),"Can't wait on semaphore");
       else
       {
-        SyncLock sync(mMutex);
+        AtomicLock sync(mMutex);
         
         if(mQueue.empty()) 
           throw std::logic_error("tbsqueue<T>::recv() - already consumed");

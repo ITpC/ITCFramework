@@ -36,6 +36,7 @@ namespace itc {
       explicit Singleton(Singleton&)=delete;
 
     public:
+      /*
       static const std::shared_ptr<T>& getInstance()
       {
         std::lock_guard<std::mutex> sync(mMutex);
@@ -48,9 +49,11 @@ namespace itc {
           return mInstance;
         }
       }
-
+       * */
+/*
       static const std::shared_ptr<T>& getExisting()
       {
+        static
         std::lock_guard<std::mutex> sync(mMutex);
 
         if (mInstance.get()) {
@@ -59,9 +62,12 @@ namespace itc {
           throw std::runtime_error("This singleton is not initialized yet");
         }
       }
-      
+  */    
       template <typename... Args> static const std::shared_ptr<T>& getInstance(Args...args)
       {
+        static std::shared_ptr<T> instance=std::make_shared<T>(args...);
+        return instance;
+        /*
         std::lock_guard<std::mutex> sync(mMutex);
 
         if (mInstance.get()) {
@@ -71,14 +77,16 @@ namespace itc {
           mInstance.swap(tmp);
           return mInstance;
         }
+         **/
       }
 
     protected:
+      /*
       static std::mutex mMutex;
       static std::shared_ptr<T> mInstance;
-
+      */
       virtual ~Singleton() = 0;
-
+/*
       static bool tryDestroyInstance()
       {
         std::lock_guard<std::mutex> sync(mMutex);
@@ -88,7 +96,7 @@ namespace itc {
         }
         return false;
       }
-
+*//*
       static void destroyInstance()
       {
         std::lock_guard<std::mutex> sync(mMutex);
@@ -98,11 +106,14 @@ namespace itc {
         }
         mInstance.reset();
       }
+      */
     };
 
     // Initialization
+    /*
     template <typename T> std::mutex Singleton<T>::mMutex;
     template <typename T> std::shared_ptr<T> Singleton<T>::mInstance(nullptr);
+     * */
 }
 
 #endif
