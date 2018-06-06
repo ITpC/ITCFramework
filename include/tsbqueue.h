@@ -17,6 +17,8 @@
 #include <sys/PosixSemaphore.h>
 #include <sys/atomic_mutex.h>
 #include <sys/synclock.h>
+#include <sys/Nanosleep.h>
+#include <mutex>
 
 namespace itc
 {
@@ -26,9 +28,9 @@ namespace itc
   template <typename DataType> class tsbqueue
   {
   private:
-   itc::sys::AtomicMutex mMutex;
-   itc::sys::Semaphore mEvent;
-   std::queue<DataType> mQueue;
+   std::mutex            mMutex;
+   itc::sys::Semaphore   mEvent;
+   std::queue<DataType>  mQueue;
 
   public:
    explicit tsbqueue():mMutex(),mEvent(),mQueue(){};
@@ -38,7 +40,7 @@ namespace itc
    void destroy()
    {
      mEvent.destroy();
-     AtomicLock sync(mMutex);
+     SyncLock sync(mMutex);
      while(!mQueue.empty())
        mQueue.pop();
    }
@@ -54,7 +56,7 @@ namespace itc
     */
     void send(const std::vector<DataType>& ref)
     {
-      AtomicLock sync(mMutex);
+      SyncLock sync(mMutex);
       for(size_t i=0;i<ref.size();++i)
       {
         mQueue.push(ref[i]);
@@ -64,6 +66,25 @@ namespace itc
         }
       }
     }
+    
+    const bool try_send(const std::vector<DataType>& ref)
+    {
+      if(mMutex.try_lock())
+      {
+        for(size_t i=0;i<ref.size();++i)
+        {
+          mQueue.push(ref[i]);
+          if(!mEvent.post())
+          {
+            throw std::system_error(errno,std::system_category(),"Can't increment semaphore, system is going down or semaphore error");
+          }
+        }
+        mMutex.unlock();
+        return true;
+      }
+      return false;
+    }
+    
    /**
     * @brief send message of DataType to the queue.
     * @param ref message to be sent.
@@ -71,7 +92,7 @@ namespace itc
     */
     void send(const DataType& ref)
     {
-      AtomicLock sync(mMutex);
+      SyncLock sync(mMutex);
       mQueue.push(ref);
       if(!mEvent.post())
       {
@@ -83,7 +104,7 @@ namespace itc
     {
       if(mEvent.timedWait(timeout))
       {
-        AtomicLock sync(mMutex);
+        SyncLock sync(mMutex);
         result=mQueue.front();
         mQueue.pop();
         return true;
@@ -106,13 +127,13 @@ namespace itc
         throw std::system_error(errno,std::system_category(),"Can't wait on semaphore");
       else
       {
-        AtomicLock sync(mMutex);
+        SyncLock sync(mMutex);
         
         if(mQueue.empty()) 
-          throw std::logic_error("tbsqueue<T>::recv() - already consumed");
-        
+          throw std::logic_error("tbsqueue<T>::recv(T&) - already consumed");
         result=std::move(mQueue.front());
         mQueue.pop();
+        mMutex.unlock();
       }
     }
     
@@ -122,11 +143,11 @@ namespace itc
         throw std::system_error(errno,std::system_category(),"Can't wait on semaphore");
       else
       {
-        AtomicLock sync(mMutex);
+        SyncLock sync(mMutex);
         
         if(mQueue.empty()) 
           throw std::logic_error("tbsqueue<T>::recv() - already consumed");
-        
+
         auto result=std::move(mQueue.front());
         mQueue.pop();
         return result;
