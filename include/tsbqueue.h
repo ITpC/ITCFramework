@@ -73,7 +73,7 @@ namespace itc
       {
         for(size_t i=0;i<ref.size();++i)
         {
-          mQueue.push(ref[i]);
+          mQueue.push(std::move(ref[i]));
           if(!mEvent.post())
           {
             throw std::system_error(errno,std::system_category(),"Can't increment semaphore, system is going down or semaphore error");
