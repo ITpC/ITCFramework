@@ -23,7 +23,8 @@
 #include <Date.h>
 #include <mutex>
 #include <atomic>
-
+#include <sys/atomic_mutex.h>
+#include <sys/synclock.h>
 
 
 
@@ -35,13 +36,13 @@ namespace itc
 {
 
   /**
-   * @brief This class is a container for taks queues and it does not manage
+   * @brief This class is a container for task queues and it does not manage
    * the threads. It is capable to create and invoke threads on task enqueue,
    * however after the task is done, the thread persists in mActiveThreads 
    * container and will not be moved to mPassiveThreads queue.
    * You does not need this class without a itc::ThreadPoolManager. So instantiate
-   * one, which will create an instance of itc::ThreadPool within itself and
-   * will effectively manage the threads in a pool.
+   * itc::ThreadPoolManager, which will create an instance of itc::ThreadPool 
+   * within itself and will effectively manage the threads in a pool.
    **/
   class ThreadPool : public abstract::IThreadPool
   {
@@ -55,7 +56,7 @@ namespace itc
       ) : mMutex(), mMaxThreads(maxthreads), mMinThreads(maxthreads), 
       mAutotune(autotune), mOvercommitRatio(overcommit), doRun(true)
     {
-      std::lock_guard<std::mutex> dosync(mMutex);
+      AtomicLock dosync(mMutex);
       ::itc::getLog()->debug(
         __FILE__, __LINE__,
         "created ThreadPool::ThreadPool(%ju,%u,%f)",
@@ -71,7 +72,7 @@ namespace itc
 
     void setAutotune(const bool& autotune)
     {
-      std::lock_guard<std::mutex> dosync(mMutex);
+      AtomicLock dosync(mMutex);
       mAutotune = autotune;
     }
 
@@ -107,7 +108,7 @@ namespace itc
 
     void expand(const size_t& inc)
     {
-      std::lock_guard<std::mutex> dosync(mMutex);
+      AtomicLock dosync(mMutex);
       if(mayRun())
       {
         mMaxThreads += inc;
@@ -118,7 +119,7 @@ namespace itc
 
     void reduce(const size_t& dec)
     {
-      std::lock_guard<std::mutex> dosync(mMutex);
+      AtomicLock dosync(mMutex);
       if(mMaxThreads > mMinThreads)
       {
         mMaxThreads -= dec;
@@ -127,7 +128,7 @@ namespace itc
 
     const size_t getFreeThreadsCount()
     {
-      std::lock_guard<std::mutex> dosync(mMutex);
+      AtomicLock dosync(mMutex);
       size_t ftc = 0;
       std::for_each(
         mActiveThreads.begin(),
@@ -144,7 +145,7 @@ namespace itc
 
     void shakePools()
     {
-      std::lock_guard<std::mutex> dosync(mMutex);
+      AtomicLock dosync(mMutex);
 
       if(mayRun())
       {
@@ -153,7 +154,7 @@ namespace itc
         if(mPassiveThreads.empty()&&(!mTaskQueue.empty()) && mAutotune)
         {
           size_t absMax = (size_t) (mMaxThreads * mOvercommitRatio);
-
+            
           size_t max_start = absMax - getThreadsCount();
 
           spawnThreads(max_start);
@@ -167,7 +168,7 @@ namespace itc
 
     void enqueue(const value_type& ref)
     {
-      std::lock_guard<std::mutex> dosync(mMutex);
+      AtomicLock dosync(mMutex);
 
       if(mayRun())
       {
@@ -184,7 +185,7 @@ namespace itc
 
     const size_t getTaskQueueDepth()
     {
-      std::lock_guard<std::mutex> dosync(mMutex);
+      AtomicLock dosync(mMutex);
       return mTaskQueue.size();
     }
     
@@ -201,7 +202,7 @@ namespace itc
     }
 
    private:
-    std::mutex mMutex;
+    itc::sys::AtomicMutex mMutex;
     std::atomic<size_t> mMaxThreads;
     std::atomic<size_t> mMinThreads;
     std::atomic<bool> mAutotune;
@@ -251,7 +252,7 @@ namespace itc
 
     void cleanInQueue()
     {
-      std::lock_guard<std::mutex> dosync(mMutex);
+      AtomicLock dosync(mMutex);
       while(!mTaskQueue.empty())
       {
         mTaskQueue.pop();
@@ -280,7 +281,7 @@ namespace itc
 
     void onShutdown()
     {
-      std::lock_guard<std::mutex> dosync(mMutex);
+      AtomicLock dosync(mMutex);
       while(!mPassiveThreads.empty())
         mPassiveThreads.pop();
       mActiveThreads.clear();

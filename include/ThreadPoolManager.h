@@ -52,17 +52,17 @@ namespace itc
 	class ThreadPoolManager : public abstract::IRunnable
 	{
   private:
-    std::mutex        mMutex;
-    bool              doStart;
-    std::atomic<bool> doRun;
-    std::atomic<bool> canStop;
-    size_t            mPurgeTm;
-    size_t            mMaxThreads;
-    size_t            mMinReadyThr;
-    size_t            mOvercommitThreads;
-    tpstats           mTPStats;
+    itc::sys::AtomicMutex       mMutex;
+    bool                        doStart;
+    std::atomic<bool>           doRun;
+    std::atomic<bool>           canStop;
+    size_t                      mPurgeTm;
+    size_t                      mMaxThreads;
+    size_t                      mMinReadyThr;
+    size_t                      mOvercommitThreads;
+    tpstats                     mTPStats;
 	  std::shared_ptr<ThreadPool> mThreadPool;
-    itc::sys::Nap mSleep;
+    itc::sys::Nap               mSleep;
     
   public:
     explicit ThreadPoolManager(
@@ -75,7 +75,7 @@ namespace itc
       mMinReadyThr(min_thr_ready),mOvercommitThreads(overcommit),
       mThreadPool(std::make_shared<ThreadPool>(min_thr_ready,false,1))
     {
-      std::lock_guard<std::mutex> dosync(mMutex);
+      AtomicLock dosync(mMutex);
       doStart=true;
       if(mMaxThreads>10000)
       {
@@ -105,7 +105,7 @@ namespace itc
 
         try
         {
-          std::lock_guard<std::mutex> dosync(mMutex);
+          AtomicLock dosync(mMutex);
     
           if(mTPStats.tpc<mMinReadyThr)
           {
