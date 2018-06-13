@@ -19,9 +19,6 @@
         <logicalFolder name="f1" displayName="sys" projectFiles="true">
         </logicalFolder>
         <itemPath>include/ClientSocketsFactory.h</itemPath>
-        <itemPath>include/CompCommon.h</itemPath>
-        <itemPath>include/CompressBuffer.h</itemPath>
-        <itemPath>include/Exceptions.h</itemPath>
         <itemPath>include/Properties.h</itemPath>
         <itemPath>include/RScheduler.h</itemPath>
         <itemPath>include/Sequence.h</itemPath>
@@ -36,8 +33,7 @@
         <itemPath>include/WorkflowEntity.h</itemPath>
         <itemPath>include/WorkflowStorableState.h</itemPath>
         <itemPath>include/al_tsbqueue.h</itemPath>
-        <itemPath>include/bz2Compressor.h</itemPath>
-        <itemPath>include/bz2Decompressor.h</itemPath>
+        <itemPath>include/bz2Compression.h</itemPath>
         <itemPath>include/tsbqueue.h</itemPath>
         <itemPath>include/tsqueue.h</itemPath>
       </logicalFolder>
@@ -104,12 +100,6 @@
       </compileType>
       <item path="include/ClientSocketsFactory.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/CompCommon.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/CompressBuffer.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/Exceptions.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="include/Properties.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/RScheduler.h" ex="false" tool="3" flavor2="0">
@@ -159,9 +149,7 @@
       </item>
       <item path="include/al_tsbqueue.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/bz2Compressor.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/bz2Decompressor.h" ex="false" tool="3" flavor2="0">
+      <item path="include/bz2Compression.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/tsbqueue.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -196,12 +184,6 @@
         </archiverTool>
       </compileType>
       <item path="include/ClientSocketsFactory.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/CompCommon.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/CompressBuffer.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/Exceptions.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Properties.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -252,9 +234,7 @@
       </item>
       <item path="include/al_tsbqueue.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/bz2Compressor.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/bz2Decompressor.h" ex="false" tool="3" flavor2="0">
+      <item path="include/bz2Compression.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/tsbqueue.h" ex="false" tool="3" flavor2="0">
       </item>
