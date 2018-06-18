@@ -21,18 +21,38 @@
 
 namespace itc
 {
-  typedef std::vector<char>        ByteArray;
+  typedef std::vector<uint8_t>        ByteArray;
   typedef std::shared_ptr<ByteArray>  CompressionBuffer;
   
   class bz2
   {
   public:
-    void compress(const CompressionBuffer& in, CompressionBuffer& out)
+    static void compress(const std::string& in, CompressionBuffer& out)
     {
-      
+      out->resize(in.size()*1.01+600);
+      uint32_t outSize=out->size()-4;
+      int ret=BZ2_bzBuffToBuffCompress((char*)(out->data()+4), &outSize, (char*)(in.data()), in.length(), 9, 0, 30);
+      switch (ret)
+      {
+        case BZ_OK:
+          out->resize(outSize+4);
+          (*(uint32_t*)(out->data()))=in.size();
+          break;
+        case BZ_CONFIG_ERROR:
+          throw std::system_error(EINVAL,std::system_category(),"BZ_CONFIG_ERROR");
+        case BZ_PARAM_ERROR:
+          throw std::system_error(EINVAL,std::system_category(),"BZ_PARAM_ERROR");
+        case BZ_MEM_ERROR:
+          throw std::system_error(ENOMEM,std::system_category(),"BZ_MEM_ERROR");
+        case BZ_OUTBUFF_FULL:
+          throw std::system_error(ENOMEM,std::system_category(),"BZ_OUTBUFF_FULL");
+      }
+    }
+    static void compress(const CompressionBuffer& in, CompressionBuffer& out)
+    {
       out->resize(in->size()*1.01+600);
       uint32_t outSize=out->size()-4;
-      int ret=BZ2_bzBuffToBuffCompress(out->data()+4, &outSize, in->data(), in->size(), 9, 0, 30);
+      int ret=BZ2_bzBuffToBuffCompress((char*)(out->data()+4), &outSize, (char*)(in->data()), in->size(), 9, 0, 30);
       switch (ret)
       {
         case BZ_OK:
@@ -50,15 +70,69 @@ namespace itc
       }
     }
     
-    void decompress(const CompressionBuffer& in, CompressionBuffer& out)
+    static void decompress(const CompressionBuffer& in, CompressionBuffer& out)
     {
       out->resize(*(uint32_t*)(in->data()));
       uint32_t outSize=out->size();
-      auto ret=BZ2_bzBuffToBuffDecompress(out->data(), &outSize, in->data()+4, in->size()-4, 0, 0);
+      auto ret=BZ2_bzBuffToBuffDecompress((char*)(out->data()), &outSize, (char*)(in->data()+4), in->size()-4, 0, 0);
       switch (ret)
       {
         case BZ_OK:
           out->resize(outSize);
+          break;
+        case BZ_CONFIG_ERROR:
+          throw std::system_error(EINVAL,std::system_category(),"BZ_CONFIG_ERROR");
+        case BZ_PARAM_ERROR:
+          throw std::system_error(EINVAL,std::system_category(),"BZ_PARAM_ERROR");
+        case BZ_MEM_ERROR:
+          throw std::system_error(ENOMEM,std::system_category(),"BZ_MEM_ERROR");
+        case BZ_OUTBUFF_FULL:
+          throw std::system_error(ENOMEM,std::system_category(),"BZ_OUTBUFF_FULL");
+        case BZ_DATA_ERROR:
+          throw std::system_error(EPROTO,std::system_category(),"BZ_DATA_ERROR");
+        case BZ_DATA_ERROR_MAGIC:
+          throw std::system_error(EPROTO,std::system_category(),"BZ_DATA_ERROR_MAGIC");
+        case BZ_UNEXPECTED_EOF:
+          throw std::system_error(EPROTO,std::system_category(),"BZ_UNEXPECTED_EOF");
+      }
+    }
+    
+    static void decompress(const CompressionBuffer& in, std::string& out)
+    {
+      out.resize(*(uint32_t*)(in->data()));
+      uint32_t outSize=out.size();
+      auto ret=BZ2_bzBuffToBuffDecompress((char*)(out.data()), &outSize, (char*)(in->data()+4), in->size()-4, 0, 0);
+      switch (ret)
+      {
+        case BZ_OK:
+          out.resize(outSize);
+          break;
+        case BZ_CONFIG_ERROR:
+          throw std::system_error(EINVAL,std::system_category(),"BZ_CONFIG_ERROR");
+        case BZ_PARAM_ERROR:
+          throw std::system_error(EINVAL,std::system_category(),"BZ_PARAM_ERROR");
+        case BZ_MEM_ERROR:
+          throw std::system_error(ENOMEM,std::system_category(),"BZ_MEM_ERROR");
+        case BZ_OUTBUFF_FULL:
+          throw std::system_error(ENOMEM,std::system_category(),"BZ_OUTBUFF_FULL");
+        case BZ_DATA_ERROR:
+          throw std::system_error(EPROTO,std::system_category(),"BZ_DATA_ERROR");
+        case BZ_DATA_ERROR_MAGIC:
+          throw std::system_error(EPROTO,std::system_category(),"BZ_DATA_ERROR_MAGIC");
+        case BZ_UNEXPECTED_EOF:
+          throw std::system_error(EPROTO,std::system_category(),"BZ_UNEXPECTED_EOF");
+      }
+    }
+    
+    static void decompress(const CompressionBuffer& in, std::vector<uint8_t>& out)
+    {
+      out.resize(*(uint32_t*)(in->data()));
+      uint32_t outSize=out.size();
+      auto ret=BZ2_bzBuffToBuffDecompress((char*)(out.data()), &outSize, (char*)(in->data()+4), in->size()-4, 0, 0);
+      switch (ret)
+      {
+        case BZ_OK:
+          out.resize(outSize);
           break;
         case BZ_CONFIG_ERROR:
           throw std::system_error(EINVAL,std::system_category(),"BZ_CONFIG_ERROR");
