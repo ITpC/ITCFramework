@@ -54,7 +54,8 @@ namespace itc
     explicit ThreadPool(
       const size_t maxthreads = 10, bool autotune = true, float overcommit = 1.2
       ) : mMutex(), mMaxThreads(maxthreads), mMinThreads(maxthreads), 
-      mAutotune(autotune), mOvercommitRatio(overcommit), doRun(true)
+      mAutotune(autotune), mOvercommitRatio(overcommit), doRun(true),
+      mInQueueDepth{0}
     {
       AtomicLock dosync(mMutex);
       ::itc::getLog()->debug(
@@ -173,6 +174,7 @@ namespace itc
       if(mayRun())
       {
         mTaskQueue.push(ref);
+        mInQueueDepth++;
         itc::getLog()->trace(__FILE__, __LINE__, "Thread [%jx] ThreadPool::enqueue() the Runnable is enqueued", pthread_self());
         if(!mPassiveThreads.empty())
         {
@@ -185,8 +187,7 @@ namespace itc
 
     const size_t getTaskQueueDepth()
     {
-      AtomicLock dosync(mMutex);
-      return mTaskQueue.size();
+      return mInQueueDepth.load();
     }
     
     void stopPool()
@@ -203,14 +204,15 @@ namespace itc
 
    private:
     itc::sys::AtomicMutex mMutex;
-    std::atomic<size_t> mMaxThreads;
-    std::atomic<size_t> mMinThreads;
-    std::atomic<bool> mAutotune;
-    std::atomic<float> mOvercommitRatio;
-    std::queue<TaskType> mTaskQueue;
-    std::list<ThreadPTR> mActiveThreads;
+    std::atomic<size_t>   mMaxThreads;
+    std::atomic<size_t>   mMinThreads;
+    std::atomic<bool>     mAutotune;
+    std::atomic<float>    mOvercommitRatio;
+    std::queue<TaskType>  mTaskQueue;
+    std::list<ThreadPTR>  mActiveThreads;
     std::queue<ThreadPTR> mPassiveThreads;
-    std::atomic<bool> doRun;
+    std::atomic<bool>     doRun;
+    std::atomic<size_t>   mInQueueDepth;
 
     void spawnThreads(size_t n)
     {
@@ -263,14 +265,15 @@ namespace itc
     {
       if(!mPassiveThreads.empty())
       {
-        auto aThread = mPassiveThreads.front();
+        auto aThread = std::move(mPassiveThreads.front());
         mPassiveThreads.pop();
         if(!mTaskQueue.empty())
         {
-          aThread->setRunnable(mTaskQueue.front());
+          aThread->setRunnable(std::move(mTaskQueue.front()));
           mTaskQueue.pop();
+          mInQueueDepth--;
         }
-        mActiveThreads.push_back(aThread);
+        mActiveThreads.push_back(std::move(aThread));
       }
     }
 

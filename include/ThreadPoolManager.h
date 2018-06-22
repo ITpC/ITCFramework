@@ -88,6 +88,10 @@ namespace itc
       mThreadPool.get()->enqueue(ref);
     }
     
+    const size_t getQueueDepth()
+    {
+      return mThreadPool.get()->getTaskQueueDepth();
+    }
     
     void execute()
     {

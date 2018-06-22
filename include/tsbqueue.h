@@ -30,9 +30,9 @@ namespace itc
    std::mutex            mMutex;
    itc::sys::Semaphore   mEvent;
    std::queue<DataType>  mQueue;
-
+   std::atomic<size_t>   mQueueDepth;
   public:
-   explicit tsbqueue():mMutex(),mEvent(),mQueue(){};
+   explicit tsbqueue():mMutex(),mEvent(),mQueue(),mQueueDepth{0}{};
    tsbqueue(const tsbqueue&)=delete;
    tsbqueue(tsbqueue&)=delete;
    
@@ -42,6 +42,7 @@ namespace itc
      SyncLock sync(mMutex);
      while(!mQueue.empty())
        mQueue.pop();
+     mQueueDepth=0;
    }
    
    ~tsbqueue()
@@ -59,6 +60,7 @@ namespace itc
       for(size_t i=0;i<ref.size();++i)
       {
         mQueue.push(ref[i]);
+        ++mQueueDepth;
         if(!mEvent.post())
         {
           throw std::system_error(errno,std::system_category(),"Can't increment semaphore, system is going down or semaphore error");
@@ -73,6 +75,7 @@ namespace itc
         for(size_t i=0;i<ref.size();++i)
         {
           mQueue.push(std::move(ref[i]));
+          ++mQueueDepth;
           if(!mEvent.post())
           {
             throw std::system_error(errno,std::system_category(),"Can't increment semaphore, system is going down or semaphore error");
@@ -93,6 +96,7 @@ namespace itc
     {
       SyncLock sync(mMutex);
       mQueue.push(ref);
+      ++mQueueDepth;
       if(!mEvent.post())
       {
         throw std::system_error(errno,std::system_category(),"Can't increment semaphore, system is going down or semaphore error");
@@ -106,6 +110,7 @@ namespace itc
         SyncLock sync(mMutex);
         result=mQueue.front();
         mQueue.pop();
+        --mQueueDepth;
         return true;
       }
       return false;
@@ -132,6 +137,7 @@ namespace itc
           throw std::logic_error("tbsqueue<T>::recv(T&) - already consumed");
         result=std::move(mQueue.front());
         mQueue.pop();
+        --mQueueDepth;
         mMutex.unlock();
       }
     }
@@ -149,6 +155,7 @@ namespace itc
 
         auto result=std::move(mQueue.front());
         mQueue.pop();
+        --mQueueDepth;
         return result;
       }
     }
@@ -167,15 +174,14 @@ namespace itc
         {
           out.push(std::move(mQueue.front()));
           mQueue.pop();
+          --mQueueDepth;
           mEvent.tryWait();
         }
       }
     }
-    const bool size(int& value)
+    const size_t size() const
     {
-      if(!mEvent.getValue(value))
-        throw std::system_error(errno,std::system_category(),"Can't access semaphore value");
-      return true;
+      return mQueueDepth;
     }
   };
 }
