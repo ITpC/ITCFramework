@@ -18,6 +18,7 @@
 #include <atomic>
 #include <string>
 #include <cstdint>
+#include <functional>
 
 #include <sys/synclock.h>
 #include <TCPSocketDef.h>
@@ -42,15 +43,18 @@ namespace itc
     int               mPort;
     ServerSocket      mServerSocket;
     ViewTypeSPtr      mSocketsHandler;
+    
+    std::function<bool(const uint32_t)> mFilter;
+    
     std::atomic<bool> doRun;
     std::atomic<bool> canDestroy;
     
 	public:
    typedef ModelType value_type;
    
-    explicit TCPListener(const std::string& address,const int port,const ViewTypeSPtr& sh)
+    explicit TCPListener(const std::string& address,const int port,const ViewTypeSPtr& sh, const std::function<bool(const uint32_t)>& _filter=nullptr)
     : mMutex(), mAddress(address), mPort(port), mServerSocket(mAddress,mPort),
-      mSocketsHandler(sh),doRun(true),canDestroy(false)
+      mSocketsHandler(sh),mFilter(_filter), doRun(true),canDestroy(false)
     {
       if(!mSocketsHandler.lock())
         throw std::runtime_error("The connection handler view does not exists (nullptr)");
@@ -77,6 +81,10 @@ namespace itc
           }
           else
           { 
+            uint32_t u32address;
+            
+            newClient->getpeeraddr(u32address);
+            
             std::string peeraddress;
             newClient->getpeeraddr(peeraddress);
             
@@ -84,7 +92,11 @@ namespace itc
             {
               newClient->close();
             }
-            else 
+            else if(mFilter&&mFilter(u32address))
+            {
+              newClient->close();
+            }
+            else
             {
               if(!notify(newClient,mSocketsHandler))
               {
