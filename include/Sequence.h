@@ -64,7 +64,6 @@ namespace itc
   class Sequence
   {
   private:
-    std::mutex mMutex;
     std::atomic<IntType> mSequence;
     Bool2Type<Reverse> mOrder;
     Bool2Type<Rotate> mCyclic;
@@ -122,23 +121,21 @@ namespace itc
 
   public:
 
-    explicit Sequence() : mMutex(), mSequence(Reverse ? std::numeric_limits<IntType>::max() : 0) { }
+    explicit Sequence() : mSequence(Reverse ? std::numeric_limits<IntType>::max() : 0) { }
 
-    explicit Sequence(const Sequence& ref) : mMutex(), mSequence(ref.mSequence) { }
+    explicit Sequence(const Sequence& ref) : mSequence(ref.mSequence) { }
 
-    explicit Sequence(Sequence& ref) : mMutex(), mSequence(ref.mSequence) { }
+    explicit Sequence(Sequence& ref) : mSequence(ref.mSequence) { }
 
     Sequence& operator=(const Sequence& ref)
     {
-      SyncLock sync(mMutex);
-      mSequence = ref.mSequence;
+      mSequence.store(ref.mSequence.load());
       return (*this);
     }
 
     const IntType getCurrent()
     {
-      SyncLock sync(mMutex);
-      return mSequence;
+      return mSequence.load();
     }
 
     operator uint64_t()
@@ -153,11 +150,9 @@ namespace itc
 
     const IntType getNext()
     {
-      SyncLock sync(mMutex);
       return getNext(mOrder, mCyclic);
     }
   };
-  typedef itc::Singleton<Sequence> SSequence;
 }
 
 #endif /*SEQUENCE_H_*/
