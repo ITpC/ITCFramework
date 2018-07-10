@@ -59,7 +59,7 @@ namespace itc
       SyncLock sync(mMutex);
       for(size_t i=0;i<ref.size();++i)
       {
-        mQueue.push(ref[i]);
+        mQueue.push(std::move(ref[i]));
         ++mQueueDepth;
         if(!mEvent.post())
         {
@@ -95,7 +95,7 @@ namespace itc
     void send(const DataType& ref)
     {
       SyncLock sync(mMutex);
-      mQueue.push(ref);
+      mQueue.push(std::move(ref));
       ++mQueueDepth;
       if(!mEvent.post())
       {
@@ -108,7 +108,7 @@ namespace itc
       if(mEvent.timedWait(timeout))
       {
         SyncLock sync(mMutex);
-        result=mQueue.front();
+        result=std::move(mQueue.front());
         mQueue.pop();
         --mQueueDepth;
         return true;
