@@ -32,7 +32,6 @@
         <itemPath>include/WorkflowControl.h</itemPath>
         <itemPath>include/WorkflowEntity.h</itemPath>
         <itemPath>include/WorkflowStorableState.h</itemPath>
-        <itemPath>include/al_tsbqueue.h</itemPath>
         <itemPath>include/bz2Compression.h</itemPath>
         <itemPath>include/tsbqueue.h</itemPath>
         <itemPath>include/tsqueue.h</itemPath>
@@ -147,8 +146,6 @@
       </item>
       <item path="include/abstract/Service.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/al_tsbqueue.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="include/bz2Compression.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/tsbqueue.h" ex="false" tool="3" flavor2="0">
@@ -231,8 +228,6 @@
       <item path="include/abstract/QueueInterface.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/abstract/Service.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/al_tsbqueue.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/bz2Compression.h" ex="false" tool="3" flavor2="0">
       </item>

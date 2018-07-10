@@ -24,10 +24,10 @@ namespace itc
   /**
    * @brief thread safe blocking queue. 
    */
-  template <typename DataType> class tsbqueue
+  template <typename DataType, typename MutexType=std::mutex> class tsbqueue
   {
   private:
-   std::mutex            mMutex;
+   MutexType             mMutex;
    itc::sys::Semaphore   mEvent;
    std::queue<DataType>  mQueue;
    std::atomic<size_t>   mQueueDepth;
@@ -39,7 +39,7 @@ namespace itc
    void destroy()
    {
      mEvent.destroy();
-     SyncLock sync(mMutex);
+     std::lock_guard<MutexType> sync(mMutex);
      while(!mQueue.empty())
        mQueue.pop();
      mQueueDepth=0;
@@ -56,7 +56,7 @@ namespace itc
     */
     void send(const std::vector<DataType>& ref)
     {
-      SyncLock sync(mMutex);
+      std::lock_guard<MutexType> sync(mMutex);
       for(size_t i=0;i<ref.size();++i)
       {
         mQueue.push(std::move(ref[i]));
@@ -94,7 +94,7 @@ namespace itc
     */
     void send(const DataType& ref)
     {
-      SyncLock sync(mMutex);
+      std::lock_guard<MutexType> sync(mMutex);
       mQueue.push(std::move(ref));
       ++mQueueDepth;
       if(!mEvent.post())
@@ -107,7 +107,7 @@ namespace itc
     {
       if(mEvent.timedWait(timeout))
       {
-        SyncLock sync(mMutex);
+        std::lock_guard<MutexType> sync(mMutex);
         result=std::move(mQueue.front());
         mQueue.pop();
         --mQueueDepth;
@@ -131,7 +131,7 @@ namespace itc
         throw std::system_error(errno,std::system_category(),"Can't wait on semaphore");
       else
       {
-        SyncLock sync(mMutex);
+        std::lock_guard<MutexType> sync(mMutex);
         
         if(mQueue.empty()) 
           throw std::logic_error("tbsqueue<T>::recv(T&) - already consumed");
@@ -148,7 +148,7 @@ namespace itc
         throw std::system_error(errno,std::system_category(),"Can't wait on semaphore");
       else
       {
-        SyncLock sync(mMutex);
+        std::lock_guard<MutexType> sync(mMutex);
         
         if(mQueue.empty()) 
           throw std::logic_error("tbsqueue<T>::recv() - already consumed");
@@ -166,7 +166,7 @@ namespace itc
         throw std::system_error(errno,std::system_category(),"Can't wait on semaphore");
       else
       {
-        SyncLock sync(mMutex);
+        std::lock_guard<MutexType> sync(mMutex);
         
         if(mQueue.empty()) 
           throw std::logic_error("tbsqueue<T>::recv() - already consumed");
