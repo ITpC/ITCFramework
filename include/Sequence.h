@@ -72,12 +72,13 @@ namespace itc
     {
       static IntType _max = std::numeric_limits<IntType>::max();
 
-      if (mSequence == _max)
+      if (mSequence.load() == _max)
       {
         throw std::out_of_range("Sequence is out of range");
       }else
       {
-        return ++mSequence;
+        mSequence.store(mSequence.load()+1);
+        return mSequence.load();
       }
     }
 
@@ -85,36 +86,41 @@ namespace itc
     {
       static IntType _max = std::numeric_limits<IntType>::max();
 
-      if (mSequence == _max)
+      if (mSequence.load() == _max)
       {
-        return (mSequence = 0);
+        mSequence.store(0);
+        return mSequence.load();
       }else
       {
-        return ++mSequence;
+        mSequence.store(mSequence.load()+1);
+        return mSequence.load();
       }
     }
 
     const IntType getNext(Bool2Type < true > reverse, Bool2Type <true> cyclic)
     {
       static IntType _max = std::numeric_limits<IntType>::max();
-      if (mSequence == 0)
+      if (mSequence.load() == 0)
       {
-        return (mSequence = _max);
+        mSequence.store(_max);
+        return mSequence.load();
       }else
       {
-        return --mSequence;
+        mSequence.store(mSequence.load() -1);
+        return mSequence.load();
       }
     }
 
     const IntType getNext(Bool2Type < true > reverse, Bool2Type <false> cyclic)
     {
       static IntType _max = std::numeric_limits<IntType>::max();
-      if (mSequence == 0)
+      if (mSequence.load() == 0)
       {
         throw std::out_of_range("Sequence is out of range");
       }else
       {
-        return --mSequence;
+        mSequence.store(mSequence.load()-1);
+        return mSequence.load();
       }
     }
 
