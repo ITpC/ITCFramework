@@ -116,6 +116,19 @@ namespace itc
       return false;
     }
     
+    const bool tryRecv(DataType& result)
+    {
+      if(mEvent.tryWait())
+      {
+        std::lock_guard<MutexType> sync(mMutex);
+        result=std::move(mQueue.front());
+        mQueue.pop();
+        --mQueueDepth;
+        return true;
+      }
+      return false;
+    }
+    
     /**
      * @brief receive a message from queue as it is available. This method will
      * block while queue is empty. As far as a semaphore indicates that there 
