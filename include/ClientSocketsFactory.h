@@ -43,17 +43,17 @@ template <uint64_t SOpts = CLIENT_SOCKET> class ClientSocketsFactory
     for(
       size_t i = 0;i < mMaxQueueLength;
       mPreBuildSockets.push(
-        std::make_shared<ClientSocketType>()
+        std::move(std::make_shared<ClientSocketType>())
       ), i++
     );
   }
 
-  SharedClientSocketPtrType getBlindSocket()
+  auto getBlindSocket()
   {
     SyncLock sync(mMutex);
     if(size_t depth = mPreBuildSockets.size() > mMinQueueLength)
     {
-      SharedClientSocketPtrType ptr = mPreBuildSockets.front();
+      auto ptr = std::move(mPreBuildSockets.front());
       mPreBuildSockets.pop();
       return ptr;
     }
@@ -62,10 +62,10 @@ template <uint64_t SOpts = CLIENT_SOCKET> class ClientSocketsFactory
       for(
         size_t i = depth;i < mMaxQueueLength;
           mPreBuildSockets.push(
-            std::make_shared<ClientSocketType>()
+            std::move(std::make_shared<ClientSocketType>())
           ), i++
         );
-      SharedClientSocketPtrType ptr = mPreBuildSockets.front();
+      auto ptr = std::move(mPreBuildSockets.front());
       mPreBuildSockets.pop();
       return ptr;
     }
