@@ -36,84 +36,16 @@ namespace itc {
       explicit Singleton(Singleton&)=delete;
 
     public:
-      /*
-      static const std::shared_ptr<T>& getInstance()
-      {
-        std::lock_guard<std::mutex> sync(mMutex);
-
-        if (mInstance.get()) {
-          return mInstance;
-        } else {
-          std::shared_ptr<T> tmp=std::make_shared<T>();
-          mInstance.swap(tmp);
-          return mInstance;
-        }
-      }
-       * */
-/*
-      static const std::shared_ptr<T>& getExisting()
-      {
-        static
-        std::lock_guard<std::mutex> sync(mMutex);
-
-        if (mInstance.get()) {
-          return mInstance;
-        } else {
-          throw std::runtime_error("This singleton is not initialized yet");
-        }
-      }
-  */    
       template <typename... Args> static const std::shared_ptr<T>& getInstance(Args...args)
       {
         static std::shared_ptr<T> instance=std::make_shared<T>(args...);
         return instance;
-        /*
-        std::lock_guard<std::mutex> sync(mMutex);
-
-        if (mInstance.get()) {
-          return mInstance;
-        } else {
-          std::shared_ptr<T> tmp=std::make_shared<T>(args...);
-          mInstance.swap(tmp);
-          return mInstance;
-        }
-         **/
       }
 
     protected:
-      /*
-      static std::mutex mMutex;
-      static std::shared_ptr<T> mInstance;
-      */
       virtual ~Singleton() = 0;
-/*
-      static bool tryDestroyInstance()
-      {
-        std::lock_guard<std::mutex> sync(mMutex);
-        if (mInstance.unique()) {
-          mInstance.reset();
-          return true;
-        }
-        return false;
-      }
-*//*
-      static void destroyInstance()
-      {
-        std::lock_guard<std::mutex> sync(mMutex);
-        itc::sys::Nap aTimer;
-        while ((!mInstance.unique()) && mInstance.use_count()) {
-          aTimer.usleep(10);
-        }
-        mInstance.reset();
-      }
-      */
     };
 
-    // Initialization
-    /*
-    template <typename T> std::mutex Singleton<T>::mMutex;
-    template <typename T> std::shared_ptr<T> Singleton<T>::mInstance(nullptr);
-     * */
 }
 
 #endif
