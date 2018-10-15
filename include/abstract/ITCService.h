@@ -11,15 +11,15 @@
  **/
 
 
-#ifndef SERVICE_H
-#  define	SERVICE_H
+#ifndef __ITC_SERVICE_H__
+#  define	__ITC_SERVICE_H__
 #include <string>
 
 namespace itc
 {
  namespace abstract
  {
-  class Service
+  class ITCService
   {
   public:
     
@@ -32,10 +32,10 @@ namespace itc
     virtual const bool isup() const =0;
 
   protected:
-    virtual ~Service()=default;
+    virtual ~ITCService()=default;
   };
  }
 }
 
-#endif	/* SERVICE_H */
+#endif	/* __ITC_SERVICE_H__ */
 

@@ -13,7 +13,7 @@
 #ifndef SERVICEFACADE_H
 #  define	SERVICEFACADE_H
 
-#  include <abstract/Service.h>
+#  include <abstract/ITCService.h>
 #  include <TSLog.h>
 #  include <mutex>
 #  include <atomic>
@@ -32,7 +32,7 @@ namespace itc
    * in the implementation destructor.
    * 
    **/
-  class ServiceFacade : public itc::abstract::Service
+  class ServiceFacade : public itc::abstract::ITCService
   {
    private:
     std::mutex mMutex;

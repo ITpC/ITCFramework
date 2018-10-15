@@ -13,7 +13,7 @@
 
 #ifndef SERVICEMANAGER_H
 #  define	SERVICEMANAGER_H
-#include <abstract/Service.h>
+#include <abstract/ITCService.h>
 #include <exception>
 #include <algorithm>
 #include <Singleton.h>
@@ -29,7 +29,7 @@ namespace itc
  class ServiceManager
  {
  public:  
-  typedef std::shared_ptr<abstract::Service> ServiceSPtr;
+  typedef std::shared_ptr<abstract::ITCService> ServiceSPtr;
   typedef std::map<std::string,ServiceSPtr> ServiceRegistryMap;
   typedef std::pair<std::string,ServiceSPtr> ServicePair;
   typedef std::set<std::string> string_set;
@@ -310,7 +310,7 @@ namespace itc
       SRMIterator srmit=mServiceRegistry.find(name);
       if(srmit!=mServiceRegistry.end())
       {
-        abstract::Service *ptr=srmit->second.get();
+        abstract::ITCService *ptr=srmit->second.get();
         if((ptr)&&(ptr->isup()))
         {
           itc::getLog()->info("[ServiceManager] shutdown the service %s", ptr->getName().c_str());
@@ -324,7 +324,7 @@ namespace itc
       SRMIterator srmit=mServiceRegistry.find(name);
       if(srmit!=mServiceRegistry.end())
       {
-        abstract::Service *ptr=srmit->second.get();
+        abstract::ITCService *ptr=srmit->second.get();
         if((ptr)&&(ptr->isdown()))
         {
           itc::getLog()->info("[ServiceManager] starting the service %s", ptr->getName().c_str());
