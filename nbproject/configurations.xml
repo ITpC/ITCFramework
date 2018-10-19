@@ -8,13 +8,13 @@
         <logicalFolder name="abstract" displayName="abstract" projectFiles="true">
           <itemPath>include/abstract/IController.h</itemPath>
           <itemPath>include/abstract/IMessageListener.h</itemPath>
+          <itemPath>include/abstract/ITCService.h</itemPath>
           <itemPath>include/abstract/IThreadPool.h</itemPath>
           <itemPath>include/abstract/IView.h</itemPath>
           <itemPath>include/abstract/IWorkflowState.h</itemPath>
           <itemPath>include/abstract/Observable.h</itemPath>
           <itemPath>include/abstract/Observer.h</itemPath>
           <itemPath>include/abstract/QueueInterface.h</itemPath>
-          <itemPath>include/abstract/Service.h</itemPath>
         </logicalFolder>
         <logicalFolder name="f1" displayName="sys" projectFiles="true">
         </logicalFolder>
@@ -132,6 +132,8 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="include/abstract/ITCService.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/abstract/IThreadPool.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/abstract/IView.h" ex="false" tool="3" flavor2="0">
@@ -143,8 +145,6 @@
       <item path="include/abstract/Observer.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/abstract/QueueInterface.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/abstract/Service.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/bz2Compression.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -215,6 +215,8 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="include/abstract/ITCService.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/abstract/IThreadPool.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/abstract/IView.h" ex="false" tool="3" flavor2="0">
@@ -226,8 +228,6 @@
       <item path="include/abstract/Observer.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/abstract/QueueInterface.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/abstract/Service.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/bz2Compression.h" ex="false" tool="3" flavor2="0">
       </item>
