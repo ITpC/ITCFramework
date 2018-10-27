@@ -151,7 +151,6 @@ namespace itc
         result=std::move(mQueue.front());
         mQueue.pop();
         --mQueueDepth;
-        mMutex.unlock();
       }
     }
     
