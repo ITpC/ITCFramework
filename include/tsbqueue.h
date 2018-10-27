@@ -181,7 +181,7 @@ namespace itc
         std::lock_guard<MutexType> sync(mMutex);
         
         if(mQueue.empty()) 
-          throw std::logic_error("tbsqueue<T>::recv() - already consumed");
+          throw std::logic_error("tbsqueue<T>::recv(std::queue<DataType>&) - already consumed");
         while(!mQueue.empty())
         {
           out.push(std::move(mQueue.front()));
