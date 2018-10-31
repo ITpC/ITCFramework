@@ -20,18 +20,12 @@
         </logicalFolder>
         <itemPath>include/ClientSocketsFactory.h</itemPath>
         <itemPath>include/Properties.h</itemPath>
-        <itemPath>include/RScheduler.h</itemPath>
         <itemPath>include/Sequence.h</itemPath>
-        <itemPath>include/ServiceFacade.h</itemPath>
-        <itemPath>include/ServiceManager.h</itemPath>
         <itemPath>include/Singleton.h</itemPath>
         <itemPath>include/TCPListener.h</itemPath>
         <itemPath>include/TCPSocketDef.h</itemPath>
         <itemPath>include/ThreadPool.h</itemPath>
         <itemPath>include/ThreadPoolManager.h</itemPath>
-        <itemPath>include/WorkflowControl.h</itemPath>
-        <itemPath>include/WorkflowEntity.h</itemPath>
-        <itemPath>include/WorkflowStorableState.h</itemPath>
         <itemPath>include/bz2Compression.h</itemPath>
         <itemPath>include/tsbqueue.h</itemPath>
         <itemPath>include/tsqueue.h</itemPath>
@@ -101,13 +95,7 @@
       </item>
       <item path="include/Properties.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/RScheduler.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="include/Sequence.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/ServiceFacade.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/ServiceManager.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Singleton.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -118,12 +106,6 @@
       <item path="include/ThreadPool.h" ex="false" tool="1" flavor2="0">
       </item>
       <item path="include/ThreadPoolManager.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/WorkflowControl.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/WorkflowEntity.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/WorkflowStorableState.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/abstract/IController.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -184,13 +166,7 @@
       </item>
       <item path="include/Properties.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/RScheduler.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="include/Sequence.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/ServiceFacade.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/ServiceManager.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Singleton.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -201,12 +177,6 @@
       <item path="include/ThreadPool.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/ThreadPoolManager.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/WorkflowControl.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/WorkflowEntity.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/WorkflowStorableState.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/abstract/IController.h" ex="false" tool="3" flavor2="0">
       </item>
