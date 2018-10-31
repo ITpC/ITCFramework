@@ -23,7 +23,7 @@
 #include <Date.h>
 #include <mutex>
 #include <atomic>
-#include <sys/atomic_mutex.h>
+#include <sys/mutex.h>
 #include <sys/synclock.h>
 
 
@@ -57,7 +57,7 @@ namespace itc
       mAutotune(autotune), mOvercommitRatio(overcommit), doRun(true),
       mInQueueDepth{0}
     {
-      AtomicLock dosync(mMutex);
+      ITCSyncLock dosync(mMutex);
       ::itc::getLog()->debug(
         __FILE__, __LINE__,
         "created ThreadPool::ThreadPool(%ju,%u,%f)",
@@ -73,7 +73,7 @@ namespace itc
 
     void setAutotune(const bool& autotune)
     {
-      AtomicLock dosync(mMutex);
+      ITCSyncLock dosync(mMutex);
       mAutotune = autotune;
     }
 
@@ -109,7 +109,7 @@ namespace itc
 
     void expand(const size_t& inc)
     {
-      AtomicLock dosync(mMutex);
+      ITCSyncLock dosync(mMutex);
       if(mayRun())
       {
         mMaxThreads += inc;
@@ -120,7 +120,7 @@ namespace itc
 
     void reduce(const size_t& dec)
     {
-      AtomicLock dosync(mMutex);
+      ITCSyncLock dosync(mMutex);
       if(mMaxThreads > mMinThreads)
       {
         mMaxThreads -= dec;
@@ -129,7 +129,7 @@ namespace itc
 
     const size_t getFreeThreadsCount()
     {
-      AtomicLock dosync(mMutex);
+      ITCSyncLock dosync(mMutex);
       size_t ftc = 0;
       std::for_each(
         mActiveThreads.begin(),
@@ -146,7 +146,7 @@ namespace itc
 
     void shakePools()
     {
-      AtomicLock dosync(mMutex);
+      ITCSyncLock dosync(mMutex);
 
       if(mayRun())
       {
@@ -169,7 +169,7 @@ namespace itc
 
     void enqueue(const value_type& ref)
     {
-      AtomicLock dosync(mMutex);
+      ITCSyncLock dosync(mMutex);
 
       if(mayRun())
       {
@@ -203,7 +203,7 @@ namespace itc
     }
 
    private:
-    itc::sys::AtomicMutex mMutex;
+    itc::sys::mutex mMutex;
     std::atomic<size_t>   mMaxThreads;
     std::atomic<size_t>   mMinThreads;
     std::atomic<bool>     mAutotune;
@@ -254,7 +254,7 @@ namespace itc
 
     void cleanInQueue()
     {
-      AtomicLock dosync(mMutex);
+      ITCSyncLock dosync(mMutex);
       while(!mTaskQueue.empty())
       {
         mTaskQueue.pop();
@@ -284,7 +284,7 @@ namespace itc
 
     void onShutdown()
     {
-      AtomicLock dosync(mMutex);
+      ITCSyncLock dosync(mMutex);
       while(!mPassiveThreads.empty())
         mPassiveThreads.pop();
       mActiveThreads.clear();

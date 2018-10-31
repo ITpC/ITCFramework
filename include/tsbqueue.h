@@ -17,7 +17,7 @@
 #include <sys/PosixSemaphore.h>
 #include <sys/synclock.h>
 #include <mutex>
-#include <sys/atomic_mutex.h>
+#include <sys/mutex.h>
 
 namespace itc
 {
@@ -105,7 +105,7 @@ namespace itc
     
     const bool tryRecv(DataType& result,const ::timespec& timeout)
     {
-      if(mEvent.timedWait(timeout))
+      if(mEvent.timed_wait(timeout))
       {
         std::lock_guard<MutexType> sync(mMutex);
         result=std::move(mQueue.front());
@@ -118,7 +118,7 @@ namespace itc
     
     const bool tryRecv(DataType& result)
     {
-      if(mEvent.tryWait())
+      if(mEvent.try_wait())
       {
         std::lock_guard<MutexType> sync(mMutex);
         result=std::move(mQueue.front());
@@ -182,12 +182,13 @@ namespace itc
         
         if(mQueue.empty()) 
           throw std::logic_error("tbsqueue<T>::recv(std::queue<DataType>&) - already consumed");
+        
         while(!mQueue.empty())
         {
           out.push(std::move(mQueue.front()));
           mQueue.pop();
           --mQueueDepth;
-          mEvent.tryWait();
+          mEvent.try_wait();
         }
       }
     }

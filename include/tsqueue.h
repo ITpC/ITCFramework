@@ -31,46 +31,46 @@ public:
   
   const bool empty()
   {
-    SyncLock sync(mMutex);
+    STDSyncLock sync(mMutex);
     return mQueue.empty();
   }
   
   const tsqueue& push(const T& ref)
   {
-    SyncLock sync(mMutex);
+    STDSyncLock sync(mMutex);
     mQueue.push(ref);
     return *this;
   }
   
   const tsqueue& push(const T&& ref)
   {
-    SyncLock sync(mMutex);
+    STDSyncLock sync(mMutex);
     mQueue.push(ref);
     return *this;
   }
   
   const T& front()
   {
-    SyncLock sync(mMutex);
+    STDSyncLock sync(mMutex);
     return mQueue.front();
   }
   
   const T& top()
   {
-    SyncLock sync(mMutex);
+    STDSyncLock sync(mMutex);
     return mQueue.front();
   }
   
   const tsqueue& pop()
   {
-    SyncLock sync(mMutex);
+    STDSyncLock sync(mMutex);
     mQueue.pop();
     return *this;
   }
   
   const size_t size()
   {
-    SyncLock sync(mMutex);
+    STDSyncLock sync(mMutex);
     return mQueue.size();
   }
   

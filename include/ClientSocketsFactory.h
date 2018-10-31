@@ -38,7 +38,7 @@ template <uint64_t SOpts = CLIENT_SOCKET> class ClientSocketsFactory
     static_assert(CLN_TCP_KA_TND < SERVER_SOCKET, "WTF ? can't you count ?!");
     static_assert(CLN_TCP_KA_TD < SERVER_SOCKET, "WTF ? can't you count ?!");
     
-    SyncLock sync(mMutex);
+    STDSyncLock sync(mMutex);
     
     for(
       size_t i = 0;i < mMaxQueueLength;
@@ -50,7 +50,7 @@ template <uint64_t SOpts = CLIENT_SOCKET> class ClientSocketsFactory
 
   auto getBlindSocket()
   {
-    SyncLock sync(mMutex);
+    STDSyncLock sync(mMutex);
     if(size_t depth = mPreBuildSockets.size() > mMinQueueLength)
     {
       auto ptr = std::move(mPreBuildSockets.front());

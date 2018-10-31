@@ -67,7 +67,7 @@ namespace itc
     {
       while(doRun.load())
       {
-        SyncLock sync(mMutex);
+        STDSyncLock sync(mMutex);
         value_type newClient(
           itc::Singleton<TCPSocketsFactory>::getInstance<
             size_t,size_t
