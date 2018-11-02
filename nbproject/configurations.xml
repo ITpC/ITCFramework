@@ -27,6 +27,7 @@
         <itemPath>include/ThreadPool.h</itemPath>
         <itemPath>include/ThreadPoolManager.h</itemPath>
         <itemPath>include/bz2Compression.h</itemPath>
+        <itemPath>include/cfifo.h</itemPath>
         <itemPath>include/tsbqueue.h</itemPath>
         <itemPath>include/tsqueue.h</itemPath>
       </logicalFolder>
@@ -130,6 +131,8 @@
       </item>
       <item path="include/bz2Compression.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/cfifo.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/tsbqueue.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/tsqueue.h" ex="false" tool="3" flavor2="0">
@@ -200,6 +203,8 @@
       <item path="include/abstract/QueueInterface.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/bz2Compression.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/cfifo.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/tsbqueue.h" ex="false" tool="3" flavor2="0">
       </item>
