@@ -36,54 +36,47 @@ namespace itc
       sitem(const sitem&) = delete;
       sitem(sitem&) = delete;
       
-      const bool try_set(const T& _item)
+      const bool set(const T& _item)
       {
-        if(lock.test_and_set(std::memory_order_seq_cst)) return false;
-        
-        bool current_value=false;
-        
-        while(busy.compare_exchange_strong(current_value, true, std::memory_order_seq_cst))
+        if(!busy.load())
         {
-          current_value=false;
-        };
-        
-        item=std::move(_item);
-        lock.clear(std::memory_order_seq_cst);
-        sem.post();
+          if(lock.test_and_set()) return false; // already locked by another thread
+          
+          bool current_value=false; 
+          if(busy.compare_exchange_strong(current_value, true, std::memory_order_seq_cst))
+          {
+            item=std::move(_item);
+            lock.clear();
+            sem.post();
+            return true;
+          }
+          lock.clear();
+          return false;
+        }
+        return false;
       }
       
-      void set(const T& _item)
+      const bool fetch_and_clear(T& out)
       {
-        while(lock.test_and_set(std::memory_order_seq_cst));
+        sem.wait(); // if there are data in item, this thread will wake
+                    // best case no waiting here, worst case fallback to POSIX semaphore
         
-        bool current_value=false;
-        
-        while(busy.compare_exchange_strong(current_value, true, std::memory_order_seq_cst))
+        if(busy.load()) // ensure the item has data (no other thread has cleared the item)
         {
-          current_value=false;
-        };
-        item=std::move(_item);
-        lock.clear(std::memory_order_seq_cst);
-        sem.post();
+          if(lock.test_and_set()) return false; // lock is already set by other thread;
+          
+          bool current_value=true; // must be busy/loaded with data
+          if(busy.compare_exchange_strong(current_value, false, std::memory_order_seq_cst))
+          { // if busy, then fetch the data, clear the lock
+            out=std::move(item);
+            lock.clear();
+            return true;
+          }
+          lock.clear();
+          return false;
+        }
+        return false;
       }
-      
-      void fetch_and_clear(T& out)
-      {
-        sem.wait();
-        
-        while(lock.test_and_set(std::memory_order_seq_cst));
-        
-        bool current_value=true;
-        
-        while(!busy.compare_exchange_strong(current_value, false, std::memory_order_seq_cst))
-        {
-          current_value=true;
-        };
-        
-        out=std::move(item);
-        lock.clear(std::memory_order_seq_cst);
-      }
-      
     };
     
     std::atomic<size_t> next_push;
@@ -102,26 +95,9 @@ namespace itc
    cfifo(cfifo&)=delete;
    cfifo(const cfifo&)=delete;
    
-   const bool try_send(const T& data)
-   {
-     if(!valid.load())
-       throw std::system_error(EOWNERDEAD,std::system_category(),"cfifo::try_send() - accessing concurrent FIFO which is being destroyed");
-     
-     size_t pos = next_push.load();
-     
-     while(!next_push.compare_exchange_strong(pos,(pos+1) < limit ? pos+1 : 0))
-     {
-       pos = next_push.load();
-     }
-     
-     if(queue[pos].try_set(data))
-       return true;
-     else
-       return false;
-   }
-   
    void send(const T& data)
    {
+     send_again:
      if(!valid.load())
        throw std::system_error(EOWNERDEAD,std::system_category(),"cfifo::send() - accessing concurrent FIFO which is being destroyed");
      
@@ -132,11 +108,13 @@ namespace itc
        pos = next_push.load();
      }
      
-     queue[pos].set(data);
+     if(!queue[pos].set(data)) // look for a next position if could not set the data
+       goto send_again;
    }
    
    auto recv()
    {
+     recv_again:
      if(!valid.load())
        throw std::system_error(EOWNERDEAD,std::system_category(),"cfifo::recv() - accessing concurrent FIFO which is being destroyed");
      
@@ -148,7 +126,8 @@ namespace itc
      }
      
      T result;
-     queue[pos].fetch_and_clear(result);
+     if(!queue[pos].fetch_and_clear(result)) // look for a next position if could not fetch the data
+       goto recv_again;
      return result;
    }
    
