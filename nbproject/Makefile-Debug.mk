@@ -70,7 +70,7 @@ ${OBJECTDIR}/include/ThreadPool.h.gch: include/ThreadPool.h nbproject/Makefile-$
 
 # Subprojects
 .build-subprojects:
-	cd ../ITCLib && ${MAKE}  -f Makefile CONF=Debug
+	cd ../ITCLib && ${MAKE}  -f Makefile CONF=Release.SSE2
 
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
@@ -78,7 +78,7 @@ ${OBJECTDIR}/include/ThreadPool.h.gch: include/ThreadPool.h nbproject/Makefile-$
 
 # Subprojects
 .clean-subprojects:
-	cd ../ITCLib && ${MAKE}  -f Makefile CONF=Debug clean
+	cd ../ITCLib && ${MAKE}  -f Makefile CONF=Release.SSE2 clean
 
 # Enable dependency checking
 .dep.inc: .depcheck-impl
