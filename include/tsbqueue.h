@@ -18,6 +18,7 @@
 #include <sys/synclock.h>
 #include <mutex>
 #include <sys/mutex.h>
+#include <sys/semaphore.h>
 
 namespace itc
 {
@@ -27,10 +28,13 @@ namespace itc
   template <typename DataType, typename MutexType=std::mutex> class tsbqueue
   {
   private:
+   using semaphore=itc::sys::semaphore<25>;
+   
    MutexType             mMutex;
-   itc::sys::Semaphore   mEvent;
+   semaphore             mEvent;
    std::queue<DataType>  mQueue;
    std::atomic<size_t>   mQueueDepth;
+   
   public:
    explicit tsbqueue():mMutex(),mEvent(),mQueue(),mQueueDepth{0}{};
    tsbqueue(const tsbqueue&)=delete;
@@ -130,67 +134,54 @@ namespace itc
     }
     
     /**
-     * @brief receive a message from queue as it is available. This method will
-     * block while queue is empty. As far as a semaphore indicates that there 
-     * is a new message it attempts to receive it. If there are concurrent 
-     * threads waiting on the same queue and it appears that the expected message
-     * is already read (which is very unlikely though possible scenario), it 
-     * throws an exception.
+     * @brief receive a message from queue as it is available. This method will 
+     * block until the semaphore is triggered. If message is already consumed
+     * by another thread (the queue is empty), an exception will be thrown.
      * 
      **/
     void recv(DataType& result)
     {
-      if(!mEvent.wait())
-        throw std::system_error(errno,std::system_category(),"Can't wait on semaphore");
-      else
-      {
-        std::lock_guard<MutexType> sync(mMutex);
-        
-        if(mQueue.empty()) 
-          throw std::logic_error("tbsqueue<T>::recv(T&) - already consumed");
-        result=std::move(mQueue.front());
-        mQueue.pop();
-        --mQueueDepth;
-      }
+      mEvent.wait();
+      std::lock_guard<MutexType> sync(mMutex);
+
+      if(mQueue.empty()) 
+        throw std::logic_error("tbsqueue<T>::recv(T&) - already consumed");
+      
+      result=std::move(mQueue.front());
+      mQueue.pop();
+      --mQueueDepth;
     }
     
     auto recv()
     {
-      if(!mEvent.wait())
-        throw std::system_error(errno,std::system_category(),"Can't wait on semaphore");
-      else
-      {
-        std::lock_guard<MutexType> sync(mMutex);
-        
-        if(mQueue.empty()) 
-          throw std::logic_error("tbsqueue<T>::recv() - already consumed");
+      mEvent.wait();
+      std::lock_guard<MutexType> sync(mMutex);
 
-        auto result=std::move(mQueue.front());
-        mQueue.pop();
-        --mQueueDepth;
-        return result;
-      }
+      if(mQueue.empty()) 
+        throw std::logic_error("tbsqueue<T>::recv() - already consumed");
+
+      auto result=std::move(mQueue.front());
+      mQueue.pop();
+      --mQueueDepth;
+      return result;
     }
     
     void recv(std::queue<DataType>& out)
     {
-      if(!mEvent.wait())
-        throw std::system_error(errno,std::system_category(),"Can't wait on semaphore");
-      else
+      mEvent.wait();
+      std::lock_guard<MutexType> sync(mMutex);
+
+      if(mQueue.empty()) 
+        throw std::logic_error("tbsqueue<T>::recv(std::queue<DataType>&) - already consumed");
+
+      mEvent.sub(mQueue.size()-1);
+
+      while(!mQueue.empty())
       {
-        std::lock_guard<MutexType> sync(mMutex);
-        
-        if(mQueue.empty()) 
-          throw std::logic_error("tbsqueue<T>::recv(std::queue<DataType>&) - already consumed");
-        
-        while(!mQueue.empty())
-        {
-          out.push(std::move(mQueue.front()));
-          mQueue.pop();
-          --mQueueDepth;
-          mEvent.try_wait();
-        }
+        out.push(std::move(mQueue.front()));
+        mQueue.pop();
       }
+      mQueueDepth.store(0);
     }
     const size_t size() const
     {
