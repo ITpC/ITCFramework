@@ -82,12 +82,12 @@
         <requiredProjects>
           <makeArtifact PL="../ITCLib"
                         CT="3"
-                        CN="Debug"
+                        CN="Release.SSE2"
                         AC="true"
                         BL="true"
                         WD="../ITCLib"
-                        BC="${MAKE}  -f Makefile CONF=Debug"
-                        CC="${MAKE}  -f Makefile CONF=Debug clean"
+                        BC="${MAKE}  -f Makefile CONF=Release.SSE2"
+                        CC="${MAKE}  -f Makefile CONF=Release.SSE2 clean"
                         OP="${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libitclib.a">
           </makeArtifact>
         </requiredProjects>
