@@ -56,7 +56,8 @@ namespace itc
       {
         
         sem.wait(); // the thread will wake if producer put the data in the cell;
-                  // best case scenarion, - no waiting here because data is already there, worst case - fallback to POSIX sem_wait
+        // best case scenario, - no waiting here because data is already there, 
+        // worst case - fallback to POSIX sem_wait
 
         std::lock_guard<itc::sys::mutex> sync(lock);
 
@@ -136,9 +137,15 @@ namespace itc
      return std::move(result);
    }
    
+   void recv(T& result)
+   {
+     while(!try_recv(result));
+   }
+   
    ~cfifo()
    {
      valid.store(false);
+     queue.clear();
    }
   };
 }
