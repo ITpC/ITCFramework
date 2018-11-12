@@ -64,12 +64,29 @@ namespace itc
       for(size_t i=0;i<ref.size();++i)
       {
         mQueue.push(std::move(ref[i]));
-        ++mQueueDepth;
         if(!mEvent.post())
         {
           throw std::system_error(errno,std::system_category(),"Can't increment semaphore, system is going down or semaphore error");
         }
       }
+      mQueueDepth.fetch_add(ref.size());
+    }
+    
+    const bool try_send(const DataType&& ref)
+    {
+      if(mMutex.try_lock())
+      {
+        mQueue.push(std::move(ref));
+        
+        if(!mEvent.post())
+        {
+          throw std::system_error(errno,std::system_category(),"Can't increment semaphore, system is going down or semaphore error");
+        }
+        ++mQueueDepth;
+        mMutex.unlock();
+        return true;
+      }
+      return false;
     }
     
     const bool try_send(const std::vector<DataType>& ref)
@@ -79,11 +96,11 @@ namespace itc
         for(size_t i=0;i<ref.size();++i)
         {
           mQueue.push(std::move(ref[i]));
-          ++mQueueDepth;
           if(!mEvent.post())
           {
             throw std::system_error(errno,std::system_category(),"Can't increment semaphore, system is going down or semaphore error");
           }
+          mQueueDepth.fetch_add(ref.size());
         }
         mMutex.unlock();
         return true;
@@ -96,15 +113,15 @@ namespace itc
     * @param ref message to be sent.
     * @return self
     */
-    void send(const DataType& ref)
+    void send(const DataType&& ref)
     {
       std::lock_guard<MutexType> sync(mMutex);
       mQueue.push(std::move(ref));
-      ++mQueueDepth;
       if(!mEvent.post())
       {
         throw std::system_error(errno,std::system_category(),"Can't increment semaphore, system is going down or semaphore error");
       }
+      ++mQueueDepth;
     }
     
     const bool tryRecv(DataType& result,const ::timespec& timeout)
@@ -163,7 +180,7 @@ namespace itc
       auto result=std::move(mQueue.front());
       mQueue.pop();
       --mQueueDepth;
-      return result;
+      return std::move(result);
     }
     
     void recv(std::queue<DataType>& out)
