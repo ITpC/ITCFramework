@@ -18,6 +18,7 @@
 #include <sys/semaphore.h>
 #include <sys/mutex.h>
 #include <mutex>
+#include <queue>
 
 namespace itc
 {
@@ -29,33 +30,28 @@ namespace itc
     
     struct sitem
     {
-      bool                busy;
+      bool                busy; // must be lock-guarded to avoid ABA problem
       itc::sys::mutex     lock;
       semaphore           sem;
-      T                   item;
+      std::queue<T>       items;
       
       explicit sitem() : busy{false},lock(){}
       sitem(const sitem&) = delete;
       sitem(sitem&) = delete;
       
-      const bool set(const T& _item)
+      const bool set(const T&& _item)
       {
         std::lock_guard<itc::sys::mutex> sync(lock);
-        if(!busy)
-        {
-          
-          item=_item;
-          busy=true;
-          sem.post();
-          return true;
-        }
-        return false; // is not yet fetched
+        items.push(std::move(_item));
+        busy=true;
+        sem.post();
+        return true;
       }
       
       const bool fetch_and_clear(T& out)
       {
         
-        sem.wait(); // the thread will wake if producer put the data in the cell;
+        sem.wait(); // the thread will wake if as far as there data in the cell;
         // best case scenario, - no waiting here because data is already there, 
         // worst case - fallback to POSIX sem_wait
 
@@ -63,8 +59,9 @@ namespace itc
 
         if(busy)
         {
-          out=item;
-          busy=false;
+          out=std::move(items.front());
+          items.pop();
+          busy=(!items.empty());
           return true;
         }
         return false;
@@ -93,7 +90,7 @@ namespace itc
    cfifo(cfifo&)=delete;
    cfifo(const cfifo&)=delete;
    
-   const bool try_send(const T& data)
+   const bool try_send(const T&& data)
    {
      assert_validity("try_send");
      
@@ -104,14 +101,14 @@ namespace itc
        pos = next_push.load();
      }
      
-     if(queue[pos].set(data))
+     if(queue[pos].set(std::move(data)))
        return true;
      return false;
    }
    
-   void send(const T& data)
+   void send(const T&& data)
    {
-     while(!try_send(data));
+     while(!try_send(std::move(data)));
    }
    
    const bool try_recv(T& result)
