@@ -27,6 +27,8 @@ namespace itc
    */
   template <typename DataType, typename MutexType=std::mutex> class tsbqueue
   {
+  public:
+     enum QCopyPolicy { SWAP, COPY };
   private:
    using semaphore=itc::sys::semaphore<25>;
    
@@ -35,6 +37,40 @@ namespace itc
    std::queue<DataType>  mQueue;
    std::atomic<size_t>   mQueueDepth;
    
+   
+   void recv(std::queue<DataType>& out, Int2Type<SWAP> swap)
+    {
+      mEvent.wait();
+      std::lock_guard<MutexType> sync(mMutex);
+
+      if(mQueue.empty()) 
+        throw std::logic_error("tbsqueue<T>::recv(std::queue<DataType>&) - already consumed");
+
+      mEvent.sub(mQueue.size()-1);
+
+      std::swap(mQueue,out);
+      
+      mQueueDepth.store(0);
+    }
+    
+    void recv(std::queue<DataType>& out, Int2Type<COPY> swap)
+    {
+      mEvent.wait();
+      std::lock_guard<MutexType> sync(mMutex);
+
+      if(mQueue.empty()) 
+        throw std::logic_error("tbsqueue<T>::recv(std::queue<DataType>&) - already consumed");
+
+      mEvent.sub(mQueue.size()-1);
+
+      while(!mQueue.empty())
+      {
+        out.push(std::move(mQueue.front()));
+        mQueue.pop();
+      }
+      mQueueDepth.store(0);
+    }
+    
   public:
    explicit tsbqueue():mMutex(),mEvent(),mQueue(),mQueueDepth{0}{};
    tsbqueue(const tsbqueue&)=delete;
@@ -44,8 +80,8 @@ namespace itc
    {
      mEvent.destroy();
      std::lock_guard<MutexType> sync(mMutex);
-     while(!mQueue.empty())
-       mQueue.pop();
+     std::queue<DataType> aQueue;
+     std::swap(mQueue,aQueue);
      mQueueDepth=0;
    }
    
@@ -183,23 +219,11 @@ namespace itc
       return std::move(result);
     }
     
-    void recv(std::queue<DataType>& out)
+    template < const QCopyPolicy policy > void recv(std::queue<DataType>& out)
     {
-      mEvent.wait();
-      std::lock_guard<MutexType> sync(mMutex);
-
-      if(mQueue.empty()) 
-        throw std::logic_error("tbsqueue<T>::recv(std::queue<DataType>&) - already consumed");
-
-      mEvent.sub(mQueue.size()-1);
-
-      while(!mQueue.empty())
-      {
-        out.push(std::move(mQueue.front()));
-        mQueue.pop();
-      }
-      mQueueDepth.store(0);
+      recv(out,Int2Type<policy>{});
     }
+    
     const size_t size() const
     {
       return mQueueDepth;
