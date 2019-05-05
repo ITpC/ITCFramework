@@ -70,12 +70,7 @@ namespace itc
       }
       mQueueDepth.store(0);
     }
-    
-  public:
-   explicit tsbqueue():mMutex(),mEvent(),mQueue(),mQueueDepth{0}{};
-   tsbqueue(const tsbqueue&)=delete;
-   tsbqueue(tsbqueue&)=delete;
-   
+
    void destroy()
    {
      mEvent.destroy();
@@ -84,6 +79,11 @@ namespace itc
      std::swap(mQueue,aQueue);
      mQueueDepth=0;
    }
+   
+  public:
+   explicit tsbqueue():mMutex(),mEvent(),mQueue(),mQueueDepth{0}{};
+   tsbqueue(const tsbqueue&)=delete;
+   tsbqueue(tsbqueue&)=delete;
    
    ~tsbqueue()
    {
