@@ -13,139 +13,179 @@
 #  define __CFIFO_H__
 #include <atomic>
 #include <vector>
-#include <time.h>
-#include <system_error>
-#include <sys/semaphore.h>
-#include <sys/mutex.h>
-#include <mutex>
 #include <queue>
+#include <map>
+#include <type_traits>
+#include <system_error>
 
 namespace itc
 {
-  template <typename T, const size_t max_attempts=50> class cfifo
+  template <typename T> class cfifo
   {
   private:
    
-    using semaphore=itc::sys::semaphore<max_attempts>;
-    
-    struct sitem
+    struct store_value_type
     {
-      bool                busy; // must be lock-guarded to avoid ABA problem
-      itc::sys::mutex     lock;
-      semaphore           sem;
-      std::queue<T>       items;
-      
-      explicit sitem() : busy{false},lock(){}
-      sitem(const sitem&) = delete;
-      sitem(sitem&) = delete;
-      
-      const bool set(const T&& _item)
-      {
-        std::lock_guard<itc::sys::mutex> sync(lock);
-        items.push(std::move(_item));
-        busy=true;
-        sem.post();
-        return true;
-      }
-      
-      const bool fetch_and_clear(T& out)
-      {
-        
-        sem.wait(); // the thread will wake if as far as there data in the cell;
-        // best case scenario, - no waiting here because data is already there, 
-        // worst case - fallback to POSIX sem_wait
-
-        std::lock_guard<itc::sys::mutex> sync(lock);
-
-        if(busy)
-        {
-          out=std::move(items.front());
-          items.pop();
-          busy=(!items.empty());
-          return true;
-        }
-        return false;
-      }
+      std::atomic<bool> can_read;
+      T data;
+      store_value_type():can_read{false}{}
+      store_value_type(const T& _data):can_read{true},data{_data}{}
+      store_value_type(T&& _data):can_read{true},data{std::move(_data)}{}
     };
     
+    using store_type=std::pair<std::atomic_flag,store_value_type>;
+    using storage_type=std::vector<store_type>;
+    
+    size_t                        limit;
     std::atomic<size_t>           next_push;
     std::atomic<size_t>           next_read;
     std::atomic<bool>             valid;
-    size_t                        limit;
-    std::vector<sitem>            queue;
+    std::atomic<int64_t>          depth;
+    storage_type                  queue;
     
-    void assert_validity(const std::string& method)
-    {
-      if(!valid.load())
-       throw std::system_error(EOWNERDEAD,std::system_category(),"cfifo::"+method+"() - accessing concurrent FIFO which is being destroyed");
-    }
     
   public:
    
    explicit cfifo(const size_t qsz)
-   :  next_push{0},next_read{0},valid{true}, limit{qsz}, queue(qsz)
+   :  next_push{0},next_read{0},limit{qsz}, valid{false}, depth{0}, queue(qsz)
    {
+     static_assert(
+      std::is_trivially_constructible<T>::value || std::is_trivially_constructible<T,T>::value,
+      "itc::cfifo<T>::cfifo(sz), - T must be trivially constructible"
+     );
+     
+     // must set all flags to false explicitly, 
+     // because no default static initialization is possible
+     
+     for(size_t i=0;i<limit;++i)
+     {
+       queue[i].first.clear();
+     }
+     valid.store(true);
    }
    
    cfifo(cfifo&)=delete;
    cfifo(const cfifo&)=delete;
    
-   const bool try_send(const T&& data)
+   const bool try_send(const T& data)
    {
-     assert_validity("try_send");
+     // fix on next possible position
      
      size_t pos = next_push.load();
-     
-     while(!next_push.compare_exchange_strong(pos,(pos+1) < limit ? pos+1 : 0))
+     // skip while valid, next_push is moved by other threads
+     while(assert_valid("try_send")&&(!next_push.compare_exchange_strong(pos,(pos+1) < limit ? pos+1 : 0)))
      {
+       // can't fix on position, getting the next one
        pos = next_push.load();
      }
      
-     if(queue[pos].set(std::move(data)))
-       return true;
-     return false;
-   }
-   
-   void send(const T&& data)
-   {
-     while(!try_send(std::move(data)));
+     // concurrency:
+     // we are safe only until next thread do not try to push at this position
+     // after full pos cycle
+     
+     if(queue[pos].first.test_and_set()) // is tested by another thread
+     {
+       // we may not be sure if it is a producer or consumer 
+       // which we are competing with. So: BAIL OUT!
+       return false;
+     }
+     
+     // we are safe to continue, - this is the testing thread
+     
+     if(queue[pos].second.can_read.load()) // there is the data already!
+     {
+       // The data are available for consumer to read. So: BAIL OUT!
+       queue[pos].first.clear();
+       return false;
+     }
+     
+     queue[pos].second.data=data;
+
+     
+     // assign flags in reverse order
+     queue[pos].second.can_read.store(true); 
+     depth.fetch_add(1);
+     queue[pos].first.clear();
+     
+     return true;
    }
    
    const bool try_recv(T& result)
    {
-     assert_validity("try_recv");
-     
      size_t pos=next_read.load();
      
-     while(!next_read.compare_exchange_strong(pos, (pos+1) < limit ? pos+1 : 0))
+     while(assert_valid("try_recv")&&(!next_read.compare_exchange_strong(pos, (pos+1) < limit ? pos+1 : 0)))
      {
        pos = next_read.load();
      }
      
-     if(!queue[pos].fetch_and_clear(result))
+     if(queue[pos].first.test_and_set()) // is tested by another thread
+     {
+       // we may not be sure if it is a producer or consumer 
+       // we are competing with. So: BAIL OUT!
        return false;
-     return true;
+     }
+     
+     // we are safe to continue, - this is the testing thread
+     
+     if(queue[pos].second.can_read.load()) // the data available
+     {
+       result=std::move(queue[pos].second.data);
+       queue[pos].second.can_read.store(false);
+       queue[pos].first.clear();
+       depth.fetch_sub(1);
+       return true;
+     }
+     
+     queue[pos].first.clear();
+     return false;
    }
    
-   auto recv()
+   void send(const T& data) // blocks until can store the data, while cfifo is valid
+   {
+     while(!try_send(data));
+   }
+   
+   auto recv() // blocks until data is available while cfifo is valid
    {
      T result;
      while(!try_recv(result));
      return std::move(result);
    }
    
-   void recv(T& result)
+   const bool assert_valid(const std::string& func)
    {
-     while(!try_recv(result));
+     if(!valid.load())
+     {
+       std::system_error(EIDRM,std::system_category(),"cfifo<T>::"+func+"(), - queue is being removed");
+     }
+     return true;
+   }
+   
+   // unreliable but eventually correct
+   const bool empty() const
+   {
+     return depth.load() <= 0;
+   }
+   
+   // unreliable but eventually correct
+   const size_t size()
+   {
+     auto ret=depth.load();
+     if(ret>0) return static_cast<size_t>(ret);
+     else return 0;
+   }
+   
+   void shutdown()
+   {
+     valid.store(false);
    }
    
    ~cfifo()
    {
-     valid.store(false);
-     queue.clear();
-   }
+     shutdown();
+   };
   };
 }
 
 #endif /* __CFIFO_H__ */
-

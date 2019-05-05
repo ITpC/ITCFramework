@@ -38,7 +38,7 @@ namespace itc
    std::atomic<size_t>   mQueueDepth;
    
    
-   void recv(std::queue<DataType>& out, Int2Type<SWAP> swap)
+   void recv(std::queue<DataType>& out, ::itc::utils::Int2Type<SWAP> swap)
     {
       mEvent.wait();
       std::lock_guard<MutexType> sync(mMutex);
@@ -53,7 +53,7 @@ namespace itc
       mQueueDepth.store(0);
     }
     
-    void recv(std::queue<DataType>& out, Int2Type<COPY> swap)
+    void recv(std::queue<DataType>& out, ::itc::utils::Int2Type<COPY> swap)
     {
       mEvent.wait();
       std::lock_guard<MutexType> sync(mMutex);
@@ -221,7 +221,7 @@ namespace itc
     
     template < const QCopyPolicy policy > void recv(std::queue<DataType>& out)
     {
-      recv(out,Int2Type<policy>{});
+      recv(out,::itc::utils::Int2Type<policy>{});
     }
     
     const size_t size() const
