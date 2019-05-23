@@ -31,6 +31,7 @@ namespace itc
       store_value_type():can_read{false}{}
       store_value_type(const T& _data):can_read{true},data{_data}{}
       store_value_type(T&& _data):can_read{true},data{std::move(_data)}{}
+      ~store_value_type()=default;
     };
     
     using store_type=std::pair<std::atomic_flag,store_value_type>;
@@ -47,12 +48,12 @@ namespace itc
   public:
    
    explicit cfifo(const size_t qsz)
-   :  next_push{0},next_read{0},limit{qsz}, valid{false}, depth{0}, queue(qsz)
+   :  limit{qsz},next_push{0},next_read{0},valid{false}, depth{0}, queue(qsz)
    {
-     static_assert(
+/*     static_assert(
       std::is_trivially_constructible<T>::value || std::is_trivially_constructible<T,T>::value,
       "itc::cfifo<T>::cfifo(sz), - T must be trivially constructible"
-     );
+     );*/
      
      // must set all flags to false explicitly, 
      // because no default static initialization is possible

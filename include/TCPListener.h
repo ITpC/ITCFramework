@@ -108,9 +108,6 @@ namespace itc
         }catch(const std::exception& e)
         {
           itc::getLog()->error(__FILE__,__LINE__,"Exception: %s",e.what());
-          doRun.store(false);
-          mServerSocket.close();
-          break;
         }
       }
       canDestroy.store(true);

@@ -13,20 +13,14 @@
 #define __SINGLETON_H__
 
 #include <memory>
-#include <Val2Type.h>
-#include <sys/Nanosleep.h>
-#include <mutex>
 
 namespace itc {
 
     /**
-     * \brief Thread safe singleton template (a singleton holder pattern)
+     * \brief Thread safe (c++14 - atomic) singleton template (a singleton holder pattern)
      * This singleton may not be inherited or instantiated. You have to call 
      * getInstance() to get a single unique instance of a class T. This template
      * does not prevent you from instantiating the class T somewhere else.
-     * 
-     * Note that use of this class can synchronize your threads
-     * because of mutex locking.
      * 
      **/
     template<class T> class Singleton {
