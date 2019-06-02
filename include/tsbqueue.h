@@ -228,6 +228,11 @@ namespace itc
     {
       return mQueueDepth;
     }
+    
+    const bool empty() const
+    {
+      return mQueueDepth.load() == 0;
+    }
   };
 }
 #endif	/* __TSBQUEUE_H__ */
