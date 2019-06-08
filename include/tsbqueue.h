@@ -29,6 +29,7 @@ namespace itc
   {
   public:
      enum QCopyPolicy { SWAP, COPY };
+     typedef DataType value_type;
   private:
    using semaphore=itc::sys::semaphore<25>;
    
