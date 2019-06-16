@@ -31,17 +31,22 @@ namespace itc
      enum QCopyPolicy { SWAP, COPY };
      typedef DataType value_type;
   private:
-   using semaphore=itc::sys::semaphore<25>;
+   using semaphore=itc::sys::semaphore;
    
    MutexType             mMutex;
-   semaphore             mEvent;
    std::queue<DataType>  mQueue;
    std::atomic<size_t>   mQueueDepth;
+   semaphore             mEvent;
    
    
    void recv(std::queue<DataType>& out, ::itc::utils::Int2Type<SWAP> swap)
     {
-      mEvent.wait();
+      try{
+       mEvent.wait();
+      }catch(...)
+      {
+        throw;
+      }
       std::lock_guard<MutexType> sync(mMutex);
 
       if(mQueue.empty()) 
@@ -56,7 +61,12 @@ namespace itc
     
     void recv(std::queue<DataType>& out, ::itc::utils::Int2Type<COPY> swap)
     {
-      mEvent.wait();
+      try{
+       mEvent.wait();
+      }catch(...)
+      {
+        throw;
+      }
       std::lock_guard<MutexType> sync(mMutex);
 
       if(mQueue.empty()) 
@@ -82,7 +92,7 @@ namespace itc
    }
    
   public:
-   explicit tsbqueue():mMutex(),mEvent(),mQueue(),mQueueDepth{0}{};
+   explicit tsbqueue():mMutex(),mQueue(),mQueueDepth{0},mEvent{10}{};
    tsbqueue(const tsbqueue&)=delete;
    tsbqueue(tsbqueue&)=delete;
    
@@ -161,7 +171,7 @@ namespace itc
       ++mQueueDepth;
     }
     
-    const bool tryRecv(DataType& result,const ::timespec& timeout)
+    const bool try_recv(DataType& result,const ::timespec& timeout)
     {
       if(mEvent.timed_wait(timeout))
       {
@@ -174,7 +184,7 @@ namespace itc
       return false;
     }
     
-    const bool tryRecv(DataType& result)
+    const bool try_recv(DataType& result)
     {
       if(mEvent.try_wait())
       {
@@ -195,7 +205,12 @@ namespace itc
      **/
     void recv(DataType& result)
     {
-      mEvent.wait();
+      try{
+       mEvent.wait();
+      }catch(...)
+      {
+        throw;
+      }
       std::lock_guard<MutexType> sync(mMutex);
 
       if(mQueue.empty()) 
@@ -208,7 +223,12 @@ namespace itc
     
     auto recv()
     {
-      mEvent.wait();
+      try{
+       mEvent.wait();
+      }catch(...)
+      {
+        throw;
+      }
       std::lock_guard<MutexType> sync(mMutex);
 
       if(mQueue.empty()) 
