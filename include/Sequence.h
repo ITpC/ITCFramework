@@ -77,8 +77,7 @@ namespace itc
         throw std::out_of_range("Sequence is out of range");
       }else
       {
-        mSequence.store(mSequence.load()+1);
-        return mSequence.load();
+        return mSequence.fetch_add(1) + 1;
       }
     }
 
@@ -89,11 +88,10 @@ namespace itc
       if (mSequence.load() == _max)
       {
         mSequence.store(0);
-        return mSequence.load();
+        return 0;
       }else
       {
-        mSequence.store(mSequence.load()+1);
-        return mSequence.load();
+        return mSequence.fetch_add(1) + 1 ;
       }
     }
 
@@ -103,11 +101,10 @@ namespace itc
       if (mSequence.load() == 0)
       {
         mSequence.store(_max);
-        return mSequence.load();
+        return _max;
       }else
       {
-        mSequence.store(mSequence.load() -1);
-        return mSequence.load();
+        return mSequence.fetch_sub(1) - 1;
       }
     }
 
@@ -119,8 +116,7 @@ namespace itc
         throw std::out_of_range("Sequence is out of range");
       }else
       {
-        mSequence.store(mSequence.load()-1);
-        return mSequence.load();
+        return mSequence.fetch_sub(1) - 1;
       }
     }
 
@@ -129,9 +125,9 @@ namespace itc
 
     explicit Sequence() : mSequence(Reverse ? std::numeric_limits<IntType>::max() : 0) { }
 
-    explicit Sequence(const Sequence& ref) : mSequence(ref.mSequence) { }
+    explicit Sequence(const Sequence& ref) : mSequence{ref.mSequence} { }
 
-    explicit Sequence(Sequence& ref) : mSequence(ref.mSequence) { }
+    explicit Sequence(Sequence& ref) : mSequence{ref.mSequence} { }
 
     Sequence& operator=(const Sequence& ref)
     {
