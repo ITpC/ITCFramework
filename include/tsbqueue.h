@@ -41,12 +41,8 @@ namespace itc
    
    void recv(std::queue<DataType>& out, ::itc::utils::Int2Type<SWAP> swap)
     {
-      try{
-       mEvent.wait();
-      }catch(...)
-      {
-        throw;
-      }
+      mEvent.wait();
+      
       std::lock_guard<MutexType> sync(mMutex);
 
       if(mQueue.empty()) 
@@ -61,12 +57,7 @@ namespace itc
     
     void recv(std::queue<DataType>& out, ::itc::utils::Int2Type<COPY> swap)
     {
-      try{
-       mEvent.wait();
-      }catch(...)
-      {
-        throw;
-      }
+      mEvent.wait();
       std::lock_guard<MutexType> sync(mMutex);
 
       if(mQueue.empty()) 
@@ -205,12 +196,7 @@ namespace itc
      **/
     void recv(DataType& result)
     {
-      try{
-       mEvent.wait();
-      }catch(...)
-      {
-        throw;
-      }
+      mEvent.wait();
       std::lock_guard<MutexType> sync(mMutex);
 
       if(mQueue.empty()) 
@@ -223,12 +209,7 @@ namespace itc
     
     auto recv()
     {
-      try{
-       mEvent.wait();
-      }catch(...)
-      {
-        throw;
-      }
+      mEvent.wait();
       std::lock_guard<MutexType> sync(mMutex);
 
       if(mQueue.empty()) 
