@@ -144,7 +144,7 @@ namespace itc
             break;
           }
         }
-        sched_yield();
+        itc::sys::sched_yield(10);
       }
     }
     ~TCPListener()
