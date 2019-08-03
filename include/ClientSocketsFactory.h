@@ -17,15 +17,14 @@
 #  include <memory>
 #  include <cstdint>
 #  include <queue>
-#  include <mutex>
+#  include <sys/mutex.h>
 #  include <InterfaceCheck.h>
 #  include <net/NSocket.h>
-#  include <sys/synclock.h>
 
 template <uint64_t SOpts = CLIENT_SOCKET> class ClientSocketsFactory
 {
  private:
-  std::mutex mMutex;
+  itc::sys::mutex mMutex;
  public:
   typedef ::itc::net::Socket<SOpts,0> ClientSocketType;
   typedef ::std::shared_ptr<ClientSocketType> SharedClientSocketPtrType;
@@ -38,7 +37,7 @@ template <uint64_t SOpts = CLIENT_SOCKET> class ClientSocketsFactory
     static_assert(CLN_TCP_KA_TND < SERVER_SOCKET, "WTF ? can't you count ?!");
     static_assert(CLN_TCP_KA_TD < SERVER_SOCKET, "WTF ? can't you count ?!");
     
-    STDSyncLock sync(mMutex);
+    std::lock_guard<itc::sys::mutex> sync(mMutex);
     
     for(
       size_t i = 0;i < mMaxQueueLength;
@@ -50,8 +49,11 @@ template <uint64_t SOpts = CLIENT_SOCKET> class ClientSocketsFactory
 
   auto getBlindSocket()
   {
-    STDSyncLock sync(mMutex);
-    if(size_t depth = mPreBuildSockets.size() > mMinQueueLength)
+    std::lock_guard<itc::sys::mutex> sync(mMutex);
+    
+    size_t depth = mPreBuildSockets.size();
+    
+    if( depth > mMinQueueLength)
     {
       auto ptr = std::move(mPreBuildSockets.front());
       mPreBuildSockets.pop();
