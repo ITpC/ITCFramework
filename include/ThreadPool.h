@@ -197,7 +197,7 @@ namespace itc
       onShutdown();
     }
     
-    ~ThreadPool() noexcept // gcc 4.7.4 compat
+    ~ThreadPool() noexcept
     {
       stopPool();
     }
