@@ -158,7 +158,7 @@ namespace itc
    {
      if(!valid.load())
      {
-       std::system_error(EIDRM,std::system_category(),"cfifo<T>::"+func+"(), - queue is being removed");
+       throw std::system_error(EIDRM,std::system_category(),"cfifo<T>::"+func+"(), - queue is being removed");
      }
      return true;
    }
