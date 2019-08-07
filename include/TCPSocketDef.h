@@ -13,7 +13,7 @@
 
 namespace itc
 {
-	typedef net::Socket<SRV_TCP_ANY_IF,100> ServerSocket;
+	typedef net::Socket<SRV_TCP_ANY_IF,1000> ServerSocket;
 	typedef net::Socket<CLN_TCP_KA_TD> ClientSocket;
 	typedef ClientSocketsFactory<CLN_TCP_KA_TD> TCPSocketsFactory;
 	typedef TCPSocketsFactory::SharedClientSocketPtrType CSocketSPtr;
