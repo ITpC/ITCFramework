@@ -218,7 +218,7 @@ namespace itc
       auto result=std::move(mQueue.front());
       mQueue.pop();
       --mQueueDepth;
-      return std::move(result);
+      return result;
     }
     
     template < const QCopyPolicy policy > void recv(std::queue<DataType>& out)
