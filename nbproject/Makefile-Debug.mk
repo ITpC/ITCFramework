@@ -66,7 +66,7 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libitcframework.a: ${OBJECTFILES}
 ${OBJECTDIR}/include/ThreadPool.h.gch: include/ThreadPool.h nbproject/Makefile-${CND_CONF}.mk
 	${MKDIR} -p ${OBJECTDIR}/include
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -Wall -Iinclude -I../ITCLib/include -I../utils/include -std=c++14 -MMD -MP -MF "$@.d" -o "$@" include/ThreadPool.h
+	$(COMPILE.cc) -g -Wall -DMIMALLOC -Iinclude -I../ITCLib/include -I../utils/include -I/usr/local/lib/mimalloc-1.6/include -std=c++14 -MMD -MP -MF "$@.d" -o "$@" include/ThreadPool.h
 
 # Subprojects
 .build-subprojects:

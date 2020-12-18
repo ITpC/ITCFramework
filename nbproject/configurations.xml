@@ -7,11 +7,8 @@
       <logicalFolder name="include" displayName="include" projectFiles="true">
         <logicalFolder name="abstract" displayName="abstract" projectFiles="true">
           <itemPath>include/abstract/IController.h</itemPath>
-          <itemPath>include/abstract/IMessageListener.h</itemPath>
-          <itemPath>include/abstract/ITCService.h</itemPath>
           <itemPath>include/abstract/IThreadPool.h</itemPath>
           <itemPath>include/abstract/IView.h</itemPath>
-          <itemPath>include/abstract/IWorkflowState.h</itemPath>
           <itemPath>include/abstract/Observable.h</itemPath>
           <itemPath>include/abstract/Observer.h</itemPath>
           <itemPath>include/abstract/QueueInterface.h</itemPath>
@@ -19,7 +16,6 @@
         <logicalFolder name="f1" displayName="sys" projectFiles="true">
         </logicalFolder>
         <itemPath>include/ClientSocketsFactory.h</itemPath>
-        <itemPath>include/Properties.h</itemPath>
         <itemPath>include/Sequence.h</itemPath>
         <itemPath>include/Singleton.h</itemPath>
         <itemPath>include/TCPListener.h</itemPath>
@@ -73,8 +69,12 @@
             <pElem>include</pElem>
             <pElem>../ITCLib/include</pElem>
             <pElem>../utils/include</pElem>
+            <pElem>/usr/local/lib/mimalloc-1.6/include</pElem>
           </incDir>
           <commandLine>-pipe -pthread -D_REENTRANT -D_THREAD_SAFE -O2 -fPIC -mtune=generic -fomit-frame-pointer -mfpmath=sse -ftree-vectorize -funroll-loops -mno-tls-direct-seg-refs -DBZ_NO_STDIO -DLOG_DEBUG -DMAX_BUFF_SIZE=256 -DTSAFE_LOG=1</commandLine>
+          <preprocessorList>
+            <Elem>MIMALLOC</Elem>
+          </preprocessorList>
           <warningLevel>2</warningLevel>
         </ccTool>
         <archiverTool>
@@ -94,8 +94,6 @@
       </compileType>
       <item path="include/ClientSocketsFactory.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/Properties.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="include/Sequence.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Singleton.h" ex="false" tool="3" flavor2="0">
@@ -110,18 +108,9 @@
       </item>
       <item path="include/abstract/IController.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/abstract/IMessageListener.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="include/abstract/ITCService.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="include/abstract/IThreadPool.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/abstract/IView.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/abstract/IWorkflowState.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/abstract/Observable.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -167,8 +156,6 @@
       </compileType>
       <item path="include/ClientSocketsFactory.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/Properties.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="include/Sequence.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Singleton.h" ex="false" tool="3" flavor2="0">
@@ -183,18 +170,9 @@
       </item>
       <item path="include/abstract/IController.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/abstract/IMessageListener.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="include/abstract/ITCService.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="include/abstract/IThreadPool.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/abstract/IView.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/abstract/IWorkflowState.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/abstract/Observable.h" ex="false" tool="3" flavor2="0">
       </item>
