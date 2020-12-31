@@ -19,6 +19,7 @@
 #include <mutex>
 #include <sys/mutex.h>
 #include <sys/semaphore.h>
+#include <Val2Type.h>
 
 namespace itc
 {
